@@ -1,34 +1,37 @@
 # paperlesspaper Art
 
-Purpose: Provide a curated set of [Public Domain](https://en.wikipedia.org/wiki/Public_domain) and [Creative Commons](https://creativecommons.org/licenses/) artworks and icons for the [paperlesspaper.de](https://paperlesspaper.de) eInk picture frame, so they can be displayed in the device’s image editor.
+Curated public-domain and Creative Commons artworks/icons for
+[paperlesspaper.de](https://paperlesspaper.de). The catalog is generated
+offline, uploaded to object storage, and exposed through a small read-only API
+that paperlesspaper-web can search.
 
-This repo contains:
+## Integration Reference
 
-- `apps/web`: Next.js app that reads `data/artworks.json` and shows downloaded artworks
-- `packages/scraper`: Node.js CLI to download public-domain artworks from multiple sources, resize them, and store metadata as JSON
-
-## Web app
-
-```bash
-cd apps/web
-yarn dev
-```
-
-Then open http://localhost:3000
-
-The web app also exposes a read-only JSON API for the paperlesspaper app:
+Production base URL:
 
 ```txt
-GET /api/artworks?q=cat&source=svgrepo&limit=40
-GET /api/artworks/svgrepo%3A526478
+https://art.paperlesspaper.de
 ```
 
-It also redirects local image paths to `ART_ASSET_BASE_URL`, so image URLs keep
-working through the app domain without bundling the image files into the Docker
-image:
+Object storage asset base:
 
 ```txt
-GET /images/svgrepo/528659/original.svg
+https://fsn1.your-objectstorage.com/paperlesspaper-art
+```
+
+paperlesspaper-web should call the API on `art.paperlesspaper.de` and render the
+returned `image.url`.
+
+## Search API
+
+```txt
+GET /api/artworks
+```
+
+Example:
+
+```txt
+GET https://art.paperlesspaper.de/api/artworks?q=bell&source=svgrepo&limit=10
 ```
 
 Query parameters:
@@ -36,100 +39,281 @@ Query parameters:
 - `q`: searches title, artist, author, collection, license, source, source id, and tags
 - `source`: `met`, `artic`, `wikimedia`, or `svgrepo`
 - `publicDomain`: `true` or `false`
-- `license`, `tag`, `collection`: simple text filters
+- `license`: text filter on license
+- `tag`: text filter on tags
+- `collection`: text filter on collection name
 - `limit`: defaults to `40`, max `200`
 - `offset`: pagination offset
 
-Runtime environment:
+Response shape:
 
-- `ART_CATALOG_URL`: optional remote `artworks.json` URL, e.g. an S3/CloudFront URL
-- `ART_ASSET_BASE_URL`: optional public asset base URL, e.g. `https://cdn.paperlesspaper.de`
-- `ART_ALLOWED_ORIGINS`: comma-separated CORS origins, defaults to `*`
-- `ART_API_KEY`: optional API key. If set, clients must pass `Authorization: Bearer <key>` or `X-API-Key: <key>`
-- `ART_CATALOG_CACHE_TTL_MS`: catalog cache TTL, defaults to `300000`
+```json
+{
+  "items": [
+    {
+      "id": "svgrepo:526478",
+      "source": "svgrepo",
+      "sourceId": "526478",
+      "title": "Bell bing SVG Vector",
+      "artist": "Solar Icons",
+      "isPublicDomain": false,
+      "license": "CC Attribution License",
+      "licenseUrl": "https://www.svgrepo.com/page/licensing/#CC%20Attribution",
+      "sourceUrl": "https://www.svgrepo.com/svg/526478/bell-bing",
+      "collection": {
+        "name": "Solar Line Duotone Icons",
+        "url": "https://www.svgrepo.com/collection/solar-line-duotone-icons/"
+      },
+      "author": {
+        "name": "Solar Icons",
+        "url": "https://www.figma.com/community/file/1166831539721848736"
+      },
+      "tags": ["Bell bing", "Bell Canada"],
+      "image": {
+        "originalUrl": "https://www.svgrepo.com/download/526478/bell-bing.svg",
+        "url": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg",
+        "localOriginalPath": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg"
+      },
+      "search": {
+        "query": "collection:solar-line-duotone-icons",
+        "downloadedAt": "2026-01-07T16:58:51.123Z"
+      }
+    }
+  ],
+  "total": 45,
+  "limit": 10,
+  "offset": 0
+}
+```
 
-## Scraper CLI
+## Detail API
+
+```txt
+GET /api/artworks/:id
+```
+
+IDs contain `:`, so URL-encode them:
+
+```txt
+GET https://art.paperlesspaper.de/api/artworks/svgrepo%3A526478
+```
+
+Response shape:
+
+```json
+{
+  "item": {
+    "id": "svgrepo:526478",
+    "title": "Bell bing SVG Vector",
+    "source": "svgrepo",
+    "image": {
+      "url": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg"
+    }
+  }
+}
+```
+
+## Image URLs
+
+The canonical image URL for consumers is:
+
+```txt
+item.image.url
+```
+
+The API rewrites local catalog paths like:
+
+```txt
+/images/svgrepo/526478/original.svg
+```
+
+to object-storage URLs using `ART_ASSET_BASE_URL`.
+
+The web app also supports app-domain image URLs by redirecting them:
+
+```txt
+GET https://art.paperlesspaper.de/images/svgrepo/528659/original.svg
+```
+
+redirects to:
+
+```txt
+https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/528659/original.svg
+```
+
+This keeps URLs convenient without bundling hundreds of MB of image files into
+the Dokploy container.
+
+## Client Example
+
+```ts
+type ArtworkSearchResponse = {
+  items: Artwork[];
+  total: number;
+  limit: number;
+  offset: number;
+};
+
+type Artwork = {
+  id: string;
+  source: "met" | "artic" | "wikimedia" | "svgrepo";
+  sourceId: string;
+  title: string;
+  artist?: string;
+  date?: string;
+  isPublicDomain: boolean;
+  license: string;
+  licenseUrl?: string;
+  sourceUrl: string;
+  collection?: {
+    name: string;
+    url: string;
+  };
+  author?: {
+    name: string;
+    url: string;
+  };
+  tags?: string[];
+  image: {
+    originalUrl: string;
+    url: string;
+    localOriginalPath?: string;
+    localResizedPaths?: Record<string, string>;
+    resizedUrls?: Record<string, string>;
+  };
+};
+
+export async function searchPaperlesspaperArt(params: {
+  q?: string;
+  source?: Artwork["source"];
+  limit?: number;
+  offset?: number;
+}) {
+  const url = new URL("https://art.paperlesspaper.de/api/artworks");
+
+  if (params.q) url.searchParams.set("q", params.q);
+  if (params.source) url.searchParams.set("source", params.source);
+  if (params.limit) url.searchParams.set("limit", String(params.limit));
+  if (params.offset) url.searchParams.set("offset", String(params.offset));
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Artwork search failed: ${response.status}`);
+  }
+
+  return (await response.json()) as ArtworkSearchResponse;
+}
+```
+
+Recommended UI behavior for paperlesspaper-web:
+
+- Use `item.image.url` for preview/render/import.
+- Display `item.title`, `item.artist`, `item.license`, and `item.source`.
+- Keep `item.sourceUrl` and `item.licenseUrl` available for attribution/details.
+- Use `limit` and `offset` for pagination or infinite scroll.
+- Prefer `source=svgrepo` when the user searches for icons.
+- Prefer `publicDomain=true` when the target workflow requires public-domain only.
+
+## HTTP Behavior
+
+- `GET /api/artworks` returns `200`.
+- `GET /api/artworks/:id` returns `200` or `404`.
+- If `ART_API_KEY` is configured, clients must pass either:
+  - `Authorization: Bearer <key>`
+  - `X-API-Key: <key>`
+- CORS is controlled by `ART_ALLOWED_ORIGINS`.
+- API responses use `Cache-Control: public, max-age=60, stale-while-revalidate=300`.
+- The in-memory catalog cache is controlled by `ART_CATALOG_CACHE_TTL_MS`.
+
+## Runtime Environment
+
+Dokploy/web runtime:
+
+```env
+ART_CATALOG_URL=https://fsn1.your-objectstorage.com/paperlesspaper-art/artworks.json
+ART_ASSET_BASE_URL=https://fsn1.your-objectstorage.com/paperlesspaper-art
+ART_ALLOWED_ORIGINS=https://paperlesspaper.de,https://app.paperlesspaper.de
+ART_CATALOG_CACHE_TTL_MS=300000
+ART_API_KEY=
+```
+
+Local/CI sync environment:
+
+```env
+S3_BUCKET=paperlesspaper-art
+S3_ENDPOINT=https://fsn1.your-objectstorage.com
+S3_REGION=fsn1
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+```
+
+Do not put `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` into Dokploy unless the
+server is also responsible for uploading assets. In the normal setup, Dokploy
+only reads public catalog/assets.
+
+## Hosting With Dokploy
+
+Deploy this repo as a Dockerfile application.
+
+Dokploy settings:
+
+- Build context: `.`
+- Dockerfile path: `Dockerfile`
+- Container port: `3000`
+- Domain: `art.paperlesspaper.de`
+- HTTPS: enabled
+
+The Docker image runs the Next standalone server and does not include
+`apps/web/public/images`. Images are served from object storage.
+
+## Updating The Catalog
+
+The scraper is an offline content pipeline. Do not run it inside API request
+handlers.
+
+Generate/update locally or in CI:
 
 ```bash
 cd packages/scraper
 yarn install
 yarn build
+
+node dist/index.js met --query "landscape" --limit 100
+node dist/index.js artic --query "portrait" --limit 100
+node dist/index.js wikimedia --query "paintings" --limit 100
+node dist/index.js svgrepo --query "cat" --limit 100
 ```
 
-Run a download (writes into `apps/web/public/images` + `apps/web/data/artworks.json`):
+Publish to object storage:
 
 ```bash
-cd packages/scraper
-node dist/index.js met --query "landscape" --limit 10
-node dist/index.js artic --query "portrait" --limit 10
-node dist/index.js wikimedia --query "paintings" --limit 10
-node dist/index.js svgrepo --query "cat" --limit 10
-node dist/index.js svgrepo --collection-url "https://www.svgrepo.com/collection/bakery-education-line-icons/" --limit 25
+set -a
+source .env
+set +a
 
-
-node dist/index.js svgrepo --all-collections --collections-start 0 --per-collection-limit 100000 --api-prefer --cdp-url http://127.0.0.1:9222
+aws s3 sync apps/web/public/images s3://$S3_BUCKET/images --delete --only-show-errors --endpoint-url $S3_ENDPOINT
+aws s3 cp apps/web/data/artworks.json s3://$S3_BUCKET/artworks.json --only-show-errors --endpoint-url $S3_ENDPOINT
 ```
 
-Sources:
+The API picks up the new catalog after `ART_CATALOG_CACHE_TTL_MS`, or immediately
+after restarting the Dokploy app.
+
+## Repository Layout
+
+- `apps/web`: Next.js web/API app
+- `apps/web/data/artworks.json`: generated catalog metadata
+- `apps/web/public/images`: generated local images, ignored by git and Docker
+- `packages/scraper`: Node.js CLI for downloading and resizing assets
+
+## Scraper Sources
 
 - The Metropolitan Museum of Art Collection API: https://metmuseum.github.io/
 - Art Institute of Chicago API: https://api.artic.edu/docs/
 - Wikimedia Commons API: https://www.mediawiki.org/wiki/API:Main_page
 - SVG Repo: https://www.svgrepo.com/
 
-Options:
-
-- `--widths 512,1024` (default)
-- `--web-root /absolute/path/to/apps/web` (only needed if autodetection fails)
-
-For `svgrepo`, you can optionally connect to an already-running Chrome session (to reuse a manually verified session):
-
-- `--cdp-url http://127.0.0.1:9222`
-
-The `svgrepo` scraper prefers Google Chrome Canary via Playwright when available (falls back to stable Chrome, then bundled Chromium).
-
-## Data layout
-
-- Images: `apps/web/public/images/<source>/<sourceId>/...`
-- Metadata: `apps/web/data/artworks.json`
-
-## Hosting with Dokploy + S3
-
-The scraper is an offline content pipeline. Do not run it inside request-time API
-handlers.
-
-1. Generate or update the catalog locally or in CI:
+For `svgrepo`, you can optionally connect to an already-running Chrome session:
 
 ```bash
-cd packages/scraper
-yarn install
-yarn build
-node dist/index.js wikimedia --query "landscape" --limit 100
-node dist/index.js svgrepo --query "cat" --limit 100
+node dist/index.js svgrepo --all-collections --collections-start 0 --per-collection-limit 100000 --api-prefer --cdp-url http://127.0.0.1:9222
 ```
-
-2. Publish generated assets to S3:
-
-```bash
-aws s3 sync apps/web/public/images s3://paperlesspaper-art/images --delete
-aws s3 cp apps/web/data/artworks.json s3://paperlesspaper-art/artworks.json
-```
-
-3. Serve the S3 bucket through CloudFront or another CDN.
-
-4. Deploy this repo in Dokploy with the included `Dockerfile` or
-   `docker-compose.yml`.
-
-Example Dokploy environment:
-
-```env
-ART_CATALOG_URL=https://cdn.paperlesspaper.de/artworks.json
-ART_ASSET_BASE_URL=https://cdn.paperlesspaper.de
-ART_ALLOWED_ORIGINS=https://paperlesspaper.de,https://app.paperlesspaper.de
-ART_API_KEY=
-ART_CATALOG_CACHE_TTL_MS=300000
-```
-
-The API service reads the catalog from S3/CDN, caches it in memory, and returns
-S3/CDN-backed image URLs. Regeneration only happens when you run the scraper and
-publish a new `artworks.json`.
