@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { corsHeaders } from "@/lib/artworks";
 
 export const dynamic = "force-dynamic";
 
@@ -16,13 +17,24 @@ export async function HEAD(request: Request, context: RouteContext) {
   return redirectToAsset(request, context);
 }
 
+export async function OPTIONS(request: Request) {
+  return new Response(null, {
+    status: 204,
+    headers: corsHeaders(request),
+  });
+}
+
 async function redirectToAsset(request: Request, context: RouteContext) {
+  const headers = {
+    ...corsHeaders(request),
+    "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
+  };
   const assetBaseUrl = process.env.ART_ASSET_BASE_URL?.trim();
 
   if (!assetBaseUrl) {
     return NextResponse.json(
       { error: "ART_ASSET_BASE_URL is not configured" },
-      { status: 404 }
+      { status: 404, headers }
     );
   }
 
@@ -39,14 +51,12 @@ async function redirectToAsset(request: Request, context: RouteContext) {
   if (targetUrl.origin === sourceUrl.origin) {
     return NextResponse.json(
       { error: "ART_ASSET_BASE_URL points back to this app" },
-      { status: 500 }
+      { status: 500, headers }
     );
   }
 
   return NextResponse.redirect(targetUrl, {
     status: 307,
-    headers: {
-      "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
-    },
+    headers,
   });
 }

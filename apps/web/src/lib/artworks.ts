@@ -213,13 +213,6 @@ export function parseArtworkSearchParams(searchParams: URLSearchParams) {
   } satisfies ArtworkSearchFilters;
 }
 
-export function allowedOrigins() {
-  return (process.env.ART_ALLOWED_ORIGINS ?? "*")
-    .split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean);
-}
-
 export function isAuthorized(request: Request) {
   const apiKey = process.env.ART_API_KEY?.trim();
   if (!apiKey) return true;
@@ -232,7 +225,10 @@ export function isAuthorized(request: Request) {
 }
 
 export function corsHeaders(request: Request) {
-  const origins = allowedOrigins();
+  const origins = (process.env.ART_ALLOWED_ORIGINS ?? "*")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
   const requestOrigin = request.headers.get("origin");
   const allowOrigin =
     origins.length === 0 || origins.includes("*") || !requestOrigin
