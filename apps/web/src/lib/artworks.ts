@@ -61,7 +61,7 @@ export type ArtworkSearchFilters = {
   offset?: number;
 };
 
-const DEFAULT_LIMIT = 40;
+const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 200;
 const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000;
 

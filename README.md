@@ -1,9 +1,18 @@
 # paperlesspaper Art
 
+![paperlesspaper Art hero](assets/readme-hero.png)
+
 Curated public-domain and Creative Commons artworks/icons for
 [paperlesspaper.de](https://paperlesspaper.de). The catalog is generated
 offline, uploaded to object storage, and exposed through a small read-only API
 that paperlesspaper-web can search.
+
+## Support Open Source
+
+paperlesspaper.de is built to make everyday paperwork simpler, calmer, and more
+accessible. If this catalog is useful to your project, support the open-source
+work behind it by visiting [paperlesspaper.de](https://paperlesspaper.de) and
+sharing it with people who could use better digital documents.
 
 ## Integration Reference
 

@@ -68,6 +68,27 @@
   color: var(--text-secondary);
 }
 
+.headerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 18px;
+  line-height: 24px;
+}
+
+.headerLinks a {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.headerLinks a:hover,
+.headerLinks a:focus-visible {
+  color: #0a84ff;
+}
+
 .empty {
   margin-top: 24px;
   color: var(--text-secondary);
@@ -222,6 +243,30 @@
   box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
 }
 
+.highlightIndicator {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #111;
+  border-radius: 5px;
+  background: #f2b705;
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+}
+
+.highlightIndicator::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 10px;
+  margin: 2px 0 0 6px;
+  border: solid #111;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
 .highlightControl::after {
   content: "";
   display: block;
@@ -344,7 +389,30 @@
   color: #fff;
 }
 
+.readOnlyCuration {
+  display: flex;
+  min-height: 28px;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.readOnlyCuration span {
+  display: inline-flex;
+  min-height: 24px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 5px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 1;
+  padding: 0 8px;
+}
+
 .links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-top: 10px;
   font-size: 14px;
 }
@@ -352,6 +420,27 @@
 .links a {
   color: var(--text-primary);
   font-weight: 500;
+}
+
+.showMoreButton {
+  align-self: center;
+  height: 38px;
+  margin: 18px auto 0;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  padding: 0 16px;
+}
+
+.showMoreButton:hover,
+.showMoreButton:focus-visible {
+  border-color: #0a84ff;
+  outline: 2px solid rgb(10 132 255 / 20%);
+  outline-offset: 1px;
 }
 
 @media (max-width: 600px) {

@@ -98,11 +98,12 @@ export default async function Home() {
             <PaperlesspaperLogo className={styles.logoLarge} />
           </h1>
           <div className={styles.artLabel}>Art</div>
-          <p>
-            Local dataset of public-domain artworks scraped via the CLI. Images
-            are in <code>public/images</code>, metadata in{" "}
-            <code>data/artworks.json</code>.
-          </p>
+          <nav className={styles.headerLinks} aria-label="Project links">
+            <a href="https://paperlesspaper.de">paperlesspaper</a>
+            <a href="https://github.com/paperlesspaper/paperlesspaper-art">
+              GitHub project
+            </a>
+          </nav>
         </div>
 
         {artworks.length === 0 ? (
@@ -113,9 +114,17 @@ export default async function Home() {
           <ArtworkCurationGrid
             artworks={artworks}
             initialCuration={curation}
+            readOnlyCuration={isProductionRuntime()}
           />
         )}
       </main>
     </div>
+  );
+}
+
+function isProductionRuntime() {
+  return (
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production"
   );
 }

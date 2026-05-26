@@ -193,21 +193,6 @@ export async function scrapeWikimedia(params: {
     const description =
       ext(meta, "ObjectName") || ext(meta, "ImageDescription") || undefined;
 
-    const creationYear = extractCreationYear({
-      meta,
-      title,
-      description,
-      categories: page.categories,
-    });
-
-    const recentCutoffYear = new Date().getFullYear() - 40;
-    if (creationYear !== undefined && creationYear > recentCutoffYear) {
-      console.log(
-        `Skipping recent file ${page.title} (year ${creationYear} > cutoff ${recentCutoffYear})`
-      );
-      continue;
-    }
-
     if (
       !looksLikeScreenArt({
         query: params.query,
@@ -312,39 +297,6 @@ function isImportantCommonsFile(params: {
     .join(" ");
 
   return IMPORTANT_CATEGORY_HINTS.some((hint) => categoryText.includes(hint));
-}
-
-function extractCreationYear(params: {
-  meta: Record<string, any>;
-  title: string;
-  description?: string;
-  categories: Array<{ title: string }> | undefined;
-}): number | undefined {
-  const candidates: string[] = [];
-  const push = (v?: string) => {
-    if (v && v.length > 0) candidates.push(v);
-  };
-
-  push(ext(params.meta, "DateTimeOriginal"));
-  push(ext(params.meta, "DateTime"));
-  push(ext(params.meta, "Date"));
-  push(params.title);
-  push(params.description);
-  for (const c of params.categories ?? []) push(c.title);
-
-  const currentYear = new Date().getFullYear() + 1; // allow slight future skew
-  const years: number[] = [];
-
-  for (const text of candidates) {
-    const matches = text.matchAll(/\b(1[0-9]{3}|20[0-9]{2}|2100)\b/g);
-    for (const m of matches) {
-      const y = Number(m[1]);
-      if (y >= 1000 && y <= currentYear) years.push(y);
-    }
-  }
-
-  if (years.length === 0) return undefined;
-  return Math.max(...years);
 }
 
 function looksLikeScreenArt(params: {

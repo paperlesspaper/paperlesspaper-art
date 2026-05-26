@@ -17,6 +17,13 @@ export async function GET(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  if (isProductionRuntime()) {
+    return NextResponse.json(
+      { error: "Curation is read-only in production" },
+      { status: 403 }
+    );
+  }
+
   if (!isAuthorized(request)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -55,4 +62,11 @@ export async function PATCH(request: Request) {
   return NextResponse.json({
     curation: await updateArtworkCurationItem(id, item),
   });
+}
+
+function isProductionRuntime() {
+  return (
+    process.env.NODE_ENV === "production" ||
+    process.env.VERCEL_ENV === "production"
+  );
 }
