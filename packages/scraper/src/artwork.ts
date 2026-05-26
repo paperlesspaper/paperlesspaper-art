@@ -1,6 +1,6 @@
 export type Artwork = {
   id: string;
-  source: "met" | "artic" | "svgrepo";
+  source: "met" | "artic" | "svgrepo" | "wikimedia";
   sourceId: string;
   title: string;
   description?: string;

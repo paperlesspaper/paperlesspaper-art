@@ -1,6 +1,8 @@
 import styles from "./page.module.css";
 import { loadArtworks } from "@/lib/artworks";
 
+export const dynamic = "force-dynamic";
+
 function PaperlesspaperLogo({ className }: { className?: string }) {
   return (
     <svg

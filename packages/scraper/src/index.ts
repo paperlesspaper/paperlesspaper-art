@@ -6,6 +6,7 @@ import { findWebRoot, parseWidths } from "./paths.js";
 import { defaultWebPaths, upsertArtworks } from "./store.js";
 import { scrapeMet } from "./sources/met.js";
 import { scrapeArtic } from "./sources/artic.js";
+import { scrapeWikimedia } from "./sources/wikimedia.js";
 import {
   fetchSvgrepoCollectionsPageApiOnly,
   fetchSvgrepoCollectionsPage,
@@ -72,6 +73,30 @@ addCommonOptions(
   const result = await upsertArtworks({ dataFilePath, artworks });
   console.log(
     `artic: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
+  );
+});
+
+addCommonOptions(
+  program
+    .command("wikimedia")
+    .description("Scrape Wikimedia Commons (CC/PD-licensed raster images)")
+).action(async (opts) => {
+  const webRoot = await resolveWebRoot(opts.webRoot);
+  const { dataFilePath, imagesRoot } = defaultWebPaths(webRoot);
+
+  const limit = Number(opts.limit);
+  const widths = parseWidths(opts.widths);
+
+  const artworks = await scrapeWikimedia({
+    query: opts.query,
+    limit: Number.isFinite(limit) ? limit : 25,
+    widths,
+    imagesRoot,
+  });
+
+  const result = await upsertArtworks({ dataFilePath, artworks });
+  console.log(
+    `wikimedia: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
   );
 });
 

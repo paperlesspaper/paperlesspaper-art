@@ -1,0 +1,13 @@
+services:
+  paperlesspaper-art:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      ART_CATALOG_URL: ${ART_CATALOG_URL:-}
+      ART_ASSET_BASE_URL: ${ART_ASSET_BASE_URL:-}
+      ART_ALLOWED_ORIGINS: ${ART_ALLOWED_ORIGINS:-*}
+      ART_API_KEY: ${ART_API_KEY:-}
+      ART_CATALOG_CACHE_TTL_MS: ${ART_CATALOG_CACHE_TTL_MS:-300000}
+    ports:
+      - "3000:3000"
