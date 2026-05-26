@@ -23,6 +23,14 @@ GET /api/artworks?q=cat&source=svgrepo&limit=40
 GET /api/artworks/svgrepo%3A526478
 ```
 
+It also redirects local image paths to `ART_ASSET_BASE_URL`, so image URLs keep
+working through the app domain without bundling the image files into the Docker
+image:
+
+```txt
+GET /images/svgrepo/528659/original.svg
+```
+
 Query parameters:
 
 - `q`: searches title, artist, author, collection, license, source, source id, and tags
