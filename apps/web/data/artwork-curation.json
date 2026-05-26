@@ -728,5 +728,63 @@
   },
   "wikimedia:21907002": {
     "rating": 1
+  },
+  "wikimedia:21977254": {
+    "rating": 1
+  },
+  "wikimedia:5369969": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:5445003": {
+    "rating": 5
+  },
+  "wikimedia:354686": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:151251": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:40213893": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:5576388": {
+    "rating": 5
+  },
+  "wikimedia:21856258": {
+    "rating": 1
+  },
+  "wikimedia:149082": {
+    "rating": 1
+  },
+  "wikimedia:13410926": {
+    "rating": 1
+  },
+  "wikimedia:13359000": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:13358942": {
+    "rating": 5
+  },
+  "wikimedia:21784617": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:21792113": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:5291299": {
+    "rating": 1
+  },
+  "wikimedia:17099479": {
+    "rating": 1
+  },
+  "wikimedia:124659101": {
+    "rating": 1
   }
 }

@@ -1,5 +1,1806 @@
 [
   {
+    "id": "wikimedia:21977254",
+    "source": "wikimedia",
+    "sourceId": "21977254",
+    "title": "Frederic Edwin Church - Aurora Borealis - Google Art Project",
+    "description": "Aurora Borealis title QS:P1476,en:\"Aurora Borealis\" label QS:Len,\"Aurora Borealis\" label QS:Lfr,\" Aurora Borealis \"",
+    "artist": "Frederic Edwin Church",
+    "date": "1865 date QS:P571,+1865-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "3QGtI0P71obkqA at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AFrederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Frederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg/1920px-Frederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1292,
+      "localOriginalPath": "/images/wikimedia/21977254/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21977254/w512.jpg",
+        "1024": "/images/wikimedia/21977254/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project American landscape painting",
+      "downloadedAt": "2026-05-26T20:12:13.922Z"
+    }
+  },
+  {
+    "id": "wikimedia:21864145",
+    "source": "wikimedia",
+    "sourceId": "21864145",
+    "title": "Claude-Joseph Vernet - Villa at Caprarola - Google Art Project",
+    "description": "Villa at Caprarola label QS:Lit,\"Palazzo Farnese (Caprarola)\" label QS:Lfr,\"Palazzo Farnese (Caprarola)\" label QS:Len,\"Villa at Caprarola\" label QS:Lde,\"Palazzo Farnese (Caprarola)\"",
+    "artist": "Joseph Vernet",
+    "date": "1746 date QS:P571,+1746-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "GgEbWCQht60AYg at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude-Joseph_Vernet_-_Villa_at_Caprarola_-_Google_Art_Project.jpg",
+    "tags": [
+      "1740s landscape paintings from France",
+      "1746 oil on canvas paintings in the United States",
+      "1746 paintings from France",
+      "18th-century landscape paintings of Italy",
+      "French paintings in the Philadelphia Museum of Art",
+      "Lazio in the 1740s",
+      "Paintings by Joseph Vernet",
+      "Palazzo Farnese (Caprarola) in art"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Claude-Joseph_Vernet_-_Villa_at_Caprarola_-_Google_Art_Project.jpg/1920px-Claude-Joseph_Vernet_-_Villa_at_Caprarola_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 818,
+      "localOriginalPath": "/images/wikimedia/21864145/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21864145/w512.jpg",
+        "1024": "/images/wikimedia/21864145/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project American landscape painting",
+      "downloadedAt": "2026-05-26T20:12:13.922Z"
+    }
+  },
+  {
+    "id": "wikimedia:23615082",
+    "source": "wikimedia",
+    "sourceId": "23615082",
+    "title": "Carl Fredrik Hill - Untitled (landscape with lion) - Google Art Project",
+    "description": "Untitled (landscape with lion) title QS:P1476,en:\"Untitled (landscape with lion)\" label QS:Len,\"Untitled (landscape with lion)\"",
+    "artist": "Carl Fredrik Hill",
+    "date": "(1883 - 1911)",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "GgF6JAv_YvyXsg at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ACarl_Fredrik_Hill_-_Untitled_(landscape_with_lion)_-_Google_Art_Project.jpg",
+    "tags": [
+      "Crayon drawings",
+      "Drawings in Malmö konstmuseum",
+      "Drawings of lions",
+      "Lions in art of Sweden",
+      "Paintings by Carl Fredrik Hill in Malmö konstmuseum"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Carl_Fredrik_Hill_-_Untitled_%28landscape_with_lion%29_-_Google_Art_Project.jpg/1920px-Carl_Fredrik_Hill_-_Untitled_%28landscape_with_lion%29_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1551,
+      "localOriginalPath": "/images/wikimedia/23615082/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/23615082/w512.jpg",
+        "1024": "/images/wikimedia/23615082/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Scandinavian painting",
+      "downloadedAt": "2026-05-26T20:12:11.065Z"
+    }
+  },
+  {
+    "id": "wikimedia:7644391",
+    "source": "wikimedia",
+    "sourceId": "7644391",
+    "title": "Guo Xi - Early Spring (large)",
+    "description": "Chinese: 《早春圖》 Early Spring title QS:P1476,zh:\"早春圖\" label QS:Lzh,\"早春圖\" label QS:Les,\"Primavera temprana\" label QS:Lru,\"Ранняя весна\" label QS:Lja,\"早春図\" label QS:Lfr,\"Début du printemps\" label QS:Lde,\"Vorfrühling (Frühlingserwachen)\" label QS:Len,\"Early Spring\" label QS:Lko,\"이른 봄\"",
+    "artist": "Guo Xi",
+    "date": "1072 date QS:P571,+1072-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "http://www.npm.gov.tw/en/collection/selections_02.htm?docno=48&amp;catno=15",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AGuo_Xi_-_Early_Spring_(large).jpg",
+    "tags": [
+      "Early Spring (Guo Xi)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Guo_Xi_-_Early_Spring_%28large%29.jpg/1920px-Guo_Xi_-_Early_Spring_%28large%29.jpg",
+      "width": 1920,
+      "height": 2792,
+      "localOriginalPath": "/images/wikimedia/7644391/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/7644391/w512.jpg",
+        "1024": "/images/wikimedia/7644391/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Chinese landscape painting",
+      "downloadedAt": "2026-05-26T20:12:00.768Z"
+    }
+  },
+  {
+    "id": "wikimedia:636221",
+    "source": "wikimedia",
+    "sourceId": "636221",
+    "title": "A Holi Festival - Krishna Radha and Gopis",
+    "description": "A Holi Festival - Krishna Radha and Gopis",
+    "artist": "Unknown artist Unknown artist",
+    "date": "19 th century date QS:P571,+1850-00-00T00:00:00Z/7",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "https://artsandculture.google.com/asset/a-holi-festival/RgFK4hKqoFvJXg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AA_Holi_Festival_-_Krishna_Radha_and_Gopis.jpg",
+    "tags": [
+      "19th-century Mughal miniatures",
+      "Avadh painting: Faizabad and Lucknow",
+      "Holi in art",
+      "Mughal miniatures in the Freer Gallery of Art",
+      "Paintings of Krishna and the Gopis",
+      "Paintings of Radha and Krishna",
+      "Processional canopies",
+      "Watercolor paintings of people of India"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/A_Holi_Festival_-_Krishna_Radha_and_Gopis.jpg/1920px-A_Holi_Festival_-_Krishna_Radha_and_Gopis.jpg",
+      "width": 1920,
+      "height": 2909,
+      "localOriginalPath": "/images/wikimedia/636221/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/636221/w512.jpg",
+        "1024": "/images/wikimedia/636221/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Indian miniature painting",
+      "downloadedAt": "2026-05-26T20:11:54.524Z"
+    }
+  },
+  {
+    "id": "wikimedia:635169",
+    "source": "wikimedia",
+    "sourceId": "635169",
+    "title": "Adam and Eve from a copy of the Falnama",
+    "description": "Folio from a Falnama (Book of omens); verso: Expulsion of Adam and Eve; recto: text",
+    "artist": "Unknown artist Unknown artist",
+    "date": "Safavid dynasty, 16 th century date QS:P571,+1550-00-00T00:00:00Z/7",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — folio-from-a-falnama-book-of-omens-verso-expulsion-of-adam-and-eve-recto-text/9gEaMm5FOOiIjw",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAdam_and_Eve_from_a_copy_of_the_Falnama.jpg",
+    "tags": [
+      "16th-century Persian miniatures",
+      "Art of Iran in the Arthur M. Sackler Gallery",
+      "Genies in art",
+      "Iblis in art",
+      "Jannah",
+      "Manuscripts of the Falnama",
+      "Miniatures of the Expulsion of Adam and Eve",
+      "Old Testament's characters in Islamic miniature",
+      "Safavid miniatures"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Adam_and_Eve_from_a_copy_of_the_Falnama.jpg/1920px-Adam_and_Eve_from_a_copy_of_the_Falnama.jpg",
+      "width": 1920,
+      "height": 2513,
+      "localOriginalPath": "/images/wikimedia/635169/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/635169/w512.jpg",
+        "1024": "/images/wikimedia/635169/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Persian miniature",
+      "downloadedAt": "2026-05-26T20:11:49.342Z"
+    }
+  },
+  {
+    "id": "wikimedia:354686",
+    "source": "wikimedia",
+    "sourceId": "354686",
+    "title": "Hiroshige A great wave by the coast",
+    "description": "Hiroshige A great wave by the coast",
+    "artist": "Utagawa Hiroshige",
+    "date": "circa 1835 date QS:P571,+1835-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "print scan",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHiroshige_A_great_wave_by_the_coast.jpg",
+    "tags": [
+      "Honchō meisho (The Famous Scenes of the Nation) by Utagawa Hiroshige",
+      "Sagami Province",
+      "Views of Enoshima and Mount Fuji from Shichirigahama Beach in ukiyo-e",
+      "Views of Mount Fuji from Kamakura",
+      "Waves in ukiyo-e"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a0/Hiroshige_A_great_wave_by_the_coast.jpg/1920px-Hiroshige_A_great_wave_by_the_coast.jpg",
+      "width": 1920,
+      "height": 1166,
+      "localOriginalPath": "/images/wikimedia/354686/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/354686/w512.jpg",
+        "1024": "/images/wikimedia/354686/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hokusai print",
+      "downloadedAt": "2026-05-26T20:11:39.098Z"
+    }
+  },
+  {
+    "id": "wikimedia:5369969",
+    "source": "wikimedia",
+    "sourceId": "5369969",
+    "title": "Kanagawa-oki nami-ura - 2 waves or 2 Fuji",
+    "description": "Kanagawa-oki nami-ura - 2 waves or 2 Fuji",
+    "artist": "Katsushika Hokusai",
+    "date": "between 1830 and 1831 date QS:P,+1830-00-00T00:00:00Z/8,P1319,+1830-00-00T00:00:00Z/9,P1326,+1831-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Image:Tsunami by hokusai 19th century.jpg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AKanagawa-oki_nami-ura_-_2_waves_or_2_Fuji.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e8/Kanagawa-oki_nami-ura_-_2_waves_or_2_Fuji.jpg",
+      "width": 499,
+      "height": 207,
+      "localOriginalPath": "/images/wikimedia/5369969/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/5369969/w512.jpg",
+        "1024": "/images/wikimedia/5369969/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hokusai print",
+      "downloadedAt": "2026-05-26T20:11:39.098Z"
+    }
+  },
+  {
+    "id": "wikimedia:5445003",
+    "source": "wikimedia",
+    "sourceId": "5445003",
+    "title": "Debussy - La Mer - The great wave of Kanaga from Hokusai",
+    "description": "Debussy - La Mer - The great wave of Kanaga from Hokusai",
+    "artist": "From The Great Wave off Kanagawa by Hokusai Katsushika",
+    "date": "1905",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "https://expositions.bnf.fr/lamer/grand/121.htm",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ADebussy_-_La_Mer_-_The_great_wave_of_Kanaga_from_Hokusai.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/a/af/Debussy_-_La_Mer_-_The_great_wave_of_Kanaga_from_Hokusai.jpg",
+      "width": 600,
+      "height": 786,
+      "localOriginalPath": "/images/wikimedia/5445003/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/5445003/w512.jpg",
+        "1024": "/images/wikimedia/5445003/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hokusai print",
+      "downloadedAt": "2026-05-26T20:11:39.098Z"
+    }
+  },
+  {
+    "id": "wikimedia:5576388",
+    "source": "wikimedia",
+    "sourceId": "5576388",
+    "title": "Great Wave off Kanagawa2",
+    "description": "Japanese: 『神奈川沖浪裏』 - Kanagawa oki nami ura title QS:P1476,ja:\"神奈川沖浪裏\" label QS:Lja,\"神奈川沖浪裏\" ; The Great Wave off Kanagawa",
+    "artist": "After Katsushika Hokusai",
+    "date": "First publication: between 1826 and 1833 date QS:P571,+1850-00-00T00:00:00Z/7,P1319,+1826-00-00T00:00:00Z/9,P1326,+1833-00-00T00:00:00Z/9 . This edition: Reprint by Adachi from the Shōwa period (between 1926 and 1989).",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Restored version of File:Great Wave off Kanagawa.jpg (rotated and cropped, dirt, stains, and smudges removed. Creases corrected. Histogram adjusted and color balanced.)",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AGreat_Wave_off_Kanagawa2.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Great_Wave_off_Kanagawa2.jpg/1920px-Great_Wave_off_Kanagawa2.jpg",
+      "width": 1920,
+      "height": 1314,
+      "localOriginalPath": "/images/wikimedia/5576388/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/5576388/w512.jpg",
+        "1024": "/images/wikimedia/5576388/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hokusai print",
+      "downloadedAt": "2026-05-26T20:11:39.098Z"
+    }
+  },
+  {
+    "id": "wikimedia:8974581",
+    "source": "wikimedia",
+    "sourceId": "8974581",
+    "title": "Great Wave off Kanagawa - reversed",
+    "description": "Great Wave off Kanagawa - reversed",
+    "artist": "Housaki",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Hokusai's \" The Great Wave off Kanagawa \", reversed by Philcha",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AGreat_Wave_off_Kanagawa_-_reversed.png",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/0/02/Great_Wave_off_Kanagawa_-_reversed.png",
+      "width": 800,
+      "height": 552,
+      "localOriginalPath": "/images/wikimedia/8974581/original.png",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/8974581/w512.jpg",
+        "1024": "/images/wikimedia/8974581/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hokusai print",
+      "downloadedAt": "2026-05-26T20:11:39.098Z"
+    }
+  },
+  {
+    "id": "wikimedia:21850196",
+    "source": "wikimedia",
+    "sourceId": "21850196",
+    "title": "Ando Hiroshige - Fuchu - Google Art Project",
+    "description": "Fuchu title QS:P1476,en:\"Fuchu\" label QS:Len,\"Fuchu\"",
+    "artist": "Utagawa Hiroshige",
+    "date": "1831 date QS:P571,+1831-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "tQHvlImbNkH-yQ at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAndo_Hiroshige_-_Fuchu_-_Google_Art_Project.jpg",
+    "tags": [
+      "19th-century paintings in the Bilbao Fine Arts Museum",
+      "Fuchu (The Fifty-three Stations of the Tōkaidō)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Ando_Hiroshige_-_Fuchu_-_Google_Art_Project.jpg/1920px-Ando_Hiroshige_-_Fuchu_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1300,
+      "localOriginalPath": "/images/wikimedia/21850196/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21850196/w512.jpg",
+        "1024": "/images/wikimedia/21850196/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Hiroshige print",
+      "downloadedAt": "2026-05-26T20:11:30.029Z"
+    }
+  },
+  {
+    "id": "wikimedia:21865766",
+    "source": "wikimedia",
+    "sourceId": "21865766",
+    "title": "Paul Klee - Gespenst eines Genies (Ghost of a Genius) - Google Art Project",
+    "description": "Fantôme d'un génie",
+    "artist": "Paul Klee",
+    "date": "1922 date QS:P571,+1922-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "zQFKImEn_NtDnQ at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APaul_Klee_-_Gespenst_eines_Genies_(Ghost_of_a_Genius)_-_Google_Art_Project.jpg",
+    "tags": [
+      "1922 drawings",
+      "1922 paintings by Paul Klee",
+      "Drawings in the Scottish National Gallery",
+      "Ghosts in art",
+      "Paintings by Paul Klee by title",
+      "Paintings by Paul Klee in the United Kingdom"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Paul_Klee_-_Gespenst_eines_Genies_%28Ghost_of_a_Genius%29_-_Google_Art_Project.jpg/1920px-Paul_Klee_-_Gespenst_eines_Genies_%28Ghost_of_a_Genius%29_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2786,
+      "localOriginalPath": "/images/wikimedia/21865766/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21865766/w512.jpg",
+        "1024": "/images/wikimedia/21865766/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Paul Klee painting",
+      "downloadedAt": "2026-05-26T20:11:23.110Z"
+    }
+  },
+  {
+    "id": "wikimedia:21996474",
+    "source": "wikimedia",
+    "sourceId": "21996474",
+    "title": "Paul Klee - The Virtue Wagon (to the memory of October 5, 1922) - Google Art Project",
+    "description": "The Virtue Wagon (to the memory of October 5, 1922) title QS:P1476,en:\"The Virtue Wagon (to the memory of October 5, 1922) \" label QS:Len,\"The Virtue Wagon (to the memory of October 5, 1922) \"",
+    "artist": "Paul Klee",
+    "date": "1922 date QS:P571,+1922-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "CQGp5Ql8uPrQKQ at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APaul_Klee_-_The_Virtue_Wagon_(to_the_memory_of_October_5%2C_1922)_-_Google_Art_Project.jpg",
+    "tags": [
+      "1922 drawings",
+      "1922 paintings by Paul Klee",
+      "Drawings by Paul Klee",
+      "Drawings in the Nelson-Atkins Museum of Art",
+      "Paintings by Paul Klee by title"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Paul_Klee_-_The_Virtue_Wagon_%28to_the_memory_of_October_5%2C_1922%29_-_Google_Art_Project.jpg/1920px-Paul_Klee_-_The_Virtue_Wagon_%28to_the_memory_of_October_5%2C_1922%29_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1447,
+      "localOriginalPath": "/images/wikimedia/21996474/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21996474/w512.jpg",
+        "1024": "/images/wikimedia/21996474/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Paul Klee painting",
+      "downloadedAt": "2026-05-26T20:11:23.110Z"
+    }
+  },
+  {
+    "id": "wikimedia:22135699",
+    "source": "wikimedia",
+    "sourceId": "22135699",
+    "title": "Franz Marc - The Sheep - Google Art Project",
+    "description": "Dutch: Das Schaf (Het schaap) The Sheep label QS:Lde,\"Das Schaf\" label QS:Len,\"The Sheep\" label QS:Lnl,\"Het schaap\"",
+    "artist": "Franz Marc",
+    "date": "between 1913 and 1914 date QS:P571,+1913-00-00T00:00:00Z/8,P1319,+1913-00-00T00:00:00Z/9,P1326,+1914-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "www.google.com/culturalinstitute : Home : Info",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AFranz_Marc_-_The_Sheep_-_Google_Art_Project.jpg",
+    "tags": [
+      "Das Schaf (Franz Marc)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Franz_Marc_-_The_Sheep_-_Google_Art_Project.jpg/1920px-Franz_Marc_-_The_Sheep_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1333,
+      "localOriginalPath": "/images/wikimedia/22135699/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22135699/w512.jpg",
+        "1024": "/images/wikimedia/22135699/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Kandinsky painting",
+      "downloadedAt": "2026-05-26T20:11:10.418Z"
+    }
+  },
+  {
+    "id": "wikimedia:40213893",
+    "source": "wikimedia",
+    "sourceId": "40213893",
+    "title": "Kandinsky, 1913, Sans titre (Etude pour Composition VII, Première abstraction)",
+    "description": "Untitled label QS:Lbn,\"শিরোনামহীন\" label QS:Lfr,\"Sans titre\" label QS:Lit,\"Primo acquarello astratto\" label QS:Len,\"Untitled\" label QS:Lca,\"primera aquarel·la abstracta de Vassili Kandinski\" label QS:Lru,\"Без названия\" label QS:Lnl,\"Primo acquarello astratto\"",
+    "artist": "Wassily Kandinsky",
+    "date": "1913 [ 1 ]",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Art &amp; Culture",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AKandinsky%2C_1913%2C_Sans_titre_(Etude_pour_Composition_VII%2C_Premi%C3%A8re_abstraction).jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Kandinsky%2C_1913%2C_Sans_titre_%28Etude_pour_Composition_VII%2C_Premi%C3%A8re_abstraction%29.jpg/1920px-Kandinsky%2C_1913%2C_Sans_titre_%28Etude_pour_Composition_VII%2C_Premi%C3%A8re_abstraction%29.jpg",
+      "width": 1920,
+      "height": 1469,
+      "localOriginalPath": "/images/wikimedia/40213893/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/40213893/w512.jpg",
+        "1024": "/images/wikimedia/40213893/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Kandinsky painting",
+      "downloadedAt": "2026-05-26T20:11:10.418Z"
+    }
+  },
+  {
+    "id": "wikimedia:151251",
+    "source": "wikimedia",
+    "sourceId": "151251",
+    "title": "Arearea, by Paul Gauguin",
+    "description": "Joyfulness",
+    "artist": "Paul Gauguin",
+    "date": "December 1892 date QS:P571,+1892-12-00T00:00:00Z/10",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 .",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AArearea%2C_by_Paul_Gauguin.jpg",
+    "tags": [
+      "Arearea (Paul Gauguin - Musée d'Orsay)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Arearea%2C_by_Paul_Gauguin.jpg/1920px-Arearea%2C_by_Paul_Gauguin.jpg",
+      "width": 1920,
+      "height": 1521,
+      "localOriginalPath": "/images/wikimedia/151251/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/151251/w512.jpg",
+        "1024": "/images/wikimedia/151251/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Gauguin painting",
+      "downloadedAt": "2026-05-26T20:11:01.707Z"
+    }
+  },
+  {
+    "id": "wikimedia:21856258",
+    "source": "wikimedia",
+    "sourceId": "21856258",
+    "title": "Claude Monet - Blue Water Lilies - Google Art Project",
+    "description": "Nymphéas bleus",
+    "artist": "Claude Monet",
+    "date": "(1916 - 1919)",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "1QFF7Ef6R2oyog at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_Blue_Water_Lilies_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Claude_Monet_-_Blue_Water_Lilies_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_Blue_Water_Lilies_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1910,
+      "localOriginalPath": "/images/wikimedia/21856258/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21856258/w512.jpg",
+        "1024": "/images/wikimedia/21856258/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Cezanne painting",
+      "downloadedAt": "2026-05-26T20:10:55.364Z"
+    }
+  },
+  {
+    "id": "wikimedia:149082",
+    "source": "wikimedia",
+    "sourceId": "149082",
+    "title": "La Montagne Sainte-Victoire vue de la carrière Bibémus, par Paul Cézanne",
+    "description": "Mountains Mont Sainte-Victoire Seen from the Bibémus Quarry title QS:P1476,en:\"Mountains Mont Sainte-Victoire Seen from the Bibémus Quarry \" label QS:Len,\"Mountains Mont Sainte-Victoire Seen from the Bibémus Quarry \" label QS:Les,\"La montaña de Sainte-Victoire, vista desde Bibémus\" label QS:Lfr,\"La Montagne Sainte-Victoire vue de Bibémus\" label QS:Lca,\"La muntanya de Sainte-Victoire vista des de Bibémus\" label QS:Lde,\"Berge Mont Sainte-Victoire vom Bibémus Steinbruch gesehen\" label QS:Lda,\"Mont Sainte-Victoire, set fra Bibémus stenbrud\" label QS:Lja,\"ビベミュの石切場から見たサント＝ヴィクトワール山\" label QS:Lit,\"La montagna Sainte-Victoire vista dalla cava di Bibemus\" label QS:Luk,\"Гора Сент-Віктуар з боку Бібемуської каменярні\" label QS:Lla,\"Montes Mont-Sainte Victoire Vidistine ex Quarry bibemus\" label QS:Lgl,\"A montaña de Sainte-Victoire, vista dende Bibémus\" label QS:Lavk,\"Sainte-Victoire mefta (trutca ke Cézanne 11)\" label QS:Lko,\"비베뮈 채석장에서 바라본 생트빅투아르산\" label QS:Lhyw,\"Սենթ-Վիքթուար լեռները տեսանելի են Պիպեմուս քարահանքէն\" label QS:Lnl,\"Mountains Mont Sainte-Victoire Seen from the Bibémus Quarry\"",
+    "artist": "Paul Cézanne",
+    "date": "circa 1897 date QS:P571,+1897-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "1. The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 . 2. Google Arts &amp; Culture",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ALa_Montagne_Sainte-Victoire_vue_de_la_carri%C3%A8re_Bib%C3%A9mus%2C_par_Paul_C%C3%A9zanne.jpg",
+    "tags": [
+      "1890s landscape paintings from France",
+      "1890s oil on canvas paintings in the United States",
+      "19th-century mountain paintings",
+      "Carrières de Bibémus by Paul Cézanne",
+      "La Montagne Sainte-Victoire vue de Bibémus by Paul Cézanne",
+      "Landscape paintings in the Baltimore Museum of Art",
+      "Montagne Sainte-Victoire by Paul Cézanne"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/af/La_Montagne_Sainte-Victoire_vue_de_la_carri%C3%A8re_Bib%C3%A9mus%2C_par_Paul_C%C3%A9zanne.jpg/1920px-La_Montagne_Sainte-Victoire_vue_de_la_carri%C3%A8re_Bib%C3%A9mus%2C_par_Paul_C%C3%A9zanne.jpg",
+      "width": 1920,
+      "height": 1527,
+      "localOriginalPath": "/images/wikimedia/149082/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/149082/w512.jpg",
+        "1024": "/images/wikimedia/149082/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Cezanne painting",
+      "downloadedAt": "2026-05-26T20:10:55.364Z"
+    }
+  },
+  {
+    "id": "wikimedia:25498286",
+    "source": "wikimedia",
+    "sourceId": "25498286",
+    "title": "Van Gogh - Starry Night - Google Art Project",
+    "description": "The Starry Night title QS:P1476,en:\" The Starry Night \" label QS:Len,\" The Starry Night \" label QS:Les,\" La noche estrellada \" label QS:Lmk,\" Ѕвездена ноќ \" label QS:Lfr,\" La Nuit étoilée \" label QS:Lar,\" ليلة النُجُوم \" label QS:Lbr,\" An Noz stergannek \" label QS:Lca,\" La nit estelada \" label QS:Lzh,\" 星夜 \" label QS:Lja,\" 星月夜 \" label QS:Lfi,\" Tähtikirkas yö \" label QS:Lbe-tarask,\" Зорная ноч \" label QS:Lth,\" คืนดาวเกลื่อนฟ้า (ฟาน ก็อกฮ์) \" label QS:Lbg,\" Звездна нощ \" label QS:Lro,\" Noapte înstelată \" label QS:Lko,\" 별이 빛나는 밤 \" label QS:Leo,\" Stela nokto \" label QS:Laf,\" Die Sterrenag \" label QS:Lru,\" Звёздная ночь \" label QS:Lde,\" Sternennacht \" label QS:Lhe,\" ליל כוכבים \" label QS:Lit,\" Notte stellata \" label QS:Lsv,\" De sterrennacht \" label QS:Let,\" Tähistaevas \" label QS:Lhr,\" Zvjezdana noć \" label QS:Lpt,\" A Noite Estrelada \" label QS:Lpl,\" Gwiaździsta noc \" label QS:Lnl,\" De sterrennacht \" label QS:Leu,\" Gau izartsua \" label QS:Lfa,\" شب پر ستاره \"",
+    "artist": "Vincent van Gogh",
+    "date": "1889 date QS:P571,+1889-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — bgEuwDxel93-Pg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AVan_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1920px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1520,
+      "localOriginalPath": "/images/wikimedia/25498286/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/25498286/w512.jpg",
+        "1024": "/images/wikimedia/25498286/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Van Gogh painting",
+      "downloadedAt": "2026-05-26T20:10:50.168Z"
+    }
+  },
+  {
+    "id": "wikimedia:13410926",
+    "source": "wikimedia",
+    "sourceId": "13410926",
+    "title": "Rembrandt Harmensz. van Rijn - Portret van een paar als oudtestamentische figuren, genaamd 'Het Joodse bruidje' - Google Art Project",
+    "description": "The Jewish Bride label QS:Len,\" Portrait of a couple as figures from the Old Testament, known as ‘The Jewish bride’ .\" label QS:Lnl,\" Portret van een paar als Oud-Testamentische figuren, genaamd ‘Het Joodse bruidje’ .\"",
+    "artist": "Rembrandt",
+    "date": "circa 1665-1669",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Unknown source Unknown source",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ARembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_'Het_Joodse_bruidje'_-_Google_Art_Project.jpg",
+    "tags": [
+      "The Jewish Bride by Rembrandt"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Rembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_%27Het_Joodse_bruidje%27_-_Google_Art_Project.jpg/1920px-Rembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_%27Het_Joodse_bruidje%27_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1400,
+      "localOriginalPath": "/images/wikimedia/13410926/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13410926/w512.jpg",
+        "1024": "/images/wikimedia/13410926/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Van Gogh painting",
+      "downloadedAt": "2026-05-26T20:10:50.168Z"
+    }
+  },
+  {
+    "id": "wikimedia:22003845",
+    "source": "wikimedia",
+    "sourceId": "22003845",
+    "title": "Jan Vermeer - The Art of Painting - Google Art Project",
+    "description": "German: Die Malkunst The Art of Painting title QS:P1476,de:\"Die Malkunst \" label QS:Lde,\"Die Malkunst \" label QS:Les,\"El arte de la pintura\" label QS:Lru,\"Мастерская художника\" label QS:Lfa,\"هنر نقاشی\" label QS:Ltr,\"The Art of Painting (Vermeer)\" label QS:Lja,\"絵画芸術\" label QS:Lsv,\"Målarkonsten\" label QS:Lhe,\"אמנות הציור\" label QS:Lavk,\"Lingeropa (trutca ke Vermeer)\" label QS:Lfi,\"Maalaustaide\" label QS:Leo,\"La Arto de Pentrado\" label QS:Lit,\"Allegoria della Pittura\" label QS:Lfr,\"L'Art de la peinture\" label QS:Lhr,\"Alegorija slikarstva\" label QS:Lpt,\"A Arte da Pintura\" label QS:Luk,\"Алегорія живопису\" label QS:Lsl,\"Umetnost slikanja (Vermeer)\" label QS:Lcs,\"Alegorie malířství\" label QS:Larz,\"فن الرسم (لوحه)\" label QS:Lgl,\"A arte da pintura\" label QS:Lth,\"ศิลปะของการเขียนภาพ\" label QS:Lpl,\"Alegoria malarstwa\" label QS:Lml,\"ദി ആർട്ട് ഓഫ് പെയിന്റിംഗ്\" label QS:Lnl,\"De Schilderkunst\" label QS:Lko,\"회화의 기술\" label QS:Lmk,\"Уметноста на сликањето\" label QS:Lca,\"Al·legoria de la pintura\" label QS:Laz,\"Rəssamlığın alleqoriyası\" label QS:Len,\"The Art of Painting\" label QS:Lar,\"فن الرسم\" label QS:Lbr,\"Alegorienn al liverezh\" label QS:Lnb,\"«Maleren i sitt atelier»\"",
+    "artist": "Johannes Vermeer",
+    "date": "circa from 1666 until 1668 date QS:P,+1666-00-00T00:00:00Z/8,P580,+1666-00-00T00:00:00Z/9,P582,+1668-00-00T00:00:00Z/9,P1480,Q5727902 Baroque (late 16 th century date QS:P,+1550-00-00T00:00:00Z/7,P4241,Q40719766 –1750s date QS:P,+1750-00-00T00:00:00Z/8 )",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — lAHeqBoLaePtEA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg/1920px-Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2281,
+      "localOriginalPath": "/images/wikimedia/22003845/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22003845/w512.jpg",
+        "1024": "/images/wikimedia/22003845/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Vermeer painting",
+      "downloadedAt": "2026-05-26T20:10:40.370Z"
+    }
+  },
+  {
+    "id": "wikimedia:159990",
+    "source": "wikimedia",
+    "sourceId": "159990",
+    "title": "Jan Vermeer van Delft 001",
+    "description": "View of Delft title QS:P1476,en:\"View of Delft \" label QS:Len,\"View of Delft \" label QS:Les,\"Vista de Delft\" label QS:Lhu,\"Delft látképe\" label QS:Lms,\"Pemandangan Delft\" label QS:Lde,\"Ansicht von Delft\" label QS:Lhy,\"Դելֆտի տեսարան\" label QS:Lbg,\"Изглед от Делфт\" label QS:Lro,\"Vedere din Delft\" label QS:Lja,\"デルフト眺望\" label QS:Lsv,\"Vy över Delft\" label QS:Luk,\"Краєвид Делфта\" label QS:Lavk,\"Wiks va Delft (trutca ke Vermeer)\" label QS:Lko,\"델프트 풍경\" label QS:Leo,\"Panoramo de Delft\" label QS:Lit,\"Veduta di Delft\" label QS:Lfr,\"Vue de Delft\" label QS:Lhr,\"Pogled na Delft\" label QS:Lmk,\"Поглед на Делфт\" label QS:Larz,\"منظر ديلفت\" label QS:Lpt,\"Vista de Delft\" label QS:Lpnb,\"ڈیلفٹ دا وکھالہ\" label QS:Llv,\"Delftas skats\" label QS:Los,\"Делфты уынд\" label QS:Lfa,\"چشم‌انداز دلفت\" label QS:Lsl,\"Pogled na Delft\" label QS:Lru,\"Вид Делфта\" label QS:Ltr,\"Delft Manzarası\" label QS:Lnb,\"«Utsikt over Delft»\" label QS:Laz,\"Delft mənzərəsi (rəsm əsəri)\" label QS:Lpl,\"Widok Delftu\" label QS:Lml,\"വ്യൂ ഓഫ് ഡെൽഫ്റ്റ്\" label QS:Lsh,\"Pogled na Delft\" label QS:Lhe,\"נוף העיר דלפט\" label QS:Lnl,\"Gezicht op Delft\" label QS:Lca,\"Vista de Delft\" label QS:Lzh,\"台夫特風景\" label QS:Lgl,\"Vista de Delft\" label QS:Lar,\"منظر ديلفت\" label QS:Lbr,\"Gwel eus Delft\" label QS:Lcs,\"Pohled na Delft\"",
+    "artist": "Johannes Vermeer",
+    "date": "between circa 1660 and circa 1661 date QS:P,+1660-00-00T00:00:00Z/8,P1319,+1660-00-00T00:00:00Z/9,P1326,+1661-00-00T00:00:00Z/9,P1480,Q5727902 Baroque (late 16 th century date QS:P,+1550-00-00T00:00:00Z/7,P4241,Q40719766 –1750s date QS:P,+1750-00-00T00:00:00Z/8 )",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 .",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJan_Vermeer_van_Delft_001.jpg",
+    "tags": [
+      "1660 paintings",
+      "1661 paintings",
+      "17th-century oil on canvas paintings in the Netherlands",
+      "City gates in the Netherlands",
+      "Cityscape paintings in the Netherlands",
+      "Oil paintings of cityscapes",
+      "Paintings of Delft",
+      "View of Delft by Johannes Vermeer"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Jan_Vermeer_van_Delft_001.jpg/1920px-Jan_Vermeer_van_Delft_001.jpg",
+      "width": 1920,
+      "height": 1601,
+      "localOriginalPath": "/images/wikimedia/159990/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/159990/w512.jpg",
+        "1024": "/images/wikimedia/159990/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Vermeer painting",
+      "downloadedAt": "2026-05-26T20:10:40.370Z"
+    }
+  },
+  {
+    "id": "wikimedia:2686274",
+    "source": "wikimedia",
+    "sourceId": "2686274",
+    "title": "Jan Vermeer van Delft 003fragment",
+    "description": "Girl reading a Letter at an Open Window , detail",
+    "artist": "Johannes Vermeer",
+    "date": "circa 1658 date QS:P571,+1658-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 .",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJan_Vermeer_van_Delft_003fragment.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/2/20/Jan_Vermeer_van_Delft_003fragment.jpg",
+      "width": 888,
+      "height": 966,
+      "localOriginalPath": "/images/wikimedia/2686274/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/2686274/w512.jpg",
+        "1024": "/images/wikimedia/2686274/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Vermeer painting",
+      "downloadedAt": "2026-05-26T20:10:40.370Z"
+    }
+  },
+  {
+    "id": "wikimedia:13352880",
+    "source": "wikimedia",
+    "sourceId": "13352880",
+    "title": "Rembrandt - Jacob Wrestling with the Angel - Google Art Project",
+    "description": "German: Jakob ringt mit dem Engel Jacob Wrestling with the Angel label QS:Lfr,\"Lutte de Jacob avec l'Ange\" label QS:Lnl,\"Jakob worstelend met de engel\" label QS:Len,\"Jacob Wrestling with the Angel\" label QS:Lde,\"Jakob ringt mit dem Engel\"",
+    "artist": "Rembrandt",
+    "date": "circa 1659 date QS:P571,+1659-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — JAEGXP30frQG6A",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ARembrandt_-_Jacob_Wrestling_with_the_Angel_-_Google_Art_Project.jpg",
+    "tags": [
+      "Gid hanasheh",
+      "Jacob Wrestling with the Angel (Rembrandt)",
+      "Paintings of Jacob Wrestling with the Angel"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Rembrandt_-_Jacob_Wrestling_with_the_Angel_-_Google_Art_Project.jpg/1920px-Rembrandt_-_Jacob_Wrestling_with_the_Angel_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2290,
+      "localOriginalPath": "/images/wikimedia/13352880/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13352880/w512.jpg",
+        "1024": "/images/wikimedia/13352880/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Rembrandt painting",
+      "downloadedAt": "2026-05-26T20:10:25.046Z"
+    }
+  },
+  {
+    "id": "wikimedia:13352892",
+    "source": "wikimedia",
+    "sourceId": "13352892",
+    "title": "Rembrandt - Minerva - Google Art Project",
+    "description": "Minerva .",
+    "artist": "Rembrandt",
+    "date": "circa 1631 date QS:P571,+1631-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — 5gENK0C-18VYxA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ARembrandt_-_Minerva_-_Google_Art_Project.jpg",
+    "tags": [
+      "1630s mythological paintings",
+      "1630s paintings in Germany",
+      "17th-century oil on panel paintings in Germany"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/Rembrandt_-_Minerva_-_Google_Art_Project.jpg/1920px-Rembrandt_-_Minerva_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2370,
+      "localOriginalPath": "/images/wikimedia/13352892/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13352892/w512.jpg",
+        "1024": "/images/wikimedia/13352892/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Rembrandt painting",
+      "downloadedAt": "2026-05-26T20:10:25.046Z"
+    }
+  },
+  {
+    "id": "wikimedia:13359664",
+    "source": "wikimedia",
+    "sourceId": "13359664",
+    "title": "John Constable - Cenotaph to the Memory of Sir Joshua Reynolds - Google Art Project",
+    "description": "Cenotaph to the Memory of Sir Joshua Reynolds, erected in the grounds of Coleorton Hall, Leicestershire by the late Sir George Beaumont, Bt. title QS:P1476,en:\"Cenotaph to the Memory of Sir Joshua Reynolds, erected in the grounds of Coleorton Hall, Leicestershire by the late Sir George Beaumont, Bt.\" label QS:Len,\"Cenotaph to the Memory of Sir Joshua Reynolds, erected in the grounds of Coleorton Hall, Leicestershire by the late Sir George Beaumont, Bt.\"",
+    "artist": "John Constable",
+    "date": "1836",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — OgG1AmOqJNIBdQ",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJohn_Constable_-_Cenotaph_to_the_Memory_of_Sir_Joshua_Reynolds_-_Google_Art_Project.jpg",
+    "tags": [
+      "Animals on green background",
+      "Cenotaphs",
+      "Coleorton Hall",
+      "Joshua Reynolds",
+      "Paintings by John Constable in the National Gallery, London",
+      "Paintings of animals by John Constable",
+      "Paintings of deer"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/John_Constable_-_Cenotaph_to_the_Memory_of_Sir_Joshua_Reynolds_-_Google_Art_Project.jpg/1920px-John_Constable_-_Cenotaph_to_the_Memory_of_Sir_Joshua_Reynolds_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2340,
+      "localOriginalPath": "/images/wikimedia/13359664/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13359664/w512.jpg",
+        "1024": "/images/wikimedia/13359664/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Constable painting",
+      "downloadedAt": "2026-05-26T20:10:08.299Z"
+    }
+  },
+  {
+    "id": "wikimedia:21886211",
+    "source": "wikimedia",
+    "sourceId": "21886211",
+    "title": "John Constable, English - Sketch for \"A Boat Passing a Lock\" - Google Art Project",
+    "description": "Sketch for \"A Boat Passing a Lock\" title QS:P1476,en:\"Sketch for \"A Boat Passing a Lock\"\" label QS:Len,\"Sketch for \"A Boat Passing a Lock\"\"",
+    "artist": "John Constable",
+    "date": "from 1822 until 1824 date QS:P571,+1822-00-00T00:00:00Z/8,P580,+1822-00-00T00:00:00Z/9,P582,+1824-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "5AEQRgfJNz6kzw at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJohn_Constable%2C_English_-_Sketch_for_%22A_Boat_Passing_a_Lock%22_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fb/John_Constable%2C_English_-_Sketch_for_%22A_Boat_Passing_a_Lock%22_-_Google_Art_Project.jpg/1920px-John_Constable%2C_English_-_Sketch_for_%22A_Boat_Passing_a_Lock%22_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2234,
+      "localOriginalPath": "/images/wikimedia/21886211/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21886211/w512.jpg",
+        "1024": "/images/wikimedia/21886211/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Constable painting",
+      "downloadedAt": "2026-05-26T20:10:08.299Z"
+    }
+  },
+  {
+    "id": "wikimedia:13460476",
+    "source": "wikimedia",
+    "sourceId": "13460476",
+    "title": "Joseph Mallord William Turner - Fishermen at Sea - Google Art Project",
+    "description": "Fishermen at Sea title QS:P1476,en:\"Fishermen at Sea\" label QS:Len,\"Fishermen at Sea\"",
+    "artist": "J. M. W. Turner",
+    "date": "1796 date QS:P571,+1796-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — UwG73jK8wqshlw Tate Images ( http://www.tate-images.com/results.asp?image=T01585&amp;wwwflag=3&amp;imagepos=2 )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJoseph_Mallord_William_Turner_-_Fishermen_at_Sea_-_Google_Art_Project.jpg",
+    "tags": [
+      "Fishermen at Sea"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0d/Joseph_Mallord_William_Turner_-_Fishermen_at_Sea_-_Google_Art_Project.jpg/1920px-Joseph_Mallord_William_Turner_-_Fishermen_at_Sea_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1427,
+      "localOriginalPath": "/images/wikimedia/13460476/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13460476/w512.jpg",
+        "1024": "/images/wikimedia/13460476/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Turner painting",
+      "downloadedAt": "2026-05-26T20:09:34.671Z"
+    }
+  },
+  {
+    "id": "wikimedia:13462078",
+    "source": "wikimedia",
+    "sourceId": "13462078",
+    "title": "Joseph Mallord William Turner - The Bay of Baiae, with Apollo and the Sibyl - Google Art Project",
+    "description": "en label QS:Lde,\"Die Bucht von Baiae, mit Apoll und der Sybille\"",
+    "artist": "J. M. W. Turner",
+    "date": "1823",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — qgHY7Z6uOQ2tUw Tate Images ( http://www.tate-images.com/results.asp?image=N00505&amp;wwwflag=3&amp;imagepos=3 )",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJoseph_Mallord_William_Turner_-_The_Bay_of_Baiae%2C_with_Apollo_and_the_Sibyl_-_Google_Art_Project.jpg",
+    "tags": [
+      "1823 oil on canvas paintings in the United Kingdom",
+      "Apollo and the Sibyl of Cumae",
+      "Baia in art",
+      "Marine mythological paintings by Joseph Mallord William Turner",
+      "Paintings by Joseph Mallord William Turner in Tate Britain",
+      "Romantic mythological paintings",
+      "Romantic paintings of trees",
+      "Temple of Venus (Baiae)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Joseph_Mallord_William_Turner_-_The_Bay_of_Baiae%2C_with_Apollo_and_the_Sibyl_-_Google_Art_Project.jpg/1920px-Joseph_Mallord_William_Turner_-_The_Bay_of_Baiae%2C_with_Apollo_and_the_Sibyl_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1176,
+      "localOriginalPath": "/images/wikimedia/13462078/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13462078/w512.jpg",
+        "1024": "/images/wikimedia/13462078/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Turner painting",
+      "downloadedAt": "2026-05-26T20:09:34.671Z"
+    }
+  },
+  {
+    "id": "wikimedia:13358942",
+    "source": "wikimedia",
+    "sourceId": "13358942",
+    "title": "Domenico Ghirlandaio, 1489-1490 - Portrait of Giovanna Tornabuoni - Google Art Project",
+    "description": "Portrait of Giovanna Tornabuoni label QS:Lit,\"Ritratto di Giovanna Tornabuoni\" label QS:Lfr,\"Portrait de Giovanna Tornabuoni\" label QS:Leu,\"Giovanna Tornabuoniren erretratua\" label QS:Lde,\"Porträt der Giovanna Tornabuoni\" label QS:Lpt,\"Retrato de Giovanna Tornabuoni\" label QS:Lbg,\"Портрет на Джована Торнабуони\" label QS:Lsl,\"Portret Giovanne Tornabuoni\" label QS:Lja,\"ジョヴァンナ・トルナブオーニの肖像\" label QS:Larz,\"صوره جيوفانا تورنابونى\" label QS:Lpl,\"Portret Giovanny Tornabuoni\" label QS:Luk,\"Портрет Джованни Торнабуоні\" label QS:Lnl,\"Portret van Giovanna Tornabuoni\" label QS:Les,\"Retrato de Giovanna Tornabuoni\" label QS:Lru,\"Портрет Джованны Торнабуони\" label QS:Len,\"Portrait of Giovanna Tornabuoni\" label QS:Lar,\"بورترية جيوفانا تورنابوني (لوحة)\" label QS:Lcs,\"Portrét Giovanny Tornabuoni\" label QS:Lca,\"Retrat de Giovanna Tornabuoni\"",
+    "artist": "Domenico Ghirlandaio",
+    "date": "between 1489 and 1490 date QS:P,+1450-00-00T00:00:00Z/7,P1319,+1489-00-00T00:00:00Z/9,P1326,+1490-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — igFh0HgpLdzCXg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ADomenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg",
+    "tags": [
+      "Giovanna Tornabuoni",
+      "Giovanna Tornabuoni by Domenico Ghirlandaio"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Domenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg/1920px-Domenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 3051,
+      "localOriginalPath": "/images/wikimedia/13358942/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13358942/w512.jpg",
+        "1024": "/images/wikimedia/13358942/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Renaissance painting",
+      "downloadedAt": "2026-05-26T20:08:01.600Z"
+    }
+  },
+  {
+    "id": "wikimedia:13361296",
+    "source": "wikimedia",
+    "sourceId": "13361296",
+    "title": "Albert Cornelis - The Magdalen in a Landscape - Google Art Project",
+    "description": "The Magdalen in a Landscape title QS:P1476,en:\"The Magdalen in a Landscape \" label QS:Len,\"The Magdalen in a Landscape \" label QS:Lit,\"la maddalena in un paesaggio\" label QS:Lde,\"Magdalena in Landschaft\" label QS:Lfr,\"Sainte Marie Madeleine au désert.\" label QS:Lnl,\"De H. Maria Magdalena in een landschap\"",
+    "artist": "Albert Cornelis / Adriaen Isenbrandt",
+    "date": "1510 / 1520s date QS:P,+1520-00-00T00:00:00Z/8",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — YQG4mF85rS3fvw",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Albert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg/1920px-Albert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2501,
+      "localOriginalPath": "/images/wikimedia/13361296/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13361296/w512.jpg",
+        "1024": "/images/wikimedia/13361296/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Renaissance painting",
+      "downloadedAt": "2026-05-26T20:08:01.600Z"
+    }
+  },
+  {
+    "id": "wikimedia:13359000",
+    "source": "wikimedia",
+    "sourceId": "13359000",
+    "title": "Hans Holbein, the Younger, Around 1497-1543 - Portrait of Henry VIII of England - Google Art Project",
+    "description": "Portrait of Henry VIII label QS:Lfr,\"Portrait de Henri VIII\" label QS:Lit,\"Ritratto di Enrico VIII d'Inghilterra\" label QS:Len,\"Portrait of Henry VIII\" label QS:Leo,\"Portreto de Henriko la Oka\" label QS:Lde,\"Porträt Heinrichs VIII\" label QS:Lnl,\"Portret van Hendrik VIII van Engeland\"",
+    "artist": "Hans Holbein the Younger",
+    "date": "1537",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — bwFsEOEPkei3Lw",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Hans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg/1920px-Hans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2695,
+      "localOriginalPath": "/images/wikimedia/13359000/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13359000/w512.jpg",
+        "1024": "/images/wikimedia/13359000/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Renaissance painting",
+      "downloadedAt": "2026-05-26T20:08:01.600Z"
+    }
+  },
+  {
+    "id": "wikimedia:13333910",
+    "source": "wikimedia",
+    "sourceId": "13333910",
+    "title": "Correggio - Leda and the Swan - Google Art Project",
+    "description": "Leda and the Swan label QS:Lit,\"Leda col cigno\" label QS:Lfr,\"Léda et le cygne\" label QS:Lsv,\"Leda och svanen\" label QS:Lpl,\"Leda z łabędziem\" label QS:Lru,\"Леда и лебедь\" label QS:Lde,\"Leda und der Schwan\" label QS:Lpt,\"Leda e o Cisne\" label QS:Len,\"Leda and the Swan\" label QS:Les,\"Leda y el cisne\"",
+    "artist": "Antonio da Correggio",
+    "date": "circa 1532 date QS:P571,+1532-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — DgFKmKLuv7GNvQ",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ACorreggio_-_Leda_and_the_Swan_-_Google_Art_Project.jpg",
+    "tags": [
+      "Italian Renaissance paintings in the Gemäldegalerie, Berlin",
+      "Leda and the Swan by Correggio",
+      "Paintings formerly in Bildergalerie Sanssouci, Potsdam",
+      "The Nude: a study in ideal form"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Correggio_-_Leda_and_the_Swan_-_Google_Art_Project.jpg/1920px-Correggio_-_Leda_and_the_Swan_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1530,
+      "localOriginalPath": "/images/wikimedia/13333910/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13333910/w512.jpg",
+        "1024": "/images/wikimedia/13333910/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Renaissance painting",
+      "downloadedAt": "2026-05-26T20:08:01.600Z"
+    }
+  },
+  {
+    "id": "wikimedia:13404873",
+    "source": "wikimedia",
+    "sourceId": "13404873",
+    "title": "Hans Bollongier - Stilleven met bloemen - Google Art Project",
+    "description": "Still life with flowers .",
+    "artist": "Hans Bollongier",
+    "date": "1639 date QS:P571,+1639-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — EQEMHGEP8LENMw",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Hans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg/1920px-Hans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2465,
+      "localOriginalPath": "/images/wikimedia/13404873/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13404873/w512.jpg",
+        "1024": "/images/wikimedia/13404873/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Dutch Golden Age painting",
+      "downloadedAt": "2026-05-26T20:07:44.034Z"
+    }
+  },
+  {
+    "id": "wikimedia:158628",
+    "source": "wikimedia",
+    "sourceId": "158628",
+    "title": "Jacob Isaaksz. van Ruisdael 016",
+    "description": "Forest Scene label QS:Lde,\"Waldszene\" label QS:Len,\"Forest Scene\"",
+    "artist": "Jacob van Ruisdael",
+    "date": "circa 1665 date QS:P571,+1665-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "1. The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 . 2. National Gallery of Art, Washington, D. C., online collection",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJacob_Isaaksz._van_Ruisdael_016.jpg",
+    "tags": [
+      "1660s landscape paintings from the Netherlands",
+      "1660s oil on canvas paintings in the United States",
+      "1670 landscape paintings from the Netherlands",
+      "1670 oil on canvas paintings in the United States",
+      "Dutch Golden Age paintings in the National Gallery of Art",
+      "Paintings by Jacob van Ruisdael in the National Gallery of Art",
+      "Paintings of waterfalls by Jacob van Ruisdael"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c4/Jacob_Isaaksz._van_Ruisdael_016.jpg/1920px-Jacob_Isaaksz._van_Ruisdael_016.jpg",
+      "width": 1920,
+      "height": 1524,
+      "localOriginalPath": "/images/wikimedia/158628/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/158628/w512.jpg",
+        "1024": "/images/wikimedia/158628/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Dutch Golden Age painting",
+      "downloadedAt": "2026-05-26T20:07:44.034Z"
+    }
+  },
+  {
+    "id": "wikimedia:13404696",
+    "source": "wikimedia",
+    "sourceId": "13404696",
+    "title": "Gerrit Adriaensz. Berckheyde - Gezicht op de Herengracht in Amsterdam, vanaf de Vijzelstraat - Google Art Project",
+    "description": "View of the Golden Bend in the Herengracht title QS:P1476,en:\"View of the Golden Bend in the Herengracht \" label QS:Len,\"View of the Golden Bend in the Herengracht \" label QS:Lfr,\"Amsterdam, la courbure d'or dans le Herengracht\" label QS:Lde,\"Die ‘Goldene Bucht’ in der Herengracht, Amsterdam, vom Osten gesehen\" label QS:Lnl,\"Gezicht op de Gouden Bocht in de Herengracht\"",
+    "artist": "Gerrit Adriaenszoon Berckheyde",
+    "date": "from 1671 until 1672 date QS:P,+1671-00-00T00:00:00Z/8,P580,+1671-00-00T00:00:00Z/9,P582,+1672-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — zAHdhYvpFXV66Q",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AGerrit_Adriaensz._Berckheyde_-_Gezicht_op_de_Herengracht_in_Amsterdam%2C_vanaf_de_Vijzelstraat_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Gerrit_Adriaensz._Berckheyde_-_Gezicht_op_de_Herengracht_in_Amsterdam%2C_vanaf_de_Vijzelstraat_-_Google_Art_Project.jpg/1920px-Gerrit_Adriaensz._Berckheyde_-_Gezicht_op_de_Herengracht_in_Amsterdam%2C_vanaf_de_Vijzelstraat_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1382,
+      "localOriginalPath": "/images/wikimedia/13404696/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13404696/w512.jpg",
+        "1024": "/images/wikimedia/13404696/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project Dutch Golden Age painting",
+      "downloadedAt": "2026-05-26T20:07:44.034Z"
+    }
+  },
+  {
+    "id": "wikimedia:22009598",
+    "source": "wikimedia",
+    "sourceId": "22009598",
+    "title": "Alfons Mucha - Absinth (Study of a Woman) - Google Art Project",
+    "description": "Absinth (Study of a Woman) title QS:P1476,en:\"Absinth (Study of a Woman)\" label QS:Len,\"Absinth (Study of a Woman)\"",
+    "artist": "Alphonse Mucha",
+    "date": "(1900 - 1905)",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "EgH5Ro_LOhs3Mw at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlfons_Mucha_-_Absinth_(Study_of_a_Woman)_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Alfons_Mucha_-_Absinth_%28Study_of_a_Woman%29_-_Google_Art_Project.jpg/1920px-Alfons_Mucha_-_Absinth_%28Study_of_a_Woman%29_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1474,
+      "localOriginalPath": "/images/wikimedia/22009598/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22009598/w512.jpg",
+        "1024": "/images/wikimedia/22009598/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project art nouveau",
+      "downloadedAt": "2026-05-26T20:07:36.211Z"
+    }
+  },
+  {
+    "id": "wikimedia:9099954",
+    "source": "wikimedia",
+    "sourceId": "9099954",
+    "title": "DameEnRobeRouge Rippl-Ronai 1898",
+    "description": "DameEnRobeRouge Rippl-Ronai 1898",
+    "artist": "József Rippl-Rónai",
+    "date": "1898",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Art Nouveau, Judith Miller, p. 63",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ADameEnRobeRouge_Rippl-Ronai_1898.jpg",
+    "tags": [
+      "1898 works in Hungary",
+      "19th-century tapestries",
+      "Art Nouveau in Hungary",
+      "Art of France",
+      "Drawings by József Rippl-Rónai",
+      "Females with red dresses in art",
+      "Lazarine Baudrion",
+      "Tapestries",
+      "Textiles of Hungary"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/DameEnRobeRouge_Rippl-Ronai_1898.jpg/1920px-DameEnRobeRouge_Rippl-Ronai_1898.jpg",
+      "width": 1920,
+      "height": 3439,
+      "localOriginalPath": "/images/wikimedia/9099954/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/9099954/w512.jpg",
+        "1024": "/images/wikimedia/9099954/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project art nouveau",
+      "downloadedAt": "2026-05-26T20:07:36.211Z"
+    }
+  },
+  {
+    "id": "wikimedia:140158153",
+    "source": "wikimedia",
+    "sourceId": "140158153",
+    "title": "Old Testament miniatures with Latin, Persian, and Judeo-Persian inscriptions - Google Art Project (cropped trebuchet)",
+    "description": "Bible de Maciejowski",
+    "artist": "Unknown",
+    "date": "circa 1245 date QS:P571,+1245-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "cAEZNyDkOAzd1w at Google Cultural Institute , zoom level maximum",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AOld_Testament_miniatures_with_Latin%2C_Persian%2C_and_Judeo-Persian_inscriptions_-_Google_Art_Project_(cropped_trebuchet).jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Old_Testament_miniatures_with_Latin%2C_Persian%2C_and_Judeo-Persian_inscriptions_-_Google_Art_Project_%28cropped_trebuchet%29.jpg/1920px-Old_Testament_miniatures_with_Latin%2C_Persian%2C_and_Judeo-Persian_inscriptions_-_Google_Art_Project_%28cropped_trebuchet%29.jpg",
+      "width": 1920,
+      "height": 1115,
+      "localOriginalPath": "/images/wikimedia/140158153/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/140158153/w512.jpg",
+        "1024": "/images/wikimedia/140158153/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project medieval manuscript illumination",
+      "downloadedAt": "2026-05-26T20:07:30.986Z"
+    }
+  },
+  {
+    "id": "wikimedia:21792113",
+    "source": "wikimedia",
+    "sourceId": "21792113",
+    "title": "August Macke - Colored Composition of Forms, 1914 - Google Art Project",
+    "description": "Colored Composition of Forms, 1914 title QS:P1476,en:\"Colored Composition of Forms, 1914 \" label QS:Len,\"Colored Composition of Forms, 1914 \" label QS:Lde,\"Farbige Formenkomposition\"",
+    "artist": "August Macke",
+    "date": "1914",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture: Home - pic",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAugust_Macke_-_Colored_Composition_of_Forms%2C_1914_-_Google_Art_Project.jpg",
+    "tags": [
+      "Abstract paintings by August Macke",
+      "Farbige Formenkomposition by August Macke",
+      "Paintings by August Macke in the Albertina"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/57/August_Macke_-_Colored_Composition_of_Forms%2C_1914_-_Google_Art_Project.jpg/1920px-August_Macke_-_Colored_Composition_of_Forms%2C_1914_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2254,
+      "localOriginalPath": "/images/wikimedia/21792113/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21792113/w512.jpg",
+        "1024": "/images/wikimedia/21792113/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project abstract painting",
+      "downloadedAt": "2026-05-26T20:07:12.959Z"
+    }
+  },
+  {
+    "id": "wikimedia:21854523",
+    "source": "wikimedia",
+    "sourceId": "21854523",
+    "title": "Kazimir Malevich - Suprematism - Google Art Project",
+    "description": "Russian: «Супрематизм» title QS:P1476,ru:\"Супрематизм\" label QS:Lru,\"Супрематизм\" Suprematism title QS:P1476,en:\"Suprematism\" label QS:Len,\"Suprematism\"",
+    "artist": "Kazimir Malevich",
+    "date": "1915 date QS:P571,+1915-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "7gFr9friECE5NA at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AKazimir_Malevich_-_Suprematism_-_Google_Art_Project.jpg",
+    "tags": [
+      "1915 paintings by Kazimir Malevich",
+      "20th-century oil paintings in the Russian Museum",
+      "Geometric abstract paintings",
+      "Oil on canvas paintings in the Russian Museum",
+      "Paintings by Kazimir Malevich in the Russian Museum"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Kazimir_Malevich_-_Suprematism_-_Google_Art_Project.jpg/1920px-Kazimir_Malevich_-_Suprematism_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2214,
+      "localOriginalPath": "/images/wikimedia/21854523/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21854523/w512.jpg",
+        "1024": "/images/wikimedia/21854523/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project abstract painting",
+      "downloadedAt": "2026-05-26T20:07:12.959Z"
+    }
+  },
+  {
+    "id": "wikimedia:13250964",
+    "source": "wikimedia",
+    "sourceId": "13250964",
+    "title": "August Wilhelm Julius Ahlborn - Blick in Griechenlands Blüte - Google Art Project",
+    "description": "German: Blick in Griechenlands Blüte View into the Heyday of Greece title QS:P1476,de:\"Blick in Griechenlands Blüte\" label QS:Lde,\"Blick in Griechenlands Blüte\" label QS:Lru,\"Просмотр в период расцвета Греции\" label QS:Lfr,\"Vue de l'apogée de la Grèce\" label QS:Len,\"View into the Heyday of Greece\"",
+    "artist": "August Ahlborn / After Karl Friedrich Schinkel",
+    "date": "1836 date QS:P571,+1836-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — HAESsJ_MthhX5g",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAugust_Wilhelm_Julius_Ahlborn_-_Blick_in_Griechenlands_Bl%C3%BCte_-_Google_Art_Project.jpg",
+    "tags": [
+      "Blick in Griechenlands Blüte by Wilhelm Ahlborn after Karl Friedrich Schinkel"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/69/August_Wilhelm_Julius_Ahlborn_-_Blick_in_Griechenlands_Bl%C3%BCte_-_Google_Art_Project.jpg/1920px-August_Wilhelm_Julius_Ahlborn_-_Blick_in_Griechenlands_Bl%C3%BCte_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 777,
+      "localOriginalPath": "/images/wikimedia/13250964/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13250964/w512.jpg",
+        "1024": "/images/wikimedia/13250964/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project flower painting",
+      "downloadedAt": "2026-05-26T20:07:03.182Z"
+    }
+  },
+  {
+    "id": "wikimedia:21784617",
+    "source": "wikimedia",
+    "sourceId": "21784617",
+    "title": "Islandic gerfalcon - Google Art Project",
+    "description": "Islandic gerfalcon title QS:P1476,en:\"Islandic gerfalcon \" label QS:Len,\"Islandic gerfalcon \" label QS:Lsv,\"Isländsk jaktfalk\" label QS:Lfr,\"Gerfaut islandais\"",
+    "artist": "anonymous",
+    "date": "1759",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture: Home - pic",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AIslandic_gerfalcon_-_Google_Art_Project.jpg",
+    "tags": [
+      "Falco rusticolus (illustrations)",
+      "Oil paintings of birds",
+      "Paintings in the Livrustkammaren"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Islandic_gerfalcon_-_Google_Art_Project.jpg/1920px-Islandic_gerfalcon_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2506,
+      "localOriginalPath": "/images/wikimedia/21784617/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21784617/w512.jpg",
+        "1024": "/images/wikimedia/21784617/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project bird illustration",
+      "downloadedAt": "2026-05-26T20:06:48.988Z"
+    }
+  },
+  {
+    "id": "wikimedia:21972252",
+    "source": "wikimedia",
+    "sourceId": "21972252",
+    "title": "George Stubbs - A Comparative Anatomical Exposition of the Structure of the Human Body with that of a Tiger and a Co... - Google Art Project (2345977)",
+    "description": "A Comparative Anatomical Exposition of the Structure of the Human Body with that of a Tiger and a Common Fowl: Dorking Hen Skeleton, Lateral View (Probably prepared for an unpublished key figure) title QS:P1476,en:\"A Comparative Anatomical Exposition of the Structure of the Human Body with that of a Tiger and a Common Fowl: Dorking Hen Skeleton, Lateral View (Probably prepared for an unpublished key figure)\" label QS:Len,\"A Comparative Anatomical Exposition of the Structure of the Human Body with that of a Tiger and a Common Fowl: Dorking Hen Skeleton, Lateral View (Probably prepared for an unpublished key figure)\"",
+    "artist": "George Stubbs",
+    "date": "1795 to 1806",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "jAHqZ5c8QycD7Q at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AGeorge_Stubbs_-_A_Comparative_Anatomical_Exposition_of_the_Structure_of_the_Human_Body_with_that_of_a_Tiger_and_a_Co..._-_Google_Art_Project_(2345977).jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/George_Stubbs_-_A_Comparative_Anatomical_Exposition_of_the_Structure_of_the_Human_Body_with_that_of_a_Tiger_and_a_Co..._-_Google_Art_Project_%282345977%29.jpg/1920px-George_Stubbs_-_A_Comparative_Anatomical_Exposition_of_the_Structure_of_the_Human_Body_with_that_of_a_Tiger_and_a_Co..._-_Google_Art_Project_%282345977%29.jpg",
+      "width": 1920,
+      "height": 1614,
+      "localOriginalPath": "/images/wikimedia/21972252/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21972252/w512.jpg",
+        "1024": "/images/wikimedia/21972252/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project bird illustration",
+      "downloadedAt": "2026-05-26T20:06:48.988Z"
+    }
+  },
+  {
+    "id": "wikimedia:22141504",
+    "source": "wikimedia",
+    "sourceId": "22141504",
+    "title": "Chapuy, after Pierre- Joseph Redouté - Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824) - Google Art Project",
+    "description": "Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824) title QS:P1476,en:\"Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824)\" label QS:Len,\"Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824)\"",
+    "artist": "Chapuy, after Pierre- Joseph Redouté 19th century – By (French) Details on Google Art Project",
+    "date": "1817 date QS:P571,+1817-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "2QG_-fBMnHpJrw at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AChapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_(Rosa_Kamtschatica)%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824)_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Chapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_%28Rosa_Kamtschatica%29%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824%29_-_Google_Art_Project.jpg/1920px-Chapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_%28Rosa_Kamtschatica%29%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824%29_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2542,
+      "localOriginalPath": "/images/wikimedia/22141504/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22141504/w512.jpg",
+        "1024": "/images/wikimedia/22141504/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project botanical illustration",
+      "downloadedAt": "2026-05-26T20:06:30.046Z"
+    }
+  },
+  {
+    "id": "wikimedia:21792126",
+    "source": "wikimedia",
+    "sourceId": "21792126",
+    "title": "Albrecht Dürer - Hare, 1502 - Google Art Project",
+    "description": "German: Feldhase Young Hare title QS:P1476,de:\"Feldhase \" label QS:Lde,\"Feldhase \" label QS:Les,\"Liebre joven\" label QS:Lbn,\"ইয়াং হেয়ার\" label QS:Lfr,\"Le Lièvre\" label QS:Lru,\"Заяц (Дюрер)\" label QS:Lhy,\"Նապաստակ\" label QS:Lsl,\"Kunec (Dürer)\" label QS:Lyue,\"兔仔 (丟勒)\" label QS:Lsv,\"Fälthare\" label QS:Lpl,\"Młody zając (Dürer)\" label QS:Luk,\"Заєць\" label QS:Lnl,\"Haas\" label QS:Lel,\"O λαγός\" label QS:Lko,\"어린 토끼\" label QS:Len,\"Young Hare\" label QS:Leo,\"Leporo\" label QS:Lmk,\"Зајак (Дирер)\"",
+    "artist": "Albrecht Dürer",
+    "date": "1502",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture: Home - pic",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Albrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg/1920px-Albrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2122,
+      "localOriginalPath": "/images/wikimedia/21792126/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21792126/w512.jpg",
+        "1024": "/images/wikimedia/21792126/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project watercolor painting",
+      "downloadedAt": "2026-05-26T20:06:13.250Z"
+    }
+  },
+  {
+    "id": "wikimedia:13318794",
+    "source": "wikimedia",
+    "sourceId": "13318794",
+    "title": "Abd as-Samad Shirin Qalam - Jamshid Writing on a Rock - Google Art Project",
+    "description": "Jamshid Writing on a Rock",
+    "artist": "Abd al-Samad",
+    "date": "circa 1588 date QS:P571,+1588-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — iAFfhs7okTqOYg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAbd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg",
+    "tags": [
+      "16th-century Mughal miniatures",
+      "Abdul-Samad",
+      "Group paintings of men",
+      "Jamshid",
+      "Mughal miniatures in the Freer Gallery of Art",
+      "People in nature in art"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Abd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg/1920px-Abd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 3060,
+      "localOriginalPath": "/images/wikimedia/13318794/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13318794/w512.jpg",
+        "1024": "/images/wikimedia/13318794/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project watercolor painting",
+      "downloadedAt": "2026-05-26T20:06:13.250Z"
+    }
+  },
+  {
+    "id": "wikimedia:13318797",
+    "source": "wikimedia",
+    "sourceId": "13318797",
+    "title": "Abu'l - The St. Petersburg Album- Allegorical representation of Emperor Jahangir and Shah - Google Art Project",
+    "description": "The St. Petersburg Album: Allegorical representation of Emperor Jahangir and Shah title QS:P1476,en:\"The St. Petersburg Album: Allegorical representation of Emperor Jahangir and Shah\" label QS:Len,\"The St. Petersburg Album: Allegorical representation of Emperor Jahangir and Shah\"",
+    "artist": "Mohammad Sadiq / Abu al-Hasan",
+    "date": "circa 1618 date QS:P571,+1618-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Originally from Google Art Project but since edited/redone by Google Art Project, see [1]",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAbu'l_-_The_St._Petersburg_Album-_Allegorical_representation_of_Emperor_Jahangir_and_Shah_-_Google_Art_Project.jpg",
+    "tags": [
+      "Emperor Jahangir Embraces Shah Abbas (FGA F1945.9a)"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/31/Abu%27l_-_The_St._Petersburg_Album-_Allegorical_representation_of_Emperor_Jahangir_and_Shah_-_Google_Art_Project.jpg/1920px-Abu%27l_-_The_St._Petersburg_Album-_Allegorical_representation_of_Emperor_Jahangir_and_Shah_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2790,
+      "localOriginalPath": "/images/wikimedia/13318797/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13318797/w512.jpg",
+        "1024": "/images/wikimedia/13318797/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project watercolor painting",
+      "downloadedAt": "2026-05-26T20:06:13.250Z"
+    }
+  },
+  {
+    "id": "wikimedia:13358804",
+    "source": "wikimedia",
+    "sourceId": "13358804",
+    "title": "Albrecht Dürer - Jesus among the Doctors - Google Art Project",
+    "description": "Jesus among the Doctors label QS:Lit,\"Gesù tra i Dottori\" label QS:Lfr,\"Jésus parmi les docteurs\" label QS:Lpl,\"Jezus wśród doktorów\" label QS:Lnl,\"Jezus onder de schriftgeleerden\" label QS:Lru,\"Двенадцать-летний Иисус в храме\" label QS:Lde,\"Der zwölfjährige Jesus im Tempel\" label QS:Len,\"Jesus among the Doctors\" label QS:Lmk,\"Исус меѓу лекарите\" label QS:Lsl,\"Mladi Jezus v templju\" Alternative title: Twelve-year-old Jesus among the Scribes label QS:Lde,\"Der zwölfjährige Jesus unter den Schriftgelehrten\" label QS:Len,\"Twelve-year-old Jesus among the Scribes\"",
+    "artist": "Albrecht Dürer",
+    "date": "1506 date QS:P571,+1506-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — pQHFFSkmA9CYuA",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg",
+    "tags": [
+      "Christ among the Doctors by Dürer"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Albrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg/1920px-Albrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1540,
+      "localOriginalPath": "/images/wikimedia/13358804/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13358804/w512.jpg",
+        "1024": "/images/wikimedia/13358804/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project still life painting",
+      "downloadedAt": "2026-05-26T20:06:06.081Z"
+    }
+  },
+  {
+    "id": "wikimedia:13333895",
+    "source": "wikimedia",
+    "sourceId": "13333895",
+    "title": "Petrus Christus - Portrait of a Young Woman - Google Art Project",
+    "description": "Portrait of a Young Woman title QS:P1476,en:\"Portrait of a Young Woman\" label QS:Len,\"Portrait of a Young Woman\"",
+    "artist": "Petrus Christus",
+    "date": "circa 1470 date QS:P571,+1470-00-00T00:00:00Z/9,P1480,Q5727902",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — UAGsuoFcmmRiTg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APetrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg",
+    "tags": [
+      "Portrait of a young girl by Petrus Christus"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Petrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg/1920px-Petrus_Christus_-_Portrait_of_a_Young_Woman_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 2503,
+      "localOriginalPath": "/images/wikimedia/13333895/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13333895/w512.jpg",
+        "1024": "/images/wikimedia/13333895/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project portrait painting",
+      "downloadedAt": "2026-05-26T20:05:57.100Z"
+    }
+  },
+  {
+    "id": "wikimedia:13291088",
+    "source": "wikimedia",
+    "sourceId": "13291088",
+    "title": "Caspar David Friedrich - Der einsame Baum - Google Art Project",
+    "description": "German: Der einsame Baum Solitary Tree title QS:P1476,de:\"Der einsame Baum \" label QS:Lde,\"Der einsame Baum \" label QS:Lsl,\"Osamljeno drevo (Caspar David Friedrich)\" label QS:Lja,\"孤独な木\" label QS:Lfr,\"Paysage champêtre, le matin\" label QS:Lml,\"ദി ലോൺലി ട്രീ\" label QS:Let,\"Üksildane puu\" label QS:Les,\"El árbol solitario\" label QS:Lhe,\"העץ הבודד\" label QS:Lru,\"Деревенский пейзаж в утреннем свете\" label QS:Larz,\"شجره منعزله\" label QS:Luk,\"Сільський краєвид в ранковому світлі\" label QS:Len,\"Solitary Tree\" label QS:Lfa,\"درخت تنها\" label QS:Lsv,\"Det ensamma trädet\"",
+    "artist": "Caspar David Friedrich",
+    "date": "1822",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "Google Arts &amp; Culture — VgEo9JDzFjfGGg",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ACaspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg",
+    "tags": [
+      "Der einsame Baum by Caspar David Friedrich"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Caspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg/1920px-Caspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1511,
+      "localOriginalPath": "/images/wikimedia/13291088/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/13291088/w512.jpg",
+        "1024": "/images/wikimedia/13291088/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project landscape painting",
+      "downloadedAt": "2026-05-26T20:05:49.216Z"
+    }
+  },
+  {
+    "id": "wikimedia:21854187",
+    "source": "wikimedia",
+    "sourceId": "21854187",
+    "title": "Hovhannes Aivazovsky - The Ninth Wave - Google Art Project",
+    "description": "The Ninth Wave",
+    "artist": "Hovhannes Aivazovsky (1817 - 1900) – painter (Russian) Born in Rossiiskaya imperiya, Feodosia. Died in Rossiiskaya imperiya, Feodosia. Details on Google Art Project",
+    "date": "1850 date QS:P571,+1850-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "jgHuL-7yxgrOSw at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg/1920px-Hovhannes_Aivazovsky_-_The_Ninth_Wave_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1290,
+      "localOriginalPath": "/images/wikimedia/21854187/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21854187/w512.jpg",
+        "1024": "/images/wikimedia/21854187/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project landscape painting",
+      "downloadedAt": "2026-05-26T20:05:49.216Z"
+    }
+  },
+  {
+    "id": "wikimedia:21996910",
+    "source": "wikimedia",
+    "sourceId": "21996910",
+    "title": "John Constable - Wivenhoe Park, Essex - Google Art Project",
+    "description": "Wivenhoe Park, Essex",
+    "artist": "John Constable",
+    "date": "1816 date QS:P571,+1816-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "vAG0ovJU1U65Rw at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJohn_Constable_-_Wivenhoe_Park%2C_Essex_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/John_Constable_-_Wivenhoe_Park%2C_Essex_-_Google_Art_Project.jpg/1920px-John_Constable_-_Wivenhoe_Park%2C_Essex_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1039,
+      "localOriginalPath": "/images/wikimedia/21996910/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21996910/w512.jpg",
+        "1024": "/images/wikimedia/21996910/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project landscape painting",
+      "downloadedAt": "2026-05-26T20:05:49.216Z"
+    }
+  },
+  {
+    "id": "wikimedia:21849938",
+    "source": "wikimedia",
+    "sourceId": "21849938",
+    "title": "Chobunsai Eishi - Untitled - Google Art Project",
+    "description": "Untitled title QS:P1476,en:\"Untitled\" label QS:Len,\"Untitled\"",
+    "artist": "Chōbunsai Eishi",
+    "date": "Late 18th century-early 19th century",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "https://www.museobilbao.com/catalogo-online/mono-amaestrado--82741",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AChobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg",
+    "tags": [
+      "Chōbunsai Eishi",
+      "Prints in the Museo de Bellas Artes de Bilbao"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Chobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg/1920px-Chobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 1240,
+      "localOriginalPath": "/images/wikimedia/21849938/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21849938/w512.jpg",
+        "1024": "/images/wikimedia/21849938/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project ukiyo-e",
+      "downloadedAt": "2026-05-26T20:05:42.255Z"
+    }
+  },
+  {
+    "id": "wikimedia:151904",
+    "source": "wikimedia",
+    "sourceId": "151904",
+    "title": "Vincent Willem van Gogh 065",
+    "description": "Landstraße mit Zypressen",
+    "artist": "Vincent van Gogh",
+    "date": "1890 date QS:P571,+1890-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "The Yorck Project (2002) 10.000 Meisterwerke der Malerei (DVD-ROM), distributed by DIRECTMEDIA Publishing GmbH. ISBN : 3936122202 .",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AVincent_Willem_van_Gogh_065.jpg",
+    "tags": [
+      "Road with Cypress and Star"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/6/63/Vincent_Willem_van_Gogh_065.jpg",
+      "width": 1576,
+      "height": 1991,
+      "localOriginalPath": "/images/wikimedia/151904/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/151904/w512.jpg",
+        "1024": "/images/wikimedia/151904/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project post impressionism painting",
+      "downloadedAt": "2026-05-26T20:05:25.158Z"
+    }
+  },
+  {
+    "id": "wikimedia:22628878",
+    "source": "wikimedia",
+    "sourceId": "22628878",
+    "title": "Claude Monet - The Water Lilies - Morning - Google Art Project",
+    "description": "Matin",
+    "artist": "Claude Monet",
+    "date": "between 1914 and 1926 date QS:P571,+1950-00-00T00:00:00Z/7,P1319,+1914-00-00T00:00:00Z/9,P1326,+1926-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "IAHgEdqp703amQ at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Claude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 302,
+      "localOriginalPath": "/images/wikimedia/22628878/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22628878/w512.jpg",
+        "1024": "/images/wikimedia/22628878/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project impressionism painting",
+      "downloadedAt": "2026-05-26T20:05:19.003Z"
+    }
+  },
+  {
+    "id": "wikimedia:22628920",
+    "source": "wikimedia",
+    "sourceId": "22628920",
+    "title": "Claude Monet - The Water Lilies - Setting Sun - Google Art Project",
+    "description": "Soleil couchant",
+    "artist": "Claude Monet",
+    "date": "between 1914 and 1926 date QS:P571,+1950-00-00T00:00:00Z/7,P1319,+1914-00-00T00:00:00Z/9,P1326,+1926-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "qAG-qyFHUPm1kg at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg",
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Claude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 637,
+      "localOriginalPath": "/images/wikimedia/22628920/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/22628920/w512.jpg",
+        "1024": "/images/wikimedia/22628920/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project impressionism painting",
+      "downloadedAt": "2026-05-26T20:05:19.003Z"
+    }
+  },
+  {
+    "id": "wikimedia:21856429",
+    "source": "wikimedia",
+    "sourceId": "21856429",
+    "title": "Claude Monet - The Rue Montorgueil in Paris. Celebration of June 30, 1878 - Google Art Project",
+    "description": "French: La rue Montorgueil à Paris. Fête du 30 juin 1878 The Rue Montorgueil in Paris. Celebration of June 30, 1878 title QS:P1476,fr:\"La rue Montorgueil à Paris. Fête du 30 juin 1878\" label QS:Lfr,\"La rue Montorgueil à Paris. Fête du 30 juin 1878\" label QS:Len,\"The Rue Montorgueil in Paris. Celebration of June 30, 1878\"",
+    "artist": "Claude Monet",
+    "date": "1878 date QS:P571,+1878-00-00T00:00:00Z/9",
+    "isPublicDomain": true,
+    "license": "Public domain",
+    "rights": "hQGKcVaLpt9iCg at Google Cultural Institute maximum zoom level",
+    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_The_Rue_Montorgueil_in_Paris._Celebration_of_June_30%2C_1878_-_Google_Art_Project.jpg",
+    "tags": [
+      "1878-06-30",
+      "National flag of France in art",
+      "The Rue Montorgueil in Paris. Celebration of June 30, 1878 by Claude Monet"
+    ],
+    "image": {
+      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Claude_Monet_-_The_Rue_Montorgueil_in_Paris._Celebration_of_June_30%2C_1878_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_The_Rue_Montorgueil_in_Paris._Celebration_of_June_30%2C_1878_-_Google_Art_Project.jpg",
+      "width": 1920,
+      "height": 3196,
+      "localOriginalPath": "/images/wikimedia/21856429/original.jpg",
+      "localResizedPaths": {
+        "512": "/images/wikimedia/21856429/w512.jpg",
+        "1024": "/images/wikimedia/21856429/w1024.jpg"
+      }
+    },
+    "search": {
+      "query": "Google Art Project impressionism painting",
+      "downloadedAt": "2026-05-26T20:05:19.003Z"
+    }
+  },
+  {
     "id": "wikimedia:22490492",
     "source": "wikimedia",
     "sourceId": "22490492",
@@ -24,37 +1825,6 @@
     "search": {
       "query": "Google Art Project Chinese painting",
       "downloadedAt": "2026-05-26T19:35:36.568Z"
-    }
-  },
-  {
-    "id": "wikimedia:21849938",
-    "source": "wikimedia",
-    "sourceId": "21849938",
-    "title": "Chobunsai Eishi - Untitled - Google Art Project",
-    "description": "Untitled title QS:P1476,en:\"Untitled\" label QS:Len,\"Untitled\"",
-    "artist": "Chōbunsai Eishi",
-    "date": "Late 18th century-early 19th century",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "https://www.museobilbao.com/catalogo-online/mono-amaestrado--82741",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AChobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg",
-    "tags": [
-      "Chōbunsai Eishi",
-      "Prints in the Museo de Bellas Artes de Bilbao"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Chobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg/1920px-Chobunsai_Eishi_-_Untitled_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/21849938/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/21849938/w512.jpg",
-        "1024": "/images/wikimedia/21849938/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1240
-    },
-    "search": {
-      "query": "Google Art Project ukiyo-e",
-      "downloadedAt": "2026-05-26T19:35:31.969Z"
     }
   },
   {
@@ -124,33 +1894,6 @@
     }
   },
   {
-    "id": "wikimedia:22003845",
-    "source": "wikimedia",
-    "sourceId": "22003845",
-    "title": "Jan Vermeer - The Art of Painting - Google Art Project",
-    "description": "German: Die Malkunst The Art of Painting title QS:P1476,de:\"Die Malkunst \" label QS:Lde,\"Die Malkunst \" label QS:Les,\"El arte de la pintura\" label QS:Lru,\"Мастерская художника\" label QS:Lfa,\"هنر نقاشی\" label QS:Ltr,\"The Art of Painting (Vermeer)\" label QS:Lja,\"絵画芸術\" label QS:Lsv,\"Målarkonsten\" label QS:Lhe,\"אמנות הציור\" label QS:Lavk,\"Lingeropa (trutca ke Vermeer)\" label QS:Lfi,\"Maalaustaide\" label QS:Leo,\"La Arto de Pentrado\" label QS:Lit,\"Allegoria della Pittura\" label QS:Lfr,\"L'Art de la peinture\" label QS:Lhr,\"Alegorija slikarstva\" label QS:Lpt,\"A Arte da Pintura\" label QS:Luk,\"Алегорія живопису\" label QS:Lsl,\"Umetnost slikanja (Vermeer)\" label QS:Lcs,\"Alegorie malířství\" label QS:Larz,\"فن الرسم (لوحه)\" label QS:Lgl,\"A arte da pintura\" label QS:Lth,\"ศิลปะของการเขียนภาพ\" label QS:Lpl,\"Alegoria malarstwa\" label QS:Lml,\"ദി ആർട്ട് ഓഫ് പെയിന്റിംഗ്\" label QS:Lnl,\"De Schilderkunst\" label QS:Lko,\"회화의 기술\" label QS:Lmk,\"Уметноста на сликањето\" label QS:Lca,\"Al·legoria de la pintura\" label QS:Laz,\"Rəssamlığın alleqoriyası\" label QS:Len,\"The Art of Painting\" label QS:Lar,\"فن الرسم\" label QS:Lbr,\"Alegorienn al liverezh\" label QS:Lnb,\"«Maleren i sitt atelier»\"",
-    "artist": "Johannes Vermeer",
-    "date": "circa from 1666 until 1668 date QS:P,+1666-00-00T00:00:00Z/8,P580,+1666-00-00T00:00:00Z/9,P582,+1668-00-00T00:00:00Z/9,P1480,Q5727902 Baroque (late 16 th century date QS:P,+1550-00-00T00:00:00Z/7,P4241,Q40719766 –1750s date QS:P,+1750-00-00T00:00:00Z/8 )",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — lAHeqBoLaePtEA",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AJan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg/1920px-Jan_Vermeer_-_The_Art_of_Painting_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/22003845/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/22003845/w512.jpg",
-        "1024": "/images/wikimedia/22003845/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2281
-    },
-    "search": {
-      "query": "Google Art Project cat painting",
-      "downloadedAt": "2026-05-26T19:35:24.254Z"
-    }
-  },
-  {
     "id": "wikimedia:13500799",
     "source": "wikimedia",
     "sourceId": "13500799",
@@ -178,36 +1921,6 @@
     "search": {
       "query": "Google Art Project bird painting",
       "downloadedAt": "2026-05-26T19:35:19.000Z"
-    }
-  },
-  {
-    "id": "wikimedia:21792126",
-    "source": "wikimedia",
-    "sourceId": "21792126",
-    "title": "Albrecht Dürer - Hare, 1502 - Google Art Project",
-    "description": "German: Feldhase Young Hare title QS:P1476,de:\"Feldhase \" label QS:Lde,\"Feldhase \" label QS:Les,\"Liebre joven\" label QS:Lbn,\"ইয়াং হেয়ার\" label QS:Lfr,\"Le Lièvre\" label QS:Lru,\"Заяц (Дюрер)\" label QS:Lhy,\"Նապաստակ\" label QS:Lsl,\"Kunec (Dürer)\" label QS:Lyue,\"兔仔 (丟勒)\" label QS:Lsv,\"Fälthare\" label QS:Lpl,\"Młody zając (Dürer)\" label QS:Luk,\"Заєць\" label QS:Lnl,\"Haas\" label QS:Lel,\"O λαγός\" label QS:Lko,\"어린 토끼\" label QS:Len,\"Young Hare\" label QS:Leo,\"Leporo\" label QS:Lmk,\"Зајак (Дирер)\"",
-    "artist": "Albrecht Dürer",
-    "date": "1502",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture: Home - pic",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg",
-    "tags": [
-      "Young Hare, by Albrecht Dürer"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Albrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg/1920px-Albrecht_D%C3%BCrer_-_Hare%2C_1502_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/21792126/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/21792126/w512.jpg",
-        "1024": "/images/wikimedia/21792126/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2122
-    },
-    "search": {
-      "query": "Google Art Project animal painting",
-      "downloadedAt": "2026-05-26T19:35:11.246Z"
     }
   },
   {
@@ -510,36 +2223,6 @@
     "search": {
       "query": "Google Art Project river landscape",
       "downloadedAt": "2026-05-26T19:33:27.538Z"
-    }
-  },
-  {
-    "id": "wikimedia:13291088",
-    "source": "wikimedia",
-    "sourceId": "13291088",
-    "title": "Caspar David Friedrich - Der einsame Baum - Google Art Project",
-    "description": "German: Der einsame Baum Solitary Tree title QS:P1476,de:\"Der einsame Baum \" label QS:Lde,\"Der einsame Baum \" label QS:Lsl,\"Osamljeno drevo (Caspar David Friedrich)\" label QS:Lja,\"孤独な木\" label QS:Lfr,\"Paysage champêtre, le matin\" label QS:Lml,\"ദി ലോൺലി ട്രീ\" label QS:Let,\"Üksildane puu\" label QS:Les,\"El árbol solitario\" label QS:Lhe,\"העץ הבודד\" label QS:Lru,\"Деревенский пейзаж в утреннем свете\" label QS:Larz,\"شجره منعزله\" label QS:Luk,\"Сільський краєвид в ранковому світлі\" label QS:Len,\"Solitary Tree\" label QS:Lfa,\"درخت تنها\" label QS:Lsv,\"Det ensamma trädet\"",
-    "artist": "Caspar David Friedrich",
-    "date": "1822",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — VgEo9JDzFjfGGg",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ACaspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg",
-    "tags": [
-      "Der einsame Baum by Caspar David Friedrich"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f0/Caspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg/1920px-Caspar_David_Friedrich_-_Der_einsame_Baum_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13291088/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13291088/w512.jpg",
-        "1024": "/images/wikimedia/13291088/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1511
-    },
-    "search": {
-      "query": "Google Art Project trees landscape",
-      "downloadedAt": "2026-05-26T19:33:21.268Z"
     }
   },
   {
@@ -1019,33 +2702,6 @@
     }
   },
   {
-    "id": "wikimedia:25498286",
-    "source": "wikimedia",
-    "sourceId": "25498286",
-    "title": "Van Gogh - Starry Night - Google Art Project",
-    "description": "The Starry Night title QS:P1476,en:\" The Starry Night \" label QS:Len,\" The Starry Night \" label QS:Les,\" La noche estrellada \" label QS:Lmk,\" Ѕвездена ноќ \" label QS:Lfr,\" La Nuit étoilée \" label QS:Lar,\" ليلة النُجُوم \" label QS:Lbr,\" An Noz stergannek \" label QS:Lca,\" La nit estelada \" label QS:Lzh,\" 星夜 \" label QS:Lja,\" 星月夜 \" label QS:Lfi,\" Tähtikirkas yö \" label QS:Lbe-tarask,\" Зорная ноч \" label QS:Lth,\" คืนดาวเกลื่อนฟ้า (ฟาน ก็อกฮ์) \" label QS:Lbg,\" Звездна нощ \" label QS:Lro,\" Noapte înstelată \" label QS:Lko,\" 별이 빛나는 밤 \" label QS:Leo,\" Stela nokto \" label QS:Laf,\" Die Sterrenag \" label QS:Lru,\" Звёздная ночь \" label QS:Lde,\" Sternennacht \" label QS:Lhe,\" ליל כוכבים \" label QS:Lit,\" Notte stellata \" label QS:Lsv,\" De sterrennacht \" label QS:Let,\" Tähistaevas \" label QS:Lhr,\" Zvjezdana noć \" label QS:Lpt,\" A Noite Estrelada \" label QS:Lpl,\" Gwiaździsta noc \" label QS:Lnl,\" De sterrennacht \" label QS:Leu,\" Gau izartsua \" label QS:Lfa,\" شب پر ستاره \"",
-    "artist": "Vincent van Gogh",
-    "date": "1889 date QS:P571,+1889-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — bgEuwDxel93-Pg",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AVan_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg/1920px-Van_Gogh_-_Starry_Night_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/25498286/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/25498286/w512.jpg",
-        "1024": "/images/wikimedia/25498286/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1520
-    },
-    "search": {
-      "query": "Google Art Project Van Gogh landscape",
-      "downloadedAt": "2026-05-26T19:25:25.076Z"
-    }
-  },
-  {
     "id": "wikimedia:151863",
     "source": "wikimedia",
     "sourceId": "151863",
@@ -1073,33 +2729,6 @@
     "search": {
       "query": "Google Art Project Van Gogh landscape",
       "downloadedAt": "2026-05-26T19:25:25.076Z"
-    }
-  },
-  {
-    "id": "wikimedia:22628878",
-    "source": "wikimedia",
-    "sourceId": "22628878",
-    "title": "Claude Monet - The Water Lilies - Morning - Google Art Project",
-    "description": "Matin",
-    "artist": "Claude Monet",
-    "date": "between 1914 and 1926 date QS:P571,+1950-00-00T00:00:00Z/7,P1319,+1914-00-00T00:00:00Z/9,P1326,+1926-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "IAHgEdqp703amQ at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Claude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_The_Water_Lilies_-_Morning_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/22628878/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/22628878/w512.jpg",
-        "1024": "/images/wikimedia/22628878/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 302
-    },
-    "search": {
-      "query": "Google Art Project Monet water lilies",
-      "downloadedAt": "2026-05-26T19:25:09.294Z"
     }
   },
   {
@@ -1163,33 +2792,6 @@
     "search": {
       "query": "Google Art Project Monet water lilies",
       "downloadedAt": "2026-05-26T19:25:09.294Z"
-    }
-  },
-  {
-    "id": "wikimedia:22628920",
-    "source": "wikimedia",
-    "sourceId": "22628920",
-    "title": "Claude Monet - The Water Lilies - Setting Sun - Google Art Project",
-    "description": "Soleil couchant",
-    "artist": "Claude Monet",
-    "date": "between 1914 and 1926 date QS:P571,+1950-00-00T00:00:00Z/7,P1319,+1914-00-00T00:00:00Z/9,P1326,+1926-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "qAG-qyFHUPm1kg at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AClaude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Claude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg/1920px-Claude_Monet_-_The_Water_Lilies_-_Setting_Sun_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/22628920/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/22628920/w512.jpg",
-        "1024": "/images/wikimedia/22628920/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 637
-    },
-    "search": {
-      "query": "Google Art Project water lilies",
-      "downloadedAt": "2026-05-26T19:24:57.984Z"
     }
   },
   {
@@ -1514,33 +3116,6 @@
     "search": {
       "query": "Google Art Project landscape river",
       "downloadedAt": "2026-05-26T19:23:11.820Z"
-    }
-  },
-  {
-    "id": "wikimedia:13404873",
-    "source": "wikimedia",
-    "sourceId": "13404873",
-    "title": "Hans Bollongier - Stilleven met bloemen - Google Art Project",
-    "description": "Still life with flowers .",
-    "artist": "Hans Bollongier",
-    "date": "1639 date QS:P571,+1639-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — EQEMHGEP8LENMw",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Hans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg/1920px-Hans_Bollongier_-_Stilleven_met_bloemen_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13404873/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13404873/w512.jpg",
-        "1024": "/images/wikimedia/13404873/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2465
-    },
-    "search": {
-      "query": "Google Art Project flower still life",
-      "downloadedAt": "2026-05-26T19:23:01.479Z"
     }
   },
   {
@@ -2313,33 +3888,6 @@
     "search": {
       "query": "Alphonse Mucha poster",
       "downloadedAt": "2026-05-26T19:17:13.728Z"
-    }
-  },
-  {
-    "id": "wikimedia:22009598",
-    "source": "wikimedia",
-    "sourceId": "22009598",
-    "title": "Alfons Mucha - Absinth (Study of a Woman) - Google Art Project",
-    "description": "Absinth (Study of a Woman) title QS:P1476,en:\"Absinth (Study of a Woman)\" label QS:Len,\"Absinth (Study of a Woman)\"",
-    "artist": "Alphonse Mucha",
-    "date": "(1900 - 1905)",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "EgH5Ro_LOhs3Mw at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlfons_Mucha_-_Absinth_(Study_of_a_Woman)_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Alfons_Mucha_-_Absinth_%28Study_of_a_Woman%29_-_Google_Art_Project.jpg/1920px-Alfons_Mucha_-_Absinth_%28Study_of_a_Woman%29_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/22009598/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/22009598/w512.jpg",
-        "1024": "/images/wikimedia/22009598/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1474
-    },
-    "search": {
-      "query": "Art Nouveau poster Mucha",
-      "downloadedAt": "2026-05-26T19:16:55.305Z"
     }
   },
   {
@@ -3176,33 +4724,6 @@
     "search": {
       "query": "Mughal miniature",
       "downloadedAt": "2026-05-26T19:14:28.643Z"
-    }
-  },
-  {
-    "id": "wikimedia:13318794",
-    "source": "wikimedia",
-    "sourceId": "13318794",
-    "title": "Abd as-Samad Shirin Qalam - Jamshid Writing on a Rock - Google Art Project",
-    "description": "Jamshid Writing on a Rock",
-    "artist": "Abd al-Samad",
-    "date": "circa 1588 date QS:P571,+1588-00-00T00:00:00Z/9,P1480,Q5727902",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — iAFfhs7okTqOYg",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAbd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Abd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg/1920px-Abd_as-Samad_Shirin_Qalam_-_Jamshid_Writing_on_a_Rock_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13318794/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13318794/w512.jpg",
-        "1024": "/images/wikimedia/13318794/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 3060
-    },
-    "search": {
-      "query": "Shahnameh miniature",
-      "downloadedAt": "2026-05-26T19:14:04.746Z"
     }
   },
   {
@@ -6542,33 +8063,6 @@
     }
   },
   {
-    "id": "wikimedia:22141504",
-    "source": "wikimedia",
-    "sourceId": "22141504",
-    "title": "Chapuy, after Pierre- Joseph Redouté - Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824) - Google Art Project",
-    "description": "Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824) title QS:P1476,en:\"Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824)\" label QS:Len,\"Kamtschatka Rose (Rosa Kamtschatica), from Redouté, \" Les Roses\", Paris, 1817–1824)\"",
-    "artist": "Chapuy, after Pierre- Joseph Redouté 19th century – By (French) Details on Google Art Project",
-    "date": "1817 date QS:P571,+1817-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "2QG_-fBMnHpJrw at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AChapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_(Rosa_Kamtschatica)%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824)_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Chapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_%28Rosa_Kamtschatica%29%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824%29_-_Google_Art_Project.jpg/1920px-Chapuy%2C_after_Pierre-_Joseph_Redout%C3%A9_-_Kamtschatka_Rose_%28Rosa_Kamtschatica%29%2C_from_Redout%C3%A9%2C_%22_Les_Roses%22%2C_Paris%2C_1817%E2%80%931824%29_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/22141504/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/22141504/w512.jpg",
-        "1024": "/images/wikimedia/22141504/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2542
-    },
-    "search": {
-      "query": "Redoute Les Roses",
-      "downloadedAt": "2026-05-26T19:00:18.134Z"
-    }
-  },
-  {
     "id": "wikimedia:76115008",
     "source": "wikimedia",
     "sourceId": "76115008",
@@ -7444,36 +8938,6 @@
     }
   },
   {
-    "id": "wikimedia:13410926",
-    "source": "wikimedia",
-    "sourceId": "13410926",
-    "title": "Rembrandt Harmensz. van Rijn - Portret van een paar als oudtestamentische figuren, genaamd 'Het Joodse bruidje' - Google Art Project",
-    "description": "The Jewish Bride label QS:Len,\" Portrait of a couple as figures from the Old Testament, known as ‘The Jewish bride’ .\" label QS:Lnl,\" Portret van een paar als Oud-Testamentische figuren, genaamd ‘Het Joodse bruidje’ .\"",
-    "artist": "Rembrandt",
-    "date": "circa 1665-1669",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Unknown source Unknown source",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ARembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_'Het_Joodse_bruidje'_-_Google_Art_Project.jpg",
-    "tags": [
-      "The Jewish Bride by Rembrandt"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Rembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_%27Het_Joodse_bruidje%27_-_Google_Art_Project.jpg/1920px-Rembrandt_Harmensz._van_Rijn_-_Portret_van_een_paar_als_oudtestamentische_figuren%2C_genaamd_%27Het_Joodse_bruidje%27_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13410926/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13410926/w512.jpg",
-        "1024": "/images/wikimedia/13410926/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1400
-    },
-    "search": {
-      "query": "Google Art Project van Gogh",
-      "downloadedAt": "2026-05-26T18:52:46.386Z"
-    }
-  },
-  {
     "id": "wikimedia:13291389",
     "source": "wikimedia",
     "sourceId": "13291389",
@@ -7683,60 +9147,6 @@
     "search": {
       "query": "Google Art Project animals",
       "downloadedAt": "2026-05-26T18:51:47.483Z"
-    }
-  },
-  {
-    "id": "wikimedia:13358942",
-    "source": "wikimedia",
-    "sourceId": "13358942",
-    "title": "Domenico Ghirlandaio, 1489-1490 - Portrait of Giovanna Tornabuoni - Google Art Project",
-    "description": "Portrait of Giovanna Tornabuoni label QS:Lit,\"Ritratto di Giovanna Tornabuoni\" label QS:Lfr,\"Portrait de Giovanna Tornabuoni\" label QS:Leu,\"Giovanna Tornabuoniren erretratua\" label QS:Lde,\"Porträt der Giovanna Tornabuoni\" label QS:Lpt,\"Retrato de Giovanna Tornabuoni\" label QS:Lbg,\"Портрет на Джована Торнабуони\" label QS:Lsl,\"Portret Giovanne Tornabuoni\" label QS:Lja,\"ジョヴァンナ・トルナブオーニの肖像\" label QS:Larz,\"صوره جيوفانا تورنابونى\" label QS:Lpl,\"Portret Giovanny Tornabuoni\" label QS:Luk,\"Портрет Джованни Торнабуоні\" label QS:Lnl,\"Portret van Giovanna Tornabuoni\" label QS:Les,\"Retrato de Giovanna Tornabuoni\" label QS:Lru,\"Портрет Джованны Торнабуони\" label QS:Len,\"Portrait of Giovanna Tornabuoni\" label QS:Lar,\"بورترية جيوفانا تورنابوني (لوحة)\" label QS:Lcs,\"Portrét Giovanny Tornabuoni\" label QS:Lca,\"Retrat de Giovanna Tornabuoni\"",
-    "artist": "Domenico Ghirlandaio",
-    "date": "between 1489 and 1490 date QS:P,+1450-00-00T00:00:00Z/7,P1319,+1489-00-00T00:00:00Z/9,P1326,+1490-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — igFh0HgpLdzCXg",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3ADomenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7b/Domenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg/1920px-Domenico_Ghirlandaio%2C_1489-1490_-_Portrait_of_Giovanna_Tornabuoni_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13358942/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13358942/w512.jpg",
-        "1024": "/images/wikimedia/13358942/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 3051
-    },
-    "search": {
-      "query": "Google Art Project portrait",
-      "downloadedAt": "2026-05-26T18:51:20.912Z"
-    }
-  },
-  {
-    "id": "wikimedia:13359000",
-    "source": "wikimedia",
-    "sourceId": "13359000",
-    "title": "Hans Holbein, the Younger, Around 1497-1543 - Portrait of Henry VIII of England - Google Art Project",
-    "description": "Portrait of Henry VIII label QS:Lfr,\"Portrait de Henri VIII\" label QS:Lit,\"Ritratto di Enrico VIII d'Inghilterra\" label QS:Len,\"Portrait of Henry VIII\" label QS:Leo,\"Portreto de Henriko la Oka\" label QS:Lde,\"Porträt Heinrichs VIII\" label QS:Lnl,\"Portret van Hendrik VIII van Engeland\"",
-    "artist": "Hans Holbein the Younger",
-    "date": "1537",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — bwFsEOEPkei3Lw",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AHans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg",
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Hans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg/1920px-Hans_Holbein%2C_the_Younger%2C_Around_1497-1543_-_Portrait_of_Henry_VIII_of_England_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13359000/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13359000/w512.jpg",
-        "1024": "/images/wikimedia/13359000/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2695
-    },
-    "search": {
-      "query": "Google Art Project portrait",
-      "downloadedAt": "2026-05-26T18:51:20.912Z"
     }
   },
   {
@@ -8050,75 +9460,6 @@
     "search": {
       "query": "Hokusai",
       "downloadedAt": "2026-05-26T18:48:03.420Z"
-    }
-  },
-  {
-    "id": "wikimedia:13358804",
-    "source": "wikimedia",
-    "sourceId": "13358804",
-    "title": "Albrecht Dürer - Jesus among the Doctors - Google Art Project",
-    "description": "Jesus among the Doctors label QS:Lit,\"Gesù tra i Dottori\" label QS:Lfr,\"Jésus parmi les docteurs\" label QS:Lpl,\"Jezus wśród doktorów\" label QS:Lnl,\"Jezus onder de schriftgeleerden\" label QS:Lru,\"Двенадцать-летний Иисус в храме\" label QS:Lde,\"Der zwölfjährige Jesus im Tempel\" label QS:Len,\"Jesus among the Doctors\" label QS:Lmk,\"Исус меѓу лекарите\" label QS:Lsl,\"Mladi Jezus v templju\" Alternative title: Twelve-year-old Jesus among the Scribes label QS:Lde,\"Der zwölfjährige Jesus unter den Schriftgelehrten\" label QS:Len,\"Twelve-year-old Jesus among the Scribes\"",
-    "artist": "Albrecht Dürer",
-    "date": "1506 date QS:P571,+1506-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — pQHFFSkmA9CYuA",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg",
-    "tags": [
-      "Christ among the Doctors by Dürer"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/Albrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg/1920px-Albrecht_D%C3%BCrer_-_Jesus_among_the_Doctors_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13358804/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13358804/w512.jpg",
-        "1024": "/images/wikimedia/13358804/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1540
-    },
-    "search": {
-      "query": "Google Art Project still life",
-      "downloadedAt": "2026-05-26T18:47:44.932Z"
-    }
-  },
-  {
-    "id": "wikimedia:13361296",
-    "source": "wikimedia",
-    "sourceId": "13361296",
-    "title": "Albert Cornelis - The Magdalen in a Landscape - Google Art Project",
-    "description": "The Magdalen in a Landscape title QS:P1476,en:\"The Magdalen in a Landscape \" label QS:Len,\"The Magdalen in a Landscape \" label QS:Lit,\"la maddalena in un paesaggio\" label QS:Lde,\"Magdalena in Landschaft\" label QS:Lfr,\"Sainte Marie Madeleine au désert.\" label QS:Lnl,\"De H. Maria Magdalena in een landschap\"",
-    "artist": "Albert Cornelis / Adriaen Isenbrandt",
-    "date": "1510 / 1520s date QS:P,+1520-00-00T00:00:00Z/8",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "Google Arts &amp; Culture — YQG4mF85rS3fvw",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AAlbert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg",
-    "tags": [
-      "1510 paintings of people",
-      "1510s paintings in the United Kingdom",
-      "1510s paintings of Mary Magdalene",
-      "1510s religious paintings",
-      "16th-century oil paintings of women at full length",
-      "16th-century paintings of angels with humans",
-      "16th-century paintings of kneeling women",
-      "16th-century paintings of women with red dresses",
-      "16th-century religious paintings in the United Kingdom",
-      "Albert Cornelis"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Albert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg/1920px-Albert_Cornelis_-_The_Magdalen_in_a_Landscape_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/13361296/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/13361296/w512.jpg",
-        "1024": "/images/wikimedia/13361296/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2501
-    },
-    "search": {
-      "query": "Google Art Project landscape",
-      "downloadedAt": "2026-05-26T18:47:26.657Z"
     }
   },
   {
@@ -120655,39 +121996,6 @@
     }
   },
   {
-    "id": "wikimedia:21865766",
-    "source": "wikimedia",
-    "sourceId": "21865766",
-    "title": "Paul Klee - Gespenst eines Genies (Ghost of a Genius) - Google Art Project",
-    "description": "Fantôme d'un génie",
-    "artist": "Paul Klee",
-    "date": "1922 date QS:P571,+1922-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "zQFKImEn_NtDnQ at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3APaul_Klee_-_Gespenst_eines_Genies_(Ghost_of_a_Genius)_-_Google_Art_Project.jpg",
-    "tags": [
-      "1922 drawings",
-      "Drawings in the Scottish National Gallery",
-      "Ghosts in art",
-      "Paintings by Paul Klee"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Paul_Klee_-_Gespenst_eines_Genies_%28Ghost_of_a_Genius%29_-_Google_Art_Project.jpg/1920px-Paul_Klee_-_Gespenst_eines_Genies_%28Ghost_of_a_Genius%29_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/21865766/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/21865766/w512.jpg",
-        "1024": "/images/wikimedia/21865766/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 2786
-    },
-    "search": {
-      "query": "Google Art Project",
-      "downloadedAt": "2026-01-07T03:59:54.549Z"
-    }
-  },
-  {
     "id": "wikimedia:21924578",
     "source": "wikimedia",
     "sourceId": "21924578",
@@ -121036,36 +122344,6 @@
       },
       "width": 1920,
       "height": 3129
-    },
-    "search": {
-      "query": "Google Art Project",
-      "downloadedAt": "2026-01-07T03:59:54.549Z"
-    }
-  },
-  {
-    "id": "wikimedia:21977254",
-    "source": "wikimedia",
-    "sourceId": "21977254",
-    "title": "Frederic Edwin Church - Aurora Borealis - Google Art Project",
-    "description": "Aurora Borealis title QS:P1476,en:\"Aurora Borealis\" label QS:Len,\"Aurora Borealis\" label QS:Lfr,\" Aurora Borealis \"",
-    "artist": "Frederic Edwin Church",
-    "date": "1865 date QS:P571,+1865-00-00T00:00:00Z/9",
-    "isPublicDomain": true,
-    "license": "Public domain",
-    "rights": "3QGtI0P71obkqA at Google Cultural Institute maximum zoom level",
-    "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AFrederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg",
-    "tags": [
-      "Aurora Borealis by Frederic Edwin Church"
-    ],
-    "image": {
-      "originalUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Frederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg/1920px-Frederic_Edwin_Church_-_Aurora_Borealis_-_Google_Art_Project.jpg",
-      "localOriginalPath": "/images/wikimedia/21977254/original.jpg",
-      "localResizedPaths": {
-        "512": "/images/wikimedia/21977254/w512.jpg",
-        "1024": "/images/wikimedia/21977254/w1024.jpg"
-      },
-      "width": 1920,
-      "height": 1292
     },
     "search": {
       "query": "Google Art Project",
