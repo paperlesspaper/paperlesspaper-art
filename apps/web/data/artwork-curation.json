@@ -841,5 +841,42 @@
   },
   "wikimedia:29726771": {
     "rating": 1
+  },
+  "wikimedia:22127442": {
+    "rating": 5
+  },
+  "wikimedia:21987773": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:24103313": {
+    "rating": 5
+  },
+  "wikimedia:24103864": {
+    "rating": 5
+  },
+  "wikimedia:29097096": {
+    "rating": 5
+  },
+  "wikimedia:73862138": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:21880552": {
+    "rating": 5
+  },
+  "wikimedia:21988089": {
+    "rating": 5
+  },
+  "wikimedia:84511172": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:22026117": {
+    "highlighted": true,
+    "rating": 5
+  },
+  "wikimedia:82692360": {
+    "highlighted": true
   }
 }
