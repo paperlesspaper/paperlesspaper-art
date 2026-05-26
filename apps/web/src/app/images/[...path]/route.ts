@@ -10,11 +10,11 @@ type RouteContext = {
 };
 
 export async function GET(request: Request, context: RouteContext) {
-  return redirectToAsset(request, context);
+  return proxyAsset(request, context);
 }
 
 export async function HEAD(request: Request, context: RouteContext) {
-  return redirectToAsset(request, context);
+  return proxyAsset(request, context);
 }
 
 export async function OPTIONS(request: Request) {
@@ -24,7 +24,7 @@ export async function OPTIONS(request: Request) {
   });
 }
 
-async function redirectToAsset(request: Request, context: RouteContext) {
+async function proxyAsset(request: Request, context: RouteContext) {
   const headers = {
     ...corsHeaders(request),
     "Cache-Control": "public, max-age=3600, stale-while-revalidate=86400",
@@ -55,8 +55,50 @@ async function redirectToAsset(request: Request, context: RouteContext) {
     );
   }
 
-  return NextResponse.redirect(targetUrl, {
-    status: 307,
-    headers,
+  const upstreamHeaders = new Headers();
+  copyRequestHeader(request, upstreamHeaders, "range");
+  copyRequestHeader(request, upstreamHeaders, "if-none-match");
+  copyRequestHeader(request, upstreamHeaders, "if-modified-since");
+
+  const upstreamResponse = await fetch(targetUrl, {
+    method: request.method,
+    headers: upstreamHeaders,
+    redirect: "follow",
   });
+
+  const responseHeaders = new Headers(headers);
+  copyResponseHeader(upstreamResponse, responseHeaders, "accept-ranges");
+  copyResponseHeader(upstreamResponse, responseHeaders, "content-disposition");
+  copyResponseHeader(upstreamResponse, responseHeaders, "content-length");
+  copyResponseHeader(upstreamResponse, responseHeaders, "content-range");
+  copyResponseHeader(upstreamResponse, responseHeaders, "content-type");
+  copyResponseHeader(upstreamResponse, responseHeaders, "etag");
+  copyResponseHeader(upstreamResponse, responseHeaders, "last-modified");
+
+  return new Response(
+    request.method === "HEAD" ? null : upstreamResponse.body,
+    {
+      status: upstreamResponse.status,
+      statusText: upstreamResponse.statusText,
+      headers: responseHeaders,
+    }
+  );
+}
+
+function copyRequestHeader(
+  request: Request,
+  targetHeaders: Headers,
+  headerName: string
+) {
+  const value = request.headers.get(headerName);
+  if (value) targetHeaders.set(headerName, value);
+}
+
+function copyResponseHeader(
+  response: Response,
+  targetHeaders: Headers,
+  headerName: string
+) {
+  const value = response.headers.get(headerName);
+  if (value) targetHeaders.set(headerName, value);
 }
