@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loadArtworkCuration } from "@/lib/artwork-curation";
 import {
   corsHeaders,
   findArtworkById,
@@ -32,8 +33,11 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const artworks = await loadArtworks();
-  const artwork = findArtworkById(artworks, decodeURIComponent(id));
+  const [artworks, curation] = await Promise.all([
+    loadArtworks(),
+    loadArtworkCuration(),
+  ]);
+  const artwork = findArtworkById(artworks, decodeURIComponent(id), curation);
 
   if (!artwork) {
     return NextResponse.json({ error: "Not found" }, { status: 404, headers });

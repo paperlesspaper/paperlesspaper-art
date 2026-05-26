@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { loadArtworkCuration } from "@/lib/artwork-curation";
 import {
   corsHeaders,
   isAuthorized,
@@ -27,10 +28,14 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const artworks = await loadArtworks();
+  const [artworks, curation] = await Promise.all([
+    loadArtworks(),
+    loadArtworkCuration(),
+  ]);
   const result = searchArtworks(
     artworks,
-    parseArtworkSearchParams(url.searchParams)
+    parseArtworkSearchParams(url.searchParams),
+    curation
   );
 
   return NextResponse.json(result, { headers });

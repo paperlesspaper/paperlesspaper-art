@@ -73,8 +73,90 @@
   color: var(--text-secondary);
 }
 
-.grid {
+.curationBar {
+  position: sticky;
+  top: 0;
+  z-index: 2;
   margin-top: 32px;
+  display: flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 16px;
+  border-bottom: 1px solid var(--button-secondary-border);
+  background: rgb(255 255 255 / 94%);
+  color: var(--text-secondary);
+  font-size: 14px;
+  backdrop-filter: blur(8px);
+}
+
+.filterPanel {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr)) auto;
+  gap: 8px;
+  margin-top: 16px;
+  align-items: end;
+}
+
+.searchField,
+.filterField {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.searchField input,
+.filterField select {
+  width: 100%;
+  min-width: 0;
+  height: 36px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+}
+
+.searchField input {
+  padding: 0 10px;
+}
+
+.filterField select {
+  padding: 0 8px;
+}
+
+.searchField input:focus,
+.filterField select:focus,
+.resetFiltersButton:focus-visible {
+  border-color: #0a84ff;
+  outline: 2px solid rgb(10 132 255 / 20%);
+  outline-offset: 1px;
+}
+
+.resetFiltersButton {
+  height: 36px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  padding: 0 14px;
+}
+
+.resetFiltersButton:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.grid {
+  margin-top: 12px;
   width: 100%;
   display: grid;
   grid-template-columns: repeat(10, minmax(0, 1fr));
@@ -84,10 +166,82 @@
 }
 
 .card {
+  position: relative;
   border: 1px solid var(--button-secondary-border);
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
   background: var(--foreground);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.cardHighlighted,
+.card:has(.highlightCheckbox:checked) {
+  border-color: #f2b705;
+  box-shadow:
+    0 0 0 2px #f2b705,
+    0 10px 24px rgb(0 0 0 / 14%);
+  transform: translateY(-1px);
+}
+
+.card:has(.highlightCheckbox:focus-visible) {
+  outline: 2px solid #0a84ff;
+  outline-offset: 3px;
+}
+
+.highlightToggle {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  cursor: pointer;
+}
+
+.highlightCheckbox {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.highlightControl {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgb(0 0 0 / 70%);
+  border-radius: 5px;
+  background: rgb(255 255 255 / 92%);
+  box-shadow: 0 2px 8px rgb(0 0 0 / 18%);
+}
+
+.highlightControl::after {
+  content: "";
+  display: block;
+  width: 6px;
+  height: 10px;
+  margin: 2px 0 0 6px;
+  border: solid #111;
+  border-width: 0 2px 2px 0;
+  opacity: 0;
+  transform: rotate(45deg) scale(0.8);
+}
+
+.highlightCheckbox:checked + .highlightControl {
+  border-color: #111;
+  background: #f2b705;
+}
+
+.highlightCheckbox:checked + .highlightControl::after {
+  opacity: 1;
+  transform: rotate(45deg) scale(1);
 }
 
 .thumb {
@@ -152,6 +306,44 @@
   font-size: 14px;
 }
 
+.ratingGroup {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 4px;
+  margin-top: 10px;
+}
+
+.ratingButton {
+  display: grid;
+  min-width: 0;
+  height: 28px;
+  place-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 5px;
+  background: var(--foreground);
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  line-height: 1;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.ratingButton:hover,
+.ratingButton:focus-visible {
+  border-color: #0a84ff;
+  color: var(--text-primary);
+}
+
+.ratingButtonActive {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
 .links {
   margin-top: 10px;
   font-size: 14px;
@@ -184,6 +376,19 @@
   .grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
+
+  .curationBar {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+
+  .filterPanel {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .searchField {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (prefers-color-scheme: dark) {
@@ -201,5 +406,15 @@
     --button-primary-hover: #ccc;
     --button-secondary-hover: #1a1a1a;
     --button-secondary-border: #1a1a1a;
+  }
+
+  .curationBar {
+    background: rgb(0 0 0 / 94%);
+  }
+
+  .ratingButtonActive {
+    border-color: #ededed;
+    background: #ededed;
+    color: #000;
   }
 }

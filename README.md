@@ -32,6 +32,7 @@ Example:
 
 ```txt
 GET https://art.paperlesspaper.de/api/artworks?q=bell&source=svgrepo&limit=10
+GET https://art.paperlesspaper.de/api/artworks?selected=true&rating=5
 ```
 
 Query parameters:
@@ -42,6 +43,9 @@ Query parameters:
 - `license`: text filter on license
 - `tag`: text filter on tags
 - `collection`: text filter on collection name
+- `selected`: `true` or `false`, filters by the curation checkbox state
+- `highlighted`: alias for `selected`
+- `rating`: `1`, `2`, `3`, `4`, `5`, `rated`, or `unrated`
 - `limit`: defaults to `40`, max `200`
 - `offset`: pagination offset
 
@@ -60,6 +64,9 @@ Response shape:
       "license": "CC Attribution License",
       "licenseUrl": "https://www.svgrepo.com/page/licensing/#CC%20Attribution",
       "sourceUrl": "https://www.svgrepo.com/svg/526478/bell-bing",
+      "selected": true,
+      "highlighted": true,
+      "rating": 5,
       "collection": {
         "name": "Solar Line Duotone Icons",
         "url": "https://www.svgrepo.com/collection/solar-line-duotone-icons/"
@@ -106,12 +113,66 @@ Response shape:
     "id": "svgrepo:526478",
     "title": "Bell bing SVG Vector",
     "source": "svgrepo",
+    "selected": true,
+    "highlighted": true,
+    "rating": 5,
     "image": {
       "url": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg"
     }
   }
 }
 ```
+
+## Curation UI And API
+
+The gallery page includes a lightweight curation tool for reviewing the local
+catalog:
+
+- Search by title, artist, tag, collection, license, source, or source id.
+- Filter by source, selected/highlighted state, and rating.
+- Toggle the checkbox on each card to mark an artwork as selected/highlighted.
+- Set a rating from `1` to `5`; click the active rating again to clear it.
+
+Curation is stored separately from the generated catalog in:
+
+```txt
+apps/web/data/artwork-curation.json
+```
+
+The file is keyed by artwork id:
+
+```json
+{
+  "wikimedia:21856227": {
+    "highlighted": true,
+    "rating": 5
+  }
+}
+```
+
+The public artwork APIs hydrate this state onto each returned item as
+`selected`, `highlighted`, and `rating`. `selected` and `highlighted` currently
+represent the same checkbox state; `selected` is the consumer-facing field.
+
+The curation JSON can also be read or updated through:
+
+```txt
+GET /api/curation
+PATCH /api/curation
+```
+
+Patch body:
+
+```json
+{
+  "id": "wikimedia:21856227",
+  "highlighted": true,
+  "rating": 5
+}
+```
+
+Use `"rating": null` to clear a rating, and `"highlighted": false` to clear the
+selected/highlighted state.
 
 ## Image URLs
 
@@ -129,20 +190,20 @@ The API rewrites local catalog paths like:
 
 to object-storage URLs using `ART_ASSET_BASE_URL`.
 
-The web app also supports app-domain image URLs by redirecting them:
+The web app also supports app-domain image URLs by proxying them:
 
 ```txt
 GET https://art.paperlesspaper.de/images/svgrepo/528659/original.svg
 ```
 
-redirects to:
+streams the object-storage asset from:
 
 ```txt
 https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/528659/original.svg
 ```
 
-This keeps URLs convenient without bundling hundreds of MB of image files into
-the Dokploy container.
+This keeps URLs convenient, adds CORS headers for canvas/Fabric.js use cases,
+and avoids exposing object-storage CORS as a client dependency.
 
 ## Client Example
 
@@ -165,6 +226,9 @@ type Artwork = {
   license: string;
   licenseUrl?: string;
   sourceUrl: string;
+  selected: boolean;
+  highlighted: boolean;
+  rating?: 1 | 2 | 3 | 4 | 5;
   collection?: {
     name: string;
     url: string;
@@ -213,11 +277,14 @@ Recommended UI behavior for paperlesspaper-web:
 - Use `limit` and `offset` for pagination or infinite scroll.
 - Prefer `source=svgrepo` when the user searches for icons.
 - Prefer `publicDomain=true` when the target workflow requires public-domain only.
+- Prefer `selected=true` or `rating=5` when surfacing curated picks.
 
 ## HTTP Behavior
 
 - `GET /api/artworks` returns `200`.
 - `GET /api/artworks/:id` returns `200` or `404`.
+- `GET /api/curation` returns the raw curation map.
+- `PATCH /api/curation` updates one curation entry.
 - If `ART_API_KEY` is configured, clients must pass either:
   - `Authorization: Bearer <key>`
   - `X-API-Key: <key>`
@@ -302,6 +369,7 @@ after restarting the Dokploy app.
 
 - `apps/web`: Next.js web/API app
 - `apps/web/data/artworks.json`: generated catalog metadata
+- `apps/web/data/artwork-curation.json`: manual selected/rating state keyed by artwork id
 - `apps/web/public/images`: generated local images, ignored by git and Docker
 - `packages/scraper`: Node.js CLI for downloading and resizing assets
 

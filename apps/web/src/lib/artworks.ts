@@ -1,5 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
+import type { ArtworkCurationItem } from "@/lib/artwork-curation";
 
 export type ArtworkSource = "met" | "artic" | "svgrepo" | "wikimedia";
 
@@ -41,6 +42,9 @@ export type ArtworkApiItem = Omit<Artwork, "image"> & {
     url?: string;
     resizedUrls?: Record<string, string>;
   };
+  selected: boolean;
+  highlighted: boolean;
+  rating?: 1 | 2 | 3 | 4 | 5;
 };
 
 export type ArtworkSearchFilters = {
@@ -50,6 +54,9 @@ export type ArtworkSearchFilters = {
   license?: string;
   tag?: string;
   collection?: string;
+  selected?: boolean;
+  highlighted?: boolean;
+  rating?: 1 | 2 | 3 | 4 | 5 | "rated" | "unrated";
   limit?: number;
   offset?: number;
 };
@@ -103,7 +110,8 @@ export async function loadArtworks(): Promise<Artwork[]> {
 
 export function searchArtworks(
   artworks: Artwork[],
-  filters: ArtworkSearchFilters
+  filters: ArtworkSearchFilters,
+  curation: Record<string, ArtworkCurationItem> = {}
 ) {
   const q = normalizeText(filters.q);
   const queryTerms = q.length > 0 ? q.split(" ").filter(Boolean) : [];
@@ -112,11 +120,19 @@ export function searchArtworks(
   const tag = normalizeText(filters.tag);
   const collection = normalizeText(filters.collection);
   const publicDomain = filters.publicDomain;
+  const selected =
+    typeof filters.selected === "boolean"
+      ? filters.selected
+      : filters.highlighted;
+  const rating = filters.rating;
   const limit = clampLimit(filters.limit);
   const offset = Math.max(0, filters.offset ?? 0);
 
   const scored = artworks
     .map((artwork, index) => {
+      const curationItem = curation[artwork.id] ?? {};
+      const isSelected = curationItem.highlighted === true;
+
       if (source && artwork.source !== source) return null;
       if (
         typeof publicDomain === "boolean" &&
@@ -141,6 +157,21 @@ export function searchArtworks(
       ) {
         return null;
       }
+      if (typeof selected === "boolean" && isSelected !== selected) {
+        return null;
+      }
+      if (rating === "rated" && !curationItem.rating) {
+        return null;
+      }
+      if (rating === "unrated" && curationItem.rating) {
+        return null;
+      }
+      if (
+        typeof rating === "number" &&
+        curationItem.rating !== rating
+      ) {
+        return null;
+      }
 
       const score = queryTerms.length > 0 ? scoreArtwork(artwork, queryTerms) : 0;
       if (queryTerms.length > 0 && score === 0) return null;
@@ -161,18 +192,27 @@ export function searchArtworks(
   const total = scored.length;
   const items = scored
     .slice(offset, offset + limit)
-    .map(({ artwork }) => toApiArtwork(artwork));
+    .map(({ artwork }) => toApiArtwork(artwork, curation[artwork.id]));
 
   return { items, total, limit, offset };
 }
 
-export function findArtworkById(artworks: Artwork[], id: string) {
+export function findArtworkById(
+  artworks: Artwork[],
+  id: string,
+  curation: Record<string, ArtworkCurationItem> = {}
+) {
   const artwork = artworks.find((candidate) => candidate.id === id);
-  return artwork ? toApiArtwork(artwork) : undefined;
+  return artwork ? toApiArtwork(artwork, curation[artwork.id]) : undefined;
 }
 
-export function toApiArtwork(artwork: Artwork): ArtworkApiItem {
+export function toApiArtwork(
+  artwork: Artwork,
+  curationItem: ArtworkCurationItem = {}
+): ArtworkApiItem {
   const resizedUrls: Record<string, string> = {};
+  const selected = curationItem.highlighted === true;
+
   for (const [width, url] of Object.entries(
     artwork.image.localResizedPaths ?? {}
   )) {
@@ -182,6 +222,9 @@ export function toApiArtwork(artwork: Artwork): ArtworkApiItem {
 
   return {
     ...artwork,
+    selected,
+    highlighted: selected,
+    rating: curationItem.rating,
     image: {
       ...artwork.image,
       url:
@@ -208,6 +251,9 @@ export function parseArtworkSearchParams(searchParams: URLSearchParams) {
     license: searchParams.get("license") ?? undefined,
     tag: searchParams.get("tag") ?? undefined,
     collection: searchParams.get("collection") ?? undefined,
+    selected: parseBoolean(searchParams.get("selected")),
+    highlighted: parseBoolean(searchParams.get("highlighted")),
+    rating: parseRatingFilter(searchParams.get("rating")),
     limit: parsePositiveInt(searchParams.get("limit"), DEFAULT_LIMIT),
     offset: parseNonNegativeInt(searchParams.get("offset"), 0),
   } satisfies ArtworkSearchFilters;
@@ -320,6 +366,17 @@ function parseArtworkSource(value: string | null): ArtworkSource | undefined {
 function parseBoolean(value: string | null) {
   if (value === "true" || value === "1") return true;
   if (value === "false" || value === "0") return false;
+  return undefined;
+}
+
+function parseRatingFilter(value: string | null) {
+  if (value === "rated" || value === "unrated") return value;
+
+  const parsed = Number(value);
+  if (Number.isInteger(parsed) && parsed >= 1 && parsed <= 5) {
+    return parsed as 1 | 2 | 3 | 4 | 5;
+  }
+
   return undefined;
 }
 

@@ -1,4 +1,6 @@
 import styles from "./page.module.css";
+import { ArtworkCurationGrid } from "./ArtworkCurationGrid";
+import { loadArtworkCuration } from "@/lib/artwork-curation";
 import { loadArtworks } from "@/lib/artworks";
 
 export const dynamic = "force-dynamic";
@@ -83,7 +85,10 @@ function PaperlesspaperLogo({ className }: { className?: string }) {
 }
 
 export default async function Home() {
-  const artworks = await loadArtworks();
+  const [artworks, curation] = await Promise.all([
+    loadArtworks(),
+    loadArtworkCuration(),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -105,50 +110,10 @@ export default async function Home() {
             No artworks yet. Run the scraper CLI to download some.
           </p>
         ) : (
-          <ul className={styles.grid}>
-            {artworks.map((a) => {
-              const preferred =
-                a.image.localResizedPaths?.["512"] ??
-                a.image.localResizedPaths?.["1024"] ??
-                a.image.localOriginalPath;
-
-              const isSvg =
-                typeof preferred === "string" &&
-                preferred.toLowerCase().split("?")[0].endsWith(".svg");
-
-              return (
-                <li key={a.id} className={styles.card}>
-                  {preferred ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={preferred}
-                      alt={a.title}
-                      className={`${styles.thumb} ${
-                        isSvg ? styles.thumbContain : ""
-                      }`}
-                      loading="lazy"
-                    />
-                  ) : null}
-                  <div className={styles.meta}>
-                    <div className={styles.titleRow}>
-                      <strong className={styles.title}>{a.title}</strong>
-                      <span className={styles.badge}>{a.source}</span>
-                    </div>
-                    <div className={styles.subtitle}>
-                      {a.artist ? <span>{a.artist}</span> : null}
-                      {a.artist && a.date ? <span> · </span> : null}
-                      {a.date ? <span>{a.date}</span> : null}
-                    </div>
-                    <div className={styles.links}>
-                      <a href={a.sourceUrl} target="_blank" rel="noreferrer">
-                        Source
-                      </a>
-                    </div>
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <ArtworkCurationGrid
+            artworks={artworks}
+            initialCuration={curation}
+          />
         )}
       </main>
     </div>
