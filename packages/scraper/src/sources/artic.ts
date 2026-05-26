@@ -2,6 +2,7 @@ import path from "node:path";
 import { z } from "zod";
 import type { Artwork } from "../artwork.js";
 import { ensureDir } from "../fsutil.js";
+import { getImageDimensions } from "../image-metadata.js";
 import { downloadToFile } from "../net.js";
 import { resizeToJpegs } from "../resize.js";
 
@@ -82,6 +83,11 @@ export async function scrapeArtic(params: {
       continue;
     }
 
+    const dimensions = await getImageDimensions(originalPath).catch(
+      () => undefined
+    );
+    if (!dimensions) continue;
+
     const resized: Record<string, string> = {};
     const outByWidth: Record<number, string> = {};
 
@@ -109,6 +115,7 @@ export async function scrapeArtic(params: {
       sourceUrl: `https://www.artic.edu/artworks/${sourceId}`,
       image: {
         originalUrl,
+        ...dimensions,
         localOriginalPath: originalPublic,
         localResizedPaths: resized,
       },

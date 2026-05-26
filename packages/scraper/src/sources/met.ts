@@ -2,6 +2,7 @@ import path from "node:path";
 import { z } from "zod";
 import type { Artwork } from "../artwork.js";
 import { ensureDir, fileExists } from "../fsutil.js";
+import { getImageDimensions } from "../image-metadata.js";
 import { downloadToFile } from "../net.js";
 import { resizeToJpegs } from "../resize.js";
 
@@ -74,6 +75,11 @@ export async function scrapeMet(params: {
       continue;
     }
 
+    const dimensions = await getImageDimensions(originalPath).catch(
+      () => undefined
+    );
+    if (!dimensions) continue;
+
     const resized: Record<string, string> = {};
     const outByWidth: Record<number, string> = {};
 
@@ -103,6 +109,7 @@ export async function scrapeMet(params: {
         `https://www.metmuseum.org/art/collection/search/${sourceId}`,
       image: {
         originalUrl: obj.primaryImage,
+        ...dimensions,
         localOriginalPath: originalPublic,
         localResizedPaths: resized,
       },
@@ -215,6 +222,11 @@ async function processMetObjectId(params: {
     }
   }
 
+  const dimensions = await getImageDimensions(originalPath).catch(
+    () => undefined
+  );
+  if (!dimensions) return null;
+
   const resized: Record<string, string> = {};
   const outByWidth: Record<number, string> = {};
 
@@ -242,6 +254,7 @@ async function processMetObjectId(params: {
       obj.objectURL ?? `https://www.metmuseum.org/art/collection/search/${sourceId}`,
     image: {
       originalUrl: obj.primaryImage,
+      ...dimensions,
       localOriginalPath: originalPublic,
       localResizedPaths: resized,
     },

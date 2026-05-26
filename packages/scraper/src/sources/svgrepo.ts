@@ -4,6 +4,7 @@ import path from "node:path";
 import { chromium } from "playwright";
 import type { Artwork } from "../artwork.js";
 import { ensureDir } from "../fsutil.js";
+import { getImageDimensions } from "../image-metadata.js";
 import { downloadToFile, HttpError } from "../net.js";
 
 type SvgrepoSession = {
@@ -498,6 +499,10 @@ async function scrapeFromHrefCandidates(params: {
     await fs.writeFile(originalPath, body);
 
     const originalPublic = toPublicPath(params.imagesRoot, originalPath);
+    const dimensions = await getImageDimensions(originalPath).catch(
+      () => undefined
+    );
+    if (!dimensions) continue;
 
     const license = detail.licenseName ?? "See source";
     const isPublicDomain =
@@ -526,6 +531,7 @@ async function scrapeFromHrefCandidates(params: {
       sourceUrl,
       image: {
         originalUrl: downloadUrl,
+        ...dimensions,
         localOriginalPath: originalPublic,
       },
       search: {
@@ -892,6 +898,10 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
     }
 
     const originalPublic = toPublicPath(params.imagesRoot, originalPath);
+    const dimensions = await getImageDimensions(originalPath).catch(
+      () => undefined
+    );
+    if (!dimensions) continue;
 
     const license = detail.licenseName ?? "See source";
     const isPublicDomain =
@@ -920,6 +930,7 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
       sourceUrl,
       image: {
         originalUrl: downloadUrl,
+        ...dimensions,
         localOriginalPath: originalPublic,
       },
       search: {

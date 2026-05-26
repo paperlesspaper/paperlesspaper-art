@@ -22,6 +22,8 @@ export type Artwork = {
   tags?: string[];
   image: {
     originalUrl: string;
+    width?: number;
+    height?: number;
     localOriginalPath?: string;
     localResizedPaths?: Record<string, string>;
   };
