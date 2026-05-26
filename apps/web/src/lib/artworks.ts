@@ -184,12 +184,22 @@ export function searchArtworks(
       Boolean(item)
     );
 
-  if (queryTerms.length > 0) {
-    scored.sort((a, b) => {
-      if (b.score !== a.score) return b.score - a.score;
-      return compareDownloadedAt(a.artwork, b.artwork) || a.index - b.index;
-    });
-  }
+  scored.sort((a, b) => {
+    const ratingDifference =
+      getRatingSortValue(curation[b.artwork.id]) -
+      getRatingSortValue(curation[a.artwork.id]);
+    if (ratingDifference !== 0) return ratingDifference;
+
+    if (queryTerms.length > 0 && b.score !== a.score) {
+      return b.score - a.score;
+    }
+
+    return (
+      a.artwork.title.localeCompare(b.artwork.title) ||
+      compareDownloadedAt(a.artwork, b.artwork) ||
+      a.index - b.index
+    );
+  });
 
   const total = scored.length;
   const items = scored
@@ -332,6 +342,10 @@ function compareDownloadedAt(a: Artwork, b: Artwork) {
   return (b.search?.downloadedAt ?? "").localeCompare(
     a.search?.downloadedAt ?? ""
   );
+}
+
+function getRatingSortValue(curationItem?: ArtworkCurationItem) {
+  return typeof curationItem?.rating === "number" ? curationItem.rating : 0;
 }
 
 function toAssetUrl(value?: string) {

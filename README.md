@@ -87,6 +87,8 @@ Response shape:
       "tags": ["Bell bing", "Bell Canada"],
       "image": {
         "originalUrl": "https://www.svgrepo.com/download/526478/bell-bing.svg",
+        "width": 800,
+        "height": 800,
         "url": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg",
         "localOriginalPath": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg"
       },
@@ -126,6 +128,8 @@ Response shape:
     "highlighted": true,
     "rating": 5,
     "image": {
+      "width": 800,
+      "height": 800,
       "url": "https://fsn1.your-objectstorage.com/paperlesspaper-art/images/svgrepo/526478/original.svg"
     }
   }
