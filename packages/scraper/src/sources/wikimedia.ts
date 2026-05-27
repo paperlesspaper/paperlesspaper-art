@@ -136,9 +136,9 @@ export async function scrapeWikimedia(params: {
   apiUrl.searchParams.set("fulimit", "200");
   apiUrl.searchParams.set("funamespace", "0|6|10|14|100|828");
   apiUrl.searchParams.set("redirects", "1");
-  // Use a Wikimedia production thumbnail size to avoid 429 throttling on arbitrary widths.
+  // Request a larger source thumbnail while still avoiding full original files.
   // See: https://www.mediawiki.org/wiki/Common_thumbnail_sizes
-  apiUrl.searchParams.set("iiurlwidth", "1920");
+  apiUrl.searchParams.set("iiurlwidth", "4000");
   apiUrl.searchParams.set(
     "iiextmetadatafilter",
     [
@@ -164,6 +164,7 @@ export async function scrapeWikimedia(params: {
   const pages = json.query?.pages ?? [];
 
   const artworks: Artwork[] = [];
+  const seenTitleKeys = new Set<string>();
 
   for (const page of pages) {
     const ii = page.imageinfo?.[0];
@@ -189,6 +190,8 @@ export async function scrapeWikimedia(params: {
 
     const sourceId = String(page.pageid);
     const title = pageTitleToDisplay(page.title);
+    const titleKey = normalizeTitleForDedupe(title);
+    if (titleKey && seenTitleKeys.has(titleKey)) continue;
     const sourceUrl = pageTitleToUrl(page.title);
 
     const description =
@@ -259,6 +262,8 @@ export async function scrapeWikimedia(params: {
       outputPathsByWidth: outByWidth,
     });
 
+    if (titleKey) seenTitleKeys.add(titleKey);
+
     artworks.push({
       id: `wikimedia:${sourceId}`,
       source: "wikimedia",
@@ -328,6 +333,16 @@ function looksLikeScreenArt(params: {
 
 function normalizeForMatch(value: string) {
   return value.toLowerCase().replace(/_/g, " ").replace(/\s+/g, " ").trim();
+}
+
+function normalizeTitleForDedupe(value: string) {
+  return value
+    .toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/lccn\d+/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim();
 }
 
 function pageTitleToUrl(title: string) {
