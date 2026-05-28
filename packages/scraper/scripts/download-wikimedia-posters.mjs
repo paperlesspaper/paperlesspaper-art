@@ -6,11 +6,49 @@ import sharp from "sharp";
 
 const target = Number(process.env.TARGET ?? 200);
 const perQueryCap = Number(process.env.PER_QUERY_CAP ?? 18);
+const categoryLimit = Number(process.env.CATEGORY_LIMIT ?? 500);
 const dataPath = path.resolve("../../apps/web/data/artworks.json");
 const imagesRoot = path.resolve("../../apps/web/public/images");
 const widths = [512, 1024];
 const downloadedAt = new Date().toISOString();
-const prefix = process.env.SEARCH_PREFIX ?? "poster-more-4000-v2:";
+const prefix = process.env.SEARCH_PREFIX ?? "poster-more-4000-v3:";
+
+const categories = [
+  "WPA posters",
+  "Federal Art Project",
+  "Federal Theatre Project posters",
+  "Federal Music Project",
+  "Posters of the United States",
+  "World War I posters from the United States",
+  "World War II posters from the United States",
+  "War bond posters",
+  "United States National Park Service posters",
+  "Travel posters",
+  "Rail transport posters",
+  "Airline posters",
+  "Ocean liner posters",
+  "Circus posters",
+  "Theatre posters",
+  "Music posters",
+  "Exhibition posters",
+  "Art Nouveau posters",
+  "Posters by Jules Chéret",
+  "Posters by Henri de Toulouse-Lautrec",
+  "Posters by Alphonse Mucha",
+  "Posters by Théophile Steinlen",
+  "Posters by Edward Penfield",
+  "Posters by Will H. Bradley",
+  "Posters by Ludwig Hohlwein",
+  "Posters by Koloman Moser",
+  "Vienna Secession posters",
+  "French posters",
+  "German posters",
+  "Polish posters",
+  "Italian posters",
+  "Spanish posters",
+  "Affiches",
+  "Plakate",
+];
 
 const queries = [
   "Wikimedia Commons public domain WPA poster art",
@@ -103,18 +141,51 @@ const stats = {
   skippedNotPoster: 0,
   skippedTitleDup: 0,
   skippedImageDup: 0,
-  rejectedScore: 0,
   skippedDownload: 0,
 };
+
+for (const category of categories) {
+  if (stats.added >= target) break;
+
+  const label = `Category:${category}`;
+  const pages = await categoryMembers(category, categoryLimit);
+  const added = await processPages({
+    pages,
+    label,
+    catalogQuery: `category:${category}`,
+  });
+
+  await saveCatalog();
+  console.log(
+    `category done: ${category} -> +${added}, total ${stats.added}/${target}`
+  );
+  await sleep(1500);
+}
 
 for (const query of queries) {
   if (stats.added >= target) break;
 
-  let perQueryAdded = 0;
   const pages = await search(query, 250);
+  const added = await processPages({
+    pages,
+    label: query,
+    catalogQuery: `search:${query}`,
+  });
+
+  await saveCatalog();
+  console.log(`query done: ${query} -> +${added}, total ${stats.added}/${target}`);
+  await sleep(1500);
+}
+
+await saveCatalog();
+
+console.log(JSON.stringify({ ...stats, total: artworks.length }, null, 2));
+
+async function processPages({ pages, label, catalogQuery }) {
+  let added = 0;
 
   for (const page of pages) {
-    if (stats.added >= target || perQueryAdded >= perQueryCap) break;
+    if (stats.added >= target || added >= perQueryCap) break;
     stats.candidates++;
 
     const ii = page.imageinfo?.[0];
@@ -169,12 +240,10 @@ for (const query of queries) {
     }
 
     let metadata;
-    let score;
     let hash;
     try {
       metadata = await sharp(buffer).metadata();
       if (!metadata.width || !metadata.height) throw new Error("missing size");
-      score = await scoreColorSimple(buffer);
       hash = await dhash(buffer);
     } catch {
       stats.skippedDownload++;
@@ -183,18 +252,6 @@ for (const query of queries) {
 
     if ([...imageHashes].some((candidate) => hamming(candidate, hash) <= 6)) {
       stats.skippedImageDup++;
-      continue;
-    }
-
-    if (
-      score.saturation < 13 ||
-      score.colorfulness < 16 ||
-      score.simplicity < 22 ||
-      score.edgeDensity > 0.5 ||
-      score.whiteShare > 0.8 ||
-      score.blackShare > 0.8
-    ) {
-      stats.rejectedScore++;
       continue;
     }
 
@@ -216,7 +273,7 @@ for (const query of queries) {
       resized[String(width)] = `/images/wikimedia/${sourceId}/w${width}.jpg`;
     }
 
-    const categories = (page.categories || [])
+    const pageCategories = (page.categories || [])
       .map((category) =>
         category.title.replace(/^Category:/, "").replace(/_/g, " ").trim()
       )
@@ -241,14 +298,7 @@ for (const query of queries) {
       licenseUrl: license.licenseUrl,
       rights: ext(meta, "Credit") || undefined,
       sourceUrl: sourceUrl(page.title),
-      tags: [
-        ...categories,
-        `colorfulness ${score.colorfulness.toFixed(1)}`,
-        `saturation ${score.saturation.toFixed(1)}`,
-        `simplicity ${score.simplicity.toFixed(1)}`,
-        "dedupe title+hash",
-        "poster batch",
-      ],
+      tags: [...pageCategories, "dedupe title+hash", "poster batch"],
       image: {
         originalUrl,
         width: metadata.width,
@@ -257,7 +307,7 @@ for (const query of queries) {
         localResizedPaths: resized,
       },
       search: {
-        query: prefix + query,
+        query: prefix + catalogQuery,
         downloadedAt,
       },
     });
@@ -267,22 +317,14 @@ for (const query of queries) {
     imageHashes.add(hash);
     stats.added++;
     stats.total = artworks.length;
-    perQueryAdded++;
+    added++;
     console.log(
-      `added ${stats.added}/${target}: ${title} (${metadata.width}x${metadata.height})`
+      `added ${stats.added}/${target}: ${title} (${metadata.width}x${metadata.height}) from ${label}`
     );
   }
 
-  await saveCatalog();
-  console.log(
-    `query done: ${query} -> +${perQueryAdded}, total ${stats.added}/${target}`
-  );
-  await sleep(1500);
+  return added;
 }
-
-await saveCatalog();
-
-console.log(JSON.stringify({ ...stats, total: artworks.length }, null, 2));
 
 async function saveCatalog() {
   const tempPath = `${dataPath}.tmp-${process.pid}`;
@@ -439,15 +481,71 @@ async function search(query, limit) {
     ].join("|")
   );
 
-  for (let attempt = 0; attempt < 4; attempt++) {
-    const response = await fetch(apiUrl);
-    if (response.ok) {
-      const json = await response.json();
-      return json.query?.pages || [];
+  const json = await fetchJsonWithRetry(apiUrl, "search");
+  return json.query?.pages || [];
+}
+
+async function categoryMembers(category, limit) {
+  const pages = [];
+  let continuation = undefined;
+
+  while (pages.length < limit) {
+    const apiUrl = new URL("https://commons.wikimedia.org/w/api.php");
+    apiUrl.searchParams.set("action", "query");
+    apiUrl.searchParams.set("format", "json");
+    apiUrl.searchParams.set("formatversion", "2");
+    apiUrl.searchParams.set("generator", "categorymembers");
+    apiUrl.searchParams.set(
+      "gcmtitle",
+      category.startsWith("Category:") ? category : `Category:${category}`
+    );
+    apiUrl.searchParams.set("gcmnamespace", "6");
+    apiUrl.searchParams.set("gcmtype", "file");
+    apiUrl.searchParams.set("gcmlimit", String(Math.min(50, limit - pages.length)));
+    apiUrl.searchParams.set("prop", "imageinfo|categories");
+    apiUrl.searchParams.set("cllimit", "50");
+    apiUrl.searchParams.set("clshow", "!hidden");
+    apiUrl.searchParams.set("iiprop", "url|mime|size|extmetadata");
+    apiUrl.searchParams.set("iiurlwidth", "4000");
+    apiUrl.searchParams.set(
+      "iiextmetadatafilter",
+      [
+        "LicenseShortName",
+        "LicenseUrl",
+        "UsageTerms",
+        "Credit",
+        "Artist",
+        "ImageDescription",
+        "DateTimeOriginal",
+        "DateTime",
+        "Date",
+        "ObjectName",
+      ].join("|")
+    );
+
+    if (continuation) {
+      for (const [key, value] of Object.entries(continuation)) {
+        apiUrl.searchParams.set(key, value);
+      }
     }
 
+    const json = await fetchJsonWithRetry(apiUrl, "category");
+    pages.push(...(json.query?.pages || []));
+
+    if (!json.continue) break;
+    continuation = json.continue;
+  }
+
+  return pages;
+}
+
+async function fetchJsonWithRetry(apiUrl, label) {
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const response = await fetch(apiUrl);
+    if (response.ok) return response.json();
+
     if (response.status !== 429 || attempt === 3) {
-      throw new Error(`search failed ${response.status}`);
+      throw new Error(`${label} failed ${response.status}`);
     }
 
     const retryAfter = Number(response.headers.get("retry-after"));
@@ -455,67 +553,11 @@ async function search(query, limit) {
       Number.isFinite(retryAfter) && retryAfter > 0
         ? retryAfter * 1000
         : (attempt + 1) * 15000;
-    console.log(`search 429; waiting ${Math.round(waitMs / 1000)}s`);
+    console.log(`${label} 429; waiting ${Math.round(waitMs / 1000)}s`);
     await sleep(waitMs);
   }
 
-  return [];
-}
-
-async function scoreColorSimple(buffer) {
-  const { data, info } = await sharp(buffer)
-    .rotate()
-    .resize({ width: 96, height: 96, fit: "inside" })
-    .removeAlpha()
-    .raw()
-    .toBuffer({ resolveWithObject: true });
-
-  let saturation = 0;
-  let colorfulness = 0;
-  let white = 0;
-  let black = 0;
-  let edges = 0;
-  const count = info.width * info.height;
-  const gray = new Float32Array(count);
-
-  for (let i = 0, pixel = 0; i < data.length; i += 3, pixel++) {
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-    const max = Math.max(r, g, b);
-    const min = Math.min(r, g, b);
-    saturation += max === 0 ? 0 : ((max - min) / max) * 100;
-    colorfulness += Math.sqrt((r - g) ** 2 + (r - b) ** 2 + (g - b) ** 2);
-
-    const y = 0.299 * r + 0.587 * g + 0.114 * b;
-    gray[pixel] = y;
-    if (y > 238) white++;
-    if (y < 20) black++;
-  }
-
-  for (let y = 1; y < info.height; y++) {
-    for (let x = 1; x < info.width; x++) {
-      const index = y * info.width + x;
-      const delta =
-        Math.abs(gray[index] - gray[index - 1]) +
-        Math.abs(gray[index] - gray[index - info.width]);
-      if (delta > 44) edges++;
-    }
-  }
-
-  const unique = new Set();
-  for (let i = 0; i < data.length; i += 12) {
-    unique.add(`${data[i] >> 5},${data[i + 1] >> 5},${data[i + 2] >> 5}`);
-  }
-
-  return {
-    saturation: saturation / count,
-    colorfulness: colorfulness / count,
-    simplicity: 100 - (unique.size / 512) * 100,
-    edgeDensity: edges / Math.max(1, (info.width - 1) * (info.height - 1)),
-    whiteShare: white / count,
-    blackShare: black / count,
-  };
+  return {};
 }
 
 async function dhash(buffer) {

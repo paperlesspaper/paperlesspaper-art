@@ -13,6 +13,24 @@ type SvgrepoSession = {
   close: () => Promise<void>;
 };
 
+type SvgrepoIconDetail = {
+  title: string;
+  description?: string;
+  licenseName?: string;
+  licenseUrl?: string;
+  authorName?: string;
+  authorUrl?: string;
+  collectionName?: string;
+  collectionUrl?: string;
+  tags: string[];
+};
+
+type SvgrepoCollectionSummary = {
+  slug: string;
+  license?: string;
+  licenseLink?: string;
+};
+
 export class SvgrepoDownloadBlockedError extends Error {
   readonly status: number;
   readonly url: string;
@@ -56,12 +74,11 @@ export async function fetchSvgrepoCollectionsPage(params: {
       : null;
   const collections = Array.isArray(json?.collections) ? json.collections : [];
 
-  const slugs = collections
-    .map((c: any) => (typeof c?.slug === "string" ? c.slug.trim() : ""))
-    .filter((s: string) => s.length > 0);
+  const collectionSummaries = summarizeCollections(collections);
 
   return {
-    slugs,
+    slugs: collectionSummaries.map((collection) => collection.slug),
+    collections: collectionSummaries,
     totalCount,
     fixedLimit,
   };
@@ -78,6 +95,7 @@ export async function fetchSvgrepoCollectionsPageApiOnly(params: {
   url.searchParams.set("start", String(params.start));
 
   const res = await fetch(url.toString(), {
+    signal: AbortSignal.timeout(30_000),
     headers: {
       Referer: "https://www.svgrepo.com/",
       Accept: "application/json",
@@ -97,12 +115,11 @@ export async function fetchSvgrepoCollectionsPageApiOnly(params: {
       : null;
   const collections = Array.isArray(json?.collections) ? json.collections : [];
 
-  const slugs = collections
-    .map((c: any) => (typeof c?.slug === "string" ? c.slug.trim() : ""))
-    .filter((s: string) => s.length > 0);
+  const collectionSummaries = summarizeCollections(collections);
 
   return {
-    slugs,
+    slugs: collectionSummaries.map((collection) => collection.slug),
+    collections: collectionSummaries,
     totalCount,
     fixedLimit,
   };
@@ -140,6 +157,16 @@ export async function scrapeSvgrepoCollectionTermApiOnly(params: {
   const hrefs = await collectSvgHrefsFromCollectionApiApiOnly({
     term: params.term,
   });
+
+  if (
+    !Number.isFinite(params.limit) &&
+    !(await svgrepoCollectionHasUsableLicense({
+      hrefs,
+      imagesRoot: params.imagesRoot,
+    }))
+  ) {
+    return [];
+  }
 
   return await scrapeFromHrefCandidatesApiOnly({
     hrefs,
@@ -354,6 +381,31 @@ function unique<T>(items: T[]) {
   return [...new Set(items)];
 }
 
+function summarizeCollections(collections: any[]): SvgrepoCollectionSummary[] {
+  return collections
+    .map((collection: any) => {
+      const slug =
+        typeof collection?.slug === "string" ? collection.slug.trim() : "";
+      if (!slug) return null;
+
+      return {
+        slug,
+        license:
+          typeof collection?.license === "string"
+            ? collection.license.trim()
+            : undefined,
+        licenseLink:
+          typeof collection?.license_link === "string"
+            ? collection.license_link.trim()
+            : undefined,
+      };
+    })
+    .filter(
+      (collection): collection is SvgrepoCollectionSummary =>
+        collection !== null
+    );
+}
+
 function normalizeSvgHref(href: string) {
   // Normalize things like /svg/123/name/ -> /svg/123/name
   const match = href.match(/\/svg\/(\d+)\/([^/?#]+)\/?$/);
@@ -378,6 +430,19 @@ async function scrapeFromHrefCandidates(params: {
 
   const artworks: Artwork[] = [];
   let satisfied = 0;
+
+  if (!Number.isFinite(params.limit)) {
+    const results = await mapLimit(candidates, 12, (href) =>
+      scrapeApiOnlyCandidate({
+        href,
+        imagesRoot: params.imagesRoot,
+        query: params.query,
+        downloadedAt: params.downloadedAt,
+      })
+    );
+
+    return results.filter((artwork): artwork is Artwork => Boolean(artwork));
+  }
 
   for (const href of candidates) {
     const match = href.match(/^\/svg\/(\d+)\/([^/?#]+)$/);
@@ -469,26 +534,10 @@ async function scrapeFromHrefCandidates(params: {
         })));
 
     const title = detail.title;
+    const licenseInfo = classifyUsableSvgrepoLicense(detail);
+    if (!licenseInfo) continue;
 
-    const downloadHref = await params.page
-      .$$eval("a", (links) => {
-        for (const a of links) {
-          const href = a.getAttribute("href") ?? "";
-          if (
-            href.includes("/download/") &&
-            href.toLowerCase().includes(".svg")
-          ) {
-            return href;
-          }
-        }
-        return null;
-      })
-      .catch(() => null as string | null);
-
-    const downloadUrl = new URL(
-      downloadHref ?? `/download/${sourceId}/${slug}.svg`,
-      "https://www.svgrepo.com"
-    ).toString();
+    const downloadUrl = svgrepoAssetUrl(sourceId, slug);
 
     const res = await params.requestContext.get(downloadUrl);
     if (!res.ok()) continue;
@@ -504,11 +553,6 @@ async function scrapeFromHrefCandidates(params: {
     );
     if (!dimensions) continue;
 
-    const license = detail.licenseName ?? "See source";
-    const isPublicDomain =
-      /\bpd\b/i.test(license) ||
-      (detail.licenseUrl ? /#pd\b/i.test(detail.licenseUrl) : false);
-
     artworks.push({
       id: `svgrepo:${sourceId}`,
       source: "svgrepo",
@@ -516,8 +560,8 @@ async function scrapeFromHrefCandidates(params: {
       title: title || `Svgrepo ${sourceId}`,
       description: detail.description,
       artist: detail.authorName,
-      isPublicDomain,
-      license,
+      isPublicDomain: licenseInfo.isPublicDomain,
+      license: licenseInfo.license,
       licenseUrl: detail.licenseUrl,
       collection:
         detail.collectionName && detail.collectionUrl
@@ -552,7 +596,7 @@ async function fetchSvgrepoApiDetail(params: {
   requestContext: import("playwright").APIRequestContext;
   id: string;
   slug: string;
-}) {
+}): Promise<SvgrepoIconDetail | null> {
   const url = `https://api.svgrepo.com/svg/${encodeURIComponent(
     params.id
   )}/${encodeURIComponent(params.slug)}`;
@@ -584,7 +628,7 @@ async function fetchSvgrepoApiDetail(params: {
         )}`
       : undefined;
 
-    const tags =
+    const tags: string[] =
       typeof icon.tags === "string"
         ? unique(
             icon.tags
@@ -631,12 +675,13 @@ async function fetchSvgrepoApiDetail(params: {
 async function fetchSvgrepoApiDetailApiOnly(params: {
   id: string;
   slug: string;
-}) {
+}): Promise<SvgrepoIconDetail | null> {
   const url = `https://api.svgrepo.com/svg/${encodeURIComponent(
     params.id
   )}/${encodeURIComponent(params.slug)}`;
   try {
     const res = await fetch(url, {
+      signal: AbortSignal.timeout(30_000),
       headers: {
         Referer: "https://www.svgrepo.com/",
         Accept: "application/json",
@@ -656,7 +701,7 @@ async function fetchSvgrepoApiDetailApiOnly(params: {
         )}`
       : undefined;
 
-    const tags =
+    const tags: string[] =
       typeof icon.tags === "string"
         ? unique(
             icon.tags
@@ -706,6 +751,62 @@ function titleFromSlug(slug: string) {
     .filter(Boolean)
     .map((w) => w.slice(0, 1).toUpperCase() + w.slice(1))
     .join(" ");
+}
+
+function classifyUsableSvgrepoLicense(detail: SvgrepoIconDetail) {
+  const licenseName = detail.licenseName?.trim();
+  const licenseUrl = detail.licenseUrl?.trim();
+  if (!isUsableSvgrepoLicense(licenseName, licenseUrl)) return null;
+
+  return {
+    license: licenseName ?? "Public Domain",
+    isPublicDomain: true,
+  };
+}
+
+export function isUsableSvgrepoLicense(
+  licenseName?: string,
+  licenseUrl?: string
+) {
+  const licenseText = `${licenseName ?? ""} ${licenseUrl ?? ""}`.toLowerCase();
+
+  return (
+    /\bpd\b/.test(licenseText) ||
+    /\bcc0\b/.test(licenseText) ||
+    licenseText.includes("public-domain") ||
+    licenseText.includes("public domain") ||
+    licenseText.includes("creativecommons.org/publicdomain/zero")
+  );
+}
+
+function svgrepoAssetUrl(sourceId: string, slug: string) {
+  return `https://cdn.svgrepo.com/show/${encodeURIComponent(
+    sourceId
+  )}/${encodeURIComponent(slug)}.svg`;
+}
+
+async function mapLimit<T, R>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T) => Promise<R>
+) {
+  const results: R[] = [];
+  let nextIndex = 0;
+
+  async function runWorker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex++;
+      results[index] = await worker(items[index]);
+    }
+  }
+
+  const workers = Array.from(
+    { length: Math.min(concurrency, items.length) },
+    runWorker
+  );
+  await Promise.all(workers);
+  return results;
 }
 
 async function collectSvgHrefsFromListingPage(
@@ -814,6 +915,7 @@ async function collectSvgHrefsFromCollectionApiApiOnly(params: {
     url.searchParams.set("start", String(start));
 
     const res = await fetch(url.toString(), {
+      signal: AbortSignal.timeout(30_000),
       headers: {
         Referer: "https://www.svgrepo.com/",
         Accept: "application/json",
@@ -880,9 +982,10 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
     if (!detail) continue;
 
     const title = detail.title;
-    const downloadUrl = `https://www.svgrepo.com/download/${encodeURIComponent(
-      sourceId
-    )}/${encodeURIComponent(slug)}.svg`;
+    const licenseInfo = classifyUsableSvgrepoLicense(detail);
+    if (!licenseInfo) continue;
+
+    const downloadUrl = svgrepoAssetUrl(sourceId, slug);
 
     await ensureDir(outDir);
     try {
@@ -903,11 +1006,6 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
     );
     if (!dimensions) continue;
 
-    const license = detail.licenseName ?? "See source";
-    const isPublicDomain =
-      /\bpd\b/i.test(license) ||
-      (detail.licenseUrl ? /#pd\b/i.test(detail.licenseUrl) : false);
-
     artworks.push({
       id: `svgrepo:${sourceId}`,
       source: "svgrepo",
@@ -915,8 +1013,8 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
       title: title || `Svgrepo ${sourceId}`,
       description: detail.description,
       artist: detail.authorName,
-      isPublicDomain,
-      license,
+      isPublicDomain: licenseInfo.isPublicDomain,
+      license: licenseInfo.license,
       licenseUrl: detail.licenseUrl,
       collection:
         detail.collectionName && detail.collectionUrl
@@ -945,6 +1043,108 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
   }
 
   return artworks;
+}
+
+async function svgrepoCollectionHasUsableLicense(params: {
+  hrefs: string[];
+  imagesRoot: string;
+}) {
+  for (const href of params.hrefs) {
+    const match = href.match(/^\/svg\/(\d+)\/([^/?#]+)$/);
+    if (!match) continue;
+
+    const sourceId = match[1];
+    const slug = match[2];
+    const originalPath = path.join(
+      params.imagesRoot,
+      "svgrepo",
+      sourceId,
+      "original.svg"
+    );
+    if (await fileExists(originalPath)) continue;
+
+    const detail = await fetchSvgrepoApiDetailApiOnly({ id: sourceId, slug });
+    return detail ? classifyUsableSvgrepoLicense(detail) !== null : false;
+  }
+
+  return false;
+}
+
+async function scrapeApiOnlyCandidate(params: {
+  href: string;
+  imagesRoot: string;
+  query: string;
+  downloadedAt: string;
+}): Promise<Artwork | null> {
+  const match = params.href.match(/^\/svg\/(\d+)\/([^/?#]+)$/);
+  if (!match) return null;
+
+  const sourceId = match[1];
+  const slug = match[2];
+  const sourceUrl = `https://www.svgrepo.com${params.href}`;
+
+  const outDir = path.join(params.imagesRoot, "svgrepo", sourceId);
+  const originalPath = path.join(outDir, "original.svg");
+  if (await fileExists(originalPath)) return null;
+
+  const detail = await fetchSvgrepoApiDetailApiOnly({ id: sourceId, slug });
+  if (!detail) return null;
+
+  const licenseInfo = classifyUsableSvgrepoLicense(detail);
+  if (!licenseInfo) return null;
+
+  const title = detail.title;
+  const downloadUrl = svgrepoAssetUrl(sourceId, slug);
+
+  await ensureDir(outDir);
+  try {
+    await downloadToFile(downloadUrl, originalPath, {
+      Referer: "https://www.svgrepo.com/",
+      Accept: "image/svg+xml,*/*",
+    });
+  } catch (err) {
+    if (err instanceof HttpError && (err.status === 429 || err.status === 403)) {
+      throw new SvgrepoDownloadBlockedError({ status: err.status, url: err.url });
+    }
+    return null;
+  }
+
+  const originalPublic = toPublicPath(params.imagesRoot, originalPath);
+  const dimensions = await getImageDimensions(originalPath).catch(
+    () => undefined
+  );
+  if (!dimensions) return null;
+
+  return {
+    id: `svgrepo:${sourceId}`,
+    source: "svgrepo",
+    sourceId,
+    title: title || `Svgrepo ${sourceId}`,
+    description: detail.description,
+    artist: detail.authorName,
+    isPublicDomain: licenseInfo.isPublicDomain,
+    license: licenseInfo.license,
+    licenseUrl: detail.licenseUrl,
+    collection:
+      detail.collectionName && detail.collectionUrl
+        ? { name: detail.collectionName, url: detail.collectionUrl }
+        : undefined,
+    author:
+      detail.authorName && detail.authorUrl
+        ? { name: detail.authorName, url: detail.authorUrl }
+        : undefined,
+    tags: detail.tags.length > 0 ? detail.tags : undefined,
+    sourceUrl,
+    image: {
+      originalUrl: downloadUrl,
+      ...dimensions,
+      localOriginalPath: originalPublic,
+    },
+    search: {
+      query: params.query,
+      downloadedAt: params.downloadedAt,
+    },
+  };
 }
 
 function collectionTermFromUrl(url: string) {

@@ -21,6 +21,7 @@ export async function downloadToFile(
 ) {
   const res = await fetch(url, {
     redirect: "follow",
+    signal: AbortSignal.timeout(30_000),
     headers: {
       "User-Agent": "paperlesspaper-art/0.1 (+local)",
       ...extraHeaders,

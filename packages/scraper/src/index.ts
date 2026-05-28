@@ -15,6 +15,7 @@ import {
   scrapeSvgrepoCollectionTerm,
   scrapeSvgrepoCollectionTermApiOnly,
   SvgrepoDownloadBlockedError,
+  isUsableSvgrepoLicense,
 } from "./sources/svgrepo.js";
 
 const program = new Command();
@@ -174,6 +175,22 @@ program
           if (page.slugs.length === 0) break;
 
           for (const slug of page.slugs) {
+            const collection = page.collections.find((item) => item.slug === slug);
+            if (
+              collection &&
+              !isUsableSvgrepoLicense(
+                collection.license,
+                collection.licenseLink
+              )
+            ) {
+              collectionsProcessed++;
+              processedSlugs.add(slug);
+              console.log(
+                `svgrepo: collection ${slug}: skipped license ${collection.license || "unknown"}`
+              );
+              continue;
+            }
+
             const artworks = await scrapeSvgrepoCollectionTermApiOnly({
               term: slug,
               limit: perCollectionLimit,
@@ -231,6 +248,20 @@ program
 
             for (const slug of page.slugs) {
               if (processedSlugs.has(slug)) continue;
+              const collection = page.collections.find((item) => item.slug === slug);
+              if (
+                collection &&
+                !isUsableSvgrepoLicense(
+                  collection.license,
+                  collection.licenseLink
+                )
+              ) {
+                processedSlugs.add(slug);
+                console.log(
+                  `svgrepo: collection ${slug}: skipped license ${collection.license || "unknown"}`
+                );
+                continue;
+              }
 
               const artworks = await scrapeSvgrepoCollectionTerm({
                 term: slug,
