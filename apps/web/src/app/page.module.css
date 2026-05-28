@@ -100,8 +100,10 @@
   z-index: 2;
   margin-top: 32px;
   display: flex;
+  width: 100%;
   min-height: 40px;
   align-items: center;
+  flex-wrap: wrap;
   gap: 16px;
   border-bottom: 1px solid var(--button-secondary-border);
   background: rgb(255 255 255 / 94%);
@@ -113,8 +115,8 @@
 .filterPanel {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(220px, 2fr) repeat(3, minmax(140px, 1fr)) auto;
-  gap: 8px;
+  grid-template-columns: minmax(280px, 2fr) repeat(4, minmax(118px, 1fr)) auto;
+  gap: 10px;
   margin-top: 16px;
   align-items: end;
 }
@@ -133,7 +135,7 @@
 .filterField select {
   width: 100%;
   min-width: 0;
-  height: 36px;
+  height: 40px;
   border: 1px solid var(--button-secondary-border);
   border-radius: 6px;
   background: var(--foreground);
@@ -143,23 +145,53 @@
 }
 
 .searchField input {
-  padding: 0 10px;
+  padding: 0 40px 0 12px;
 }
 
 .filterField select {
   padding: 0 8px;
 }
 
+.searchInputWrap {
+  position: relative;
+  display: block;
+}
+
+.clearSearchButton {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  width: 28px;
+  height: 28px;
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  transform: translateY(-50%);
+}
+
 .searchField input:focus,
 .filterField select:focus,
-.resetFiltersButton:focus-visible {
+.resetFiltersButton:focus-visible,
+.clearSearchButton:focus-visible,
+.filterChip:focus-visible,
+.pagination button:focus-visible,
+.apiRequestRow button:focus-visible,
+.previewButton:focus-visible,
+.titleButton:focus-visible,
+.inlineHighlightToggle:has(input:focus-visible),
+.previewCloseButton:focus-visible,
+.previewNavButton:focus-visible,
+.previewActions a:focus-visible {
   border-color: #0a84ff;
   outline: 2px solid rgb(10 132 255 / 20%);
   outline-offset: 1px;
 }
 
 .resetFiltersButton {
-  height: 36px;
+  height: 40px;
   border: 1px solid var(--button-secondary-border);
   border-radius: 6px;
   background: var(--foreground);
@@ -176,18 +208,128 @@
   opacity: 0.45;
 }
 
+.activeFilters {
+  display: flex;
+  width: 100%;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.filterChip {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.filterChip span {
+  color: var(--text-secondary);
+}
+
+.apiPanel,
+.previewApiPanel {
+  display: grid;
+  width: 100%;
+  gap: 8px;
+  margin-top: 14px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  background: #f7f7f7;
+  padding: 12px;
+}
+
+.apiPanelHeader {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.apiPanel h2,
+.previewApiPanel h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.apiPanelHeader span {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.apiRequestRow {
+  display: grid;
+  grid-template-columns: 68px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.apiRequestRow span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.apiRequestRow code {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+  line-height: 28px;
+  padding: 0 8px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.apiRequestRow button,
+.pagination button {
+  height: 32px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.apiRequestRow button:hover,
+.pagination button:hover:not(:disabled),
+.filterChip:hover,
+.resetFiltersButton:hover:not(:disabled),
+.clearSearchButton:hover {
+  border-color: #0a84ff;
+}
+
 .grid {
   margin-top: 12px;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(10, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 10px;
   padding: 0;
   list-style: none;
 }
 
 .card {
   position: relative;
+  min-width: 0;
   border: 1px solid var(--button-secondary-border);
   border-radius: 8px;
   overflow: hidden;
@@ -322,8 +464,28 @@
   object-fit: contain;
 }
 
+.previewButton {
+  display: block;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: zoom-in;
+  padding: 0;
+}
+
+.missingThumb {
+  display: grid;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  place-items: center;
+  background: #f2f2f2;
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
 .meta {
-  padding: 6px 6px 8px;
+  min-width: 0;
+  padding: 8px 8px 10px;
 }
 
 .titleRow {
@@ -331,13 +493,40 @@
   align-items: baseline;
   justify-content: space-between;
   gap: 12px;
+  min-width: 0;
 }
 
 .title {
   color: var(--text-primary);
 }
 
+.titleButton {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  line-height: 18px;
+  padding: 0;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.titleButton:hover {
+  color: #0a84ff;
+}
+
 .badge {
+  display: inline-flex;
+  flex: 0 0 auto;
+  min-height: 24px;
+  align-items: center;
   font-size: 12px;
   color: var(--text-secondary);
   border: 1px solid var(--button-secondary-border);
@@ -347,15 +536,49 @@
 
 .subtitle {
   margin-top: 6px;
+  overflow: hidden;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 18px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.curationControls {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.curationControlsCompact {
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.inlineHighlightToggle {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.inlineHighlightToggle input {
+  width: 14px;
+  height: 14px;
+  accent-color: #f2b705;
 }
 
 .ratingGroup {
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 4px;
-  margin-top: 10px;
 }
 
 .ratingButton {
@@ -422,6 +645,32 @@
   font-weight: 500;
 }
 
+.links a:hover,
+.links a:focus-visible {
+  color: #0a84ff;
+}
+
+.pagination {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 16px;
+}
+
+.pagination button:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.paginationButtonActive {
+  border-color: #111 !important;
+  background: #111 !important;
+  color: #fff !important;
+}
+
 .showMoreButton {
   align-self: center;
   height: 38px;
@@ -441,6 +690,219 @@
   border-color: #0a84ff;
   outline: 2px solid rgb(10 132 255 / 20%);
   outline-offset: 1px;
+}
+
+.previewOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+  height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+  background: #111;
+  color: #fff;
+}
+
+.previewMedia {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  place-items: center;
+  padding: 24px;
+}
+
+.previewImage,
+.previewImageContain {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100dvh - 48px);
+  display: block;
+  object-fit: contain;
+}
+
+.previewImage {
+  object-fit: contain;
+}
+
+.previewImageContain {
+  background-color: var(--checker-grey);
+  background-image: linear-gradient(
+      45deg,
+      var(--checker-white) 25%,
+      transparent 25%,
+      transparent 75%,
+      var(--checker-white) 75%,
+      var(--checker-white)
+    ),
+    linear-gradient(
+      45deg,
+      var(--checker-white) 25%,
+      transparent 25%,
+      transparent 75%,
+      var(--checker-white) 75%,
+      var(--checker-white)
+    );
+  background-position: 0 0, 14px 14px;
+  background-size: 28px 28px;
+}
+
+.previewMissingImage {
+  display: grid;
+  width: min(520px, 80%);
+  aspect-ratio: 1 / 1;
+  place-items: center;
+  border: 1px solid rgb(255 255 255 / 18%);
+  color: rgb(255 255 255 / 72%);
+}
+
+.previewCloseButton,
+.previewNavButton {
+  position: absolute;
+  z-index: 1;
+  border: 1px solid rgb(255 255 255 / 22%);
+  border-radius: 6px;
+  background: rgb(0 0 0 / 58%);
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+}
+
+.previewCloseButton {
+  top: 16px;
+  right: 16px;
+  width: 38px;
+  height: 38px;
+  font-size: 18px;
+}
+
+.previewNavButton {
+  top: 50%;
+  height: 38px;
+  padding: 0 12px;
+  transform: translateY(-50%);
+}
+
+.previewNavPrevious {
+  left: 16px;
+}
+
+.previewNavNext {
+  right: 16px;
+}
+
+.previewNavButton:disabled {
+  cursor: default;
+  opacity: 0.25;
+}
+
+.previewDetails {
+  min-width: 0;
+  max-height: 100dvh;
+  overflow: auto;
+  border-left: 1px solid rgb(255 255 255 / 14%);
+  background: var(--foreground);
+  color: var(--text-primary);
+  padding: 22px;
+}
+
+.previewHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.previewDetails h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 24px;
+  line-height: 30px;
+  overflow-wrap: anywhere;
+}
+
+.previewCredit {
+  margin: 8px 0 0;
+  color: var(--text-secondary);
+  font-size: 15px;
+  line-height: 22px;
+}
+
+.previewActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.previewActions a {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 12px;
+}
+
+.previewActions a:hover {
+  border-color: #0a84ff;
+  color: #0a84ff;
+}
+
+.previewDescription {
+  margin-top: 18px;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 22px;
+}
+
+.detailList {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 8px 12px;
+  margin-top: 18px;
+}
+
+.detailList dt {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.detailList dd {
+  min-width: 0;
+  color: var(--text-primary);
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.tagList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 18px;
+}
+
+.tagList span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  padding: 0 8px;
+}
+
+.previewApiPanel {
+  margin-top: 18px;
 }
 
 @media (max-width: 600px) {
@@ -466,17 +928,67 @@
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .curationBar {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
   .filterPanel {
     grid-template-columns: 1fr 1fr;
   }
 
   .searchField {
     grid-column: 1 / -1;
+  }
+
+  .resetFiltersButton {
+    grid-column: 1 / -1;
+  }
+
+  .apiRequestRow {
+    grid-template-columns: 1fr auto;
+  }
+
+  .apiRequestRow span {
+    grid-column: 1 / -1;
+  }
+
+  .pagination {
+    overflow-x: auto;
+    justify-content: flex-start;
+    padding-bottom: 2px;
+  }
+
+  .previewOverlay {
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(280px, 46vh) minmax(0, 1fr);
+  }
+
+  .previewMedia {
+    padding: 12px;
+  }
+
+  .previewImage,
+  .previewImageContain {
+    max-height: calc(46dvh - 24px);
+  }
+
+  .previewDetails {
+    max-height: none;
+    border-left: 0;
+    border-top: 1px solid var(--button-secondary-border);
+    padding: 18px 16px 24px;
+  }
+
+  .previewDetails h2 {
+    font-size: 21px;
+    line-height: 27px;
+  }
+
+  .previewNavButton {
+    top: auto;
+    bottom: 14px;
+    transform: none;
+  }
+
+  .detailList {
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
 }
 
@@ -501,9 +1013,24 @@
     background: rgb(0 0 0 / 94%);
   }
 
+  .apiPanel,
+  .previewApiPanel {
+    background: #050505;
+  }
+
+  .missingThumb {
+    background: #111;
+  }
+
   .ratingButtonActive {
     border-color: #ededed;
     background: #ededed;
     color: #000;
+  }
+
+  .paginationButtonActive {
+    border-color: #ededed !important;
+    background: #ededed !important;
+    color: #000 !important;
   }
 }
