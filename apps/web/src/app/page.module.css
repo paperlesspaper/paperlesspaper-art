@@ -37,7 +37,7 @@
   flex-direction: column;
   align-items: flex-start;
   text-align: left;
-  gap: 24px;
+  gap: 18px;
 }
 
 .headerTitle {
@@ -52,11 +52,11 @@
 }
 
 .artLabel {
-  margin-top: -10px;
+  margin-top: -8px;
   font-size: 40px;
   font-weight: 600;
   line-height: 48px;
-  letter-spacing: -2.4px;
+  letter-spacing: 0;
   color: var(--text-primary);
 }
 
@@ -110,6 +110,10 @@
   color: var(--text-secondary);
   font-size: 14px;
   backdrop-filter: blur(8px);
+}
+
+.curationBar span {
+  white-space: nowrap;
 }
 
 .filterPanel {
@@ -272,6 +276,7 @@
   grid-template-columns: 68px minmax(0, 1fr) auto;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .apiRequestRow span {
@@ -798,6 +803,7 @@
 .previewNavButton:disabled {
   cursor: default;
   opacity: 0.25;
+  visibility: hidden;
 }
 
 .previewDetails {
@@ -907,25 +913,40 @@
 
 @media (max-width: 600px) {
   .main {
-    padding: 32px 16px;
+    padding: 28px 16px;
   }
 
   .header {
-    gap: 16px;
+    gap: 14px;
   }
 
   .logoLarge {
-    width: 260px;
+    width: min(260px, 100%);
   }
 
   .artLabel {
-    font-size: 32px;
-    line-height: 40px;
-    letter-spacing: -1.92px;
+    margin-top: -6px;
+    font-size: 30px;
+    line-height: 36px;
+    letter-spacing: 0;
   }
 
   .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .curationBar {
+    display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 12px;
+    margin-top: 24px;
+    padding-bottom: 10px;
+  }
+
+  .curationBar span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .filterPanel {
@@ -941,11 +962,26 @@
   }
 
   .apiRequestRow {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .apiRequestRow span {
-    grid-column: 1 / -1;
+    grid-column: auto;
+  }
+
+  .apiRequestRow code {
+    line-height: 18px;
+    padding-block: 6px;
+    white-space: normal;
+    word-break: break-all;
+  }
+
+  .apiRequestRow button {
+    width: fit-content;
+  }
+
+  .apiPanelHeader {
+    display: grid;
   }
 
   .pagination {
@@ -987,8 +1023,8 @@
   }
 
   .detailList {
-    grid-template-columns: 1fr;
-    gap: 4px;
+    grid-template-columns: 90px minmax(0, 1fr);
+    gap: 6px 10px;
   }
 }
 
