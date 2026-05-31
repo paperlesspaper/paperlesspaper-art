@@ -31,7 +31,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const artwork = findArtworkInCatalogById(decodeURIComponent(id));
+  const artwork = await findArtworkInCatalogById(decodeURIComponent(id));
 
   if (!artwork) {
     return NextResponse.json({ error: "Not found" }, { status: 404, headers });

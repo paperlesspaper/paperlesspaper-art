@@ -26,7 +26,9 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const result = searchArtworkCatalog(parseArtworkSearchParams(url.searchParams));
+  const result = await searchArtworkCatalog(
+    parseArtworkSearchParams(url.searchParams)
+  );
 
   return NextResponse.json(result, { headers });
 }

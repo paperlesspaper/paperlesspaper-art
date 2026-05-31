@@ -4,6 +4,7 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
+      DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
       ART_CATALOG_URL: ${ART_CATALOG_URL:-}
       ART_ASSET_BASE_URL: ${ART_ASSET_BASE_URL:-}
       ART_ALLOWED_ORIGINS: ${ART_ALLOWED_ORIGINS:-*}

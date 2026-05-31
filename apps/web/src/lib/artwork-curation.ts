@@ -1,6 +1,5 @@
-import fs from "node:fs";
-import fsPromises from "node:fs/promises";
 import path from "node:path";
+import { ensureArtworkDatabase, getArtworkPool } from "@/lib/artwork-database";
 
 export type ArtworkCurationItem = {
   highlighted?: boolean;
@@ -14,54 +13,63 @@ export function curationFilePath() {
 }
 
 export async function loadArtworkCuration(): Promise<ArtworkCuration> {
-  try {
-    const raw = await fsPromises.readFile(curationFilePath(), "utf8");
-    return parseArtworkCuration(JSON.parse(raw));
-  } catch {
-    return {};
-  }
-}
+  await ensureArtworkDatabase();
 
-export function loadArtworkCurationSync(): ArtworkCuration {
-  try {
-    const raw = fs.readFileSync(curationFilePath(), "utf8");
-    return parseArtworkCuration(JSON.parse(raw));
-  } catch {
-    return {};
-  }
+  const result = await getArtworkPool().query<{
+    id: string;
+    highlighted: boolean;
+    rating: number | null;
+  }>(
+    `SELECT id, highlighted, rating
+     FROM artwork_curation
+     WHERE highlighted = TRUE OR rating IS NOT NULL
+     ORDER BY id`
+  );
+
+  return Object.fromEntries(
+    result.rows.flatMap((row) => {
+      const item = normalizeCurationItem(row);
+      return item.highlighted || item.rating ? [[row.id, item] as const] : [];
+    })
+  );
 }
 
 export async function updateArtworkCurationItem(
   id: string,
   item: ArtworkCurationItem
 ) {
-  const curation = await loadArtworkCuration();
+  await ensureArtworkDatabase();
+
+  const current = await getArtworkPool().query<{
+    highlighted: boolean;
+    rating: number | null;
+  }>(
+    `SELECT highlighted, rating
+     FROM artwork_curation
+     WHERE id = $1
+     LIMIT 1`,
+    [id]
+  );
   const nextItem = normalizeCurationItem({
-    ...curation[id],
+    ...current.rows[0],
     ...item,
   });
 
   if (nextItem.highlighted || nextItem.rating) {
-    curation[id] = nextItem;
+    await getArtworkPool().query(
+      `INSERT INTO artwork_curation (id, highlighted, rating)
+       VALUES ($1, $2, $3)
+       ON CONFLICT (id)
+       DO UPDATE SET highlighted = EXCLUDED.highlighted, rating = EXCLUDED.rating`,
+      [id, nextItem.highlighted === true, nextItem.rating ?? null]
+    );
   } else {
-    delete curation[id];
+    await getArtworkPool().query("DELETE FROM artwork_curation WHERE id = $1", [
+      id,
+    ]);
   }
 
-  await writeArtworkCuration(curation);
-  return curation;
-}
-
-function parseArtworkCuration(value: unknown): ArtworkCuration {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-
-  const entries = Object.entries(value).flatMap(([id, item]) => {
-    const normalized = normalizeCurationItem(item);
-    return normalized.highlighted || normalized.rating
-      ? [[id, normalized] as const]
-      : [];
-  });
-
-  return Object.fromEntries(entries);
+  return loadArtworkCuration();
 }
 
 function normalizeCurationItem(value: unknown): ArtworkCurationItem {
@@ -78,14 +86,4 @@ function normalizeCurationItem(value: unknown): ArtworkCurationItem {
   }
 
   return item;
-}
-
-async function writeArtworkCuration(curation: ArtworkCuration) {
-  const filePath = curationFilePath();
-  const tmpPath = `${filePath}.tmp`;
-  const body = `${JSON.stringify(curation, null, 2)}\n`;
-
-  await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
-  await fsPromises.writeFile(tmpPath, body, "utf8");
-  await fsPromises.rename(tmpPath, filePath);
 }
