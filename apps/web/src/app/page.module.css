@@ -46,9 +46,12 @@
 }
 
 .logoLarge {
-  width: 320px;
-  height: auto;
   display: block;
+  color: var(--text-primary);
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
 }
 
 .artLabel {
@@ -775,14 +778,44 @@
   color: #fff;
   cursor: pointer;
   font: inherit;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease,
+    transform 160ms ease;
 }
 
 .previewCloseButton {
-  top: 16px;
-  right: 16px;
-  width: 38px;
-  height: 38px;
-  font-size: 18px;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  background: rgb(0 0 0 / 72%);
+}
+
+.previewCloseButton span,
+.previewCloseButton span::after {
+  display: block;
+  width: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.previewCloseButton span {
+  transform: rotate(45deg);
+}
+
+.previewCloseButton span::after {
+  content: "";
+  transform: rotate(90deg);
+}
+
+.previewCloseButton:hover {
+  border-color: rgb(255 255 255 / 44%);
+  background: rgb(0 0 0 / 86%);
+  transform: translateY(-1px);
 }
 
 .previewNavButton {
@@ -813,7 +846,7 @@
   border-left: 1px solid rgb(255 255 255 / 14%);
   background: var(--foreground);
   color: var(--text-primary);
-  padding: 22px;
+  padding: 74px 22px 22px;
 }
 
 .previewHeader {
@@ -921,7 +954,8 @@
   }
 
   .logoLarge {
-    width: min(260px, 100%);
+    font-size: 38px;
+    overflow-wrap: anywhere;
   }
 
   .artLabel {
@@ -997,6 +1031,11 @@
 
   .previewMedia {
     padding: 12px;
+  }
+
+  .previewCloseButton {
+    top: 12px;
+    right: 12px;
   }
 
   .previewImage,

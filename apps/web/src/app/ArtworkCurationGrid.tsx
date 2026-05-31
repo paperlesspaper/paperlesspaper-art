@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import type { Artwork } from "@/lib/artworks";
+import type { Artwork, ArtworkApiItem, ArtworkCatalogMeta } from "@/lib/artworks";
 import type {
   ArtworkCuration,
   ArtworkCurationItem,
@@ -10,8 +10,6 @@ import type {
 import styles from "./page.module.css";
 
 type Props = {
-  artworks: Artwork[];
-  initialCuration: ArtworkCuration;
   readOnlyCuration: boolean;
 };
 
@@ -31,13 +29,30 @@ type UrlFilters = {
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 60;
 const PAGE_SIZE_OPTIONS = [40, 60, 100, 160];
+const ARTWORK_SOURCES: Array<Artwork["source"]> = [
+  "artic",
+  "met",
+  "svgrepo",
+  "wikimedia",
+];
+const EMPTY_META: ArtworkCatalogMeta = {
+  totalCatalogItems: 0,
+  sourceCounts: {},
+  sources: [],
+  curation: {
+    highlighted: 0,
+    rated: 0,
+  },
+};
 
-export function ArtworkCurationGrid({
-  artworks,
-  initialCuration,
-  readOnlyCuration,
-}: Props) {
-  const [curation, setCuration] = useState<ArtworkCuration>(initialCuration);
+export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
+  const [artworks, setArtworks] = useState<ArtworkApiItem[]>([]);
+  const [curation, setCuration] = useState<ArtworkCuration>({});
+  const [catalogMeta, setCatalogMeta] =
+    useState<ArtworkCatalogMeta>(EMPTY_META);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string>();
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
@@ -49,90 +64,28 @@ export function ArtworkCurationGrid({
   const [selectedArtworkId, setSelectedArtworkId] = useState<string>();
   const [copiedRequest, setCopiedRequest] = useState<string>();
   const [hasLoadedUrlFilters, setHasLoadedUrlFilters] = useState(false);
+  const [refreshToken, setRefreshToken] = useState(0);
 
-  const stats = useMemo(() => {
-    return Object.values(curation).reduce(
-      (counts, item) => {
-        if (item.highlighted) counts.highlighted += 1;
-        if (item.rating) counts.rated += 1;
-        return counts;
-      },
-      { highlighted: 0, rated: 0 }
-    );
-  }, [curation]);
+  const stats = catalogMeta.curation;
 
   const sourceOptions = useMemo(() => {
-    return Array.from(new Set(artworks.map((artwork) => artwork.source))).sort();
-  }, [artworks]);
+    const fromMeta =
+      catalogMeta.sources.length > 0
+        ? catalogMeta.sources
+        : ARTWORK_SOURCES;
+    return Array.from(new Set(fromMeta)).sort();
+  }, [catalogMeta]);
 
-  const filteredArtworks = useMemo(() => {
-    const terms = normalizeSearch(query).split(" ").filter(Boolean);
-
-    return artworks.filter((artwork) => {
-      const item = curation[artwork.id] ?? {};
-
-      if (sourceFilter !== "all" && artwork.source !== sourceFilter) {
-        return false;
-      }
-
-      if (highlightFilter === "highlighted" && !item.highlighted) {
-        return false;
-      }
-
-      if (highlightFilter === "not-highlighted" && item.highlighted) {
-        return false;
-      }
-
-      if (ratingFilter === "rated" && !item.rating) {
-        return false;
-      }
-
-      if (ratingFilter === "unrated" && item.rating) {
-        return false;
-      }
-
-      if (
-        ratingFilter !== "all" &&
-        ratingFilter !== "rated" &&
-        ratingFilter !== "unrated" &&
-        item.rating !== Number(ratingFilter)
-      ) {
-        return false;
-      }
-
-      if (terms.length === 0) return true;
-
-      const searchable = normalizeSearch(
-        [
-          artwork.title,
-          artwork.description,
-          artwork.artist,
-          artwork.date,
-          artwork.source,
-          artwork.sourceId,
-          artwork.license,
-          artwork.rights,
-          artwork.collection?.name,
-          artwork.author?.name,
-          artwork.search?.query,
-          ...(artwork.tags ?? []),
-        ].join(" ")
-      );
-
-      return terms.every((term) => searchable.includes(term));
-    });
-  }, [artworks, curation, highlightFilter, query, ratingFilter, sourceFilter]);
-
-  const pageCount = Math.max(1, Math.ceil(filteredArtworks.length / pageSize));
+  const pageCount = Math.max(1, Math.ceil(total / pageSize));
   const currentPage = Math.min(page, pageCount);
   const pageStart = (currentPage - 1) * pageSize;
-  const pageEnd = Math.min(pageStart + pageSize, filteredArtworks.length);
-  const pageArtworks = filteredArtworks.slice(pageStart, pageEnd);
+  const pageEnd = Math.min(pageStart + artworks.length, total);
+  const pageArtworks = artworks;
   const selectedArtwork = selectedArtworkId
-    ? filteredArtworks.find((artwork) => artwork.id === selectedArtworkId)
+    ? pageArtworks.find((artwork) => artwork.id === selectedArtworkId)
     : undefined;
   const selectedIndex = selectedArtwork
-    ? filteredArtworks.findIndex((artwork) => artwork.id === selectedArtwork.id)
+    ? pageArtworks.findIndex((artwork) => artwork.id === selectedArtwork.id)
     : -1;
   const listApiPath = useMemo(
     () =>
@@ -157,7 +110,7 @@ export function ArtworkCurationGrid({
     pageSize !== DEFAULT_PAGE_SIZE;
 
   useEffect(() => {
-    const filters = readUrlFilters(artworks);
+    const filters = readUrlFilters();
     setQuery(filters.query);
     setSourceFilter(filters.sourceFilter);
     setHighlightFilter(filters.highlightFilter);
@@ -165,7 +118,54 @@ export function ArtworkCurationGrid({
     setPage(filters.page);
     setPageSize(filters.pageSize);
     setHasLoadedUrlFilters(true);
-  }, [artworks]);
+  }, []);
+
+  useEffect(() => {
+    if (!hasLoadedUrlFilters) return;
+
+    const abortController = new AbortController();
+
+    async function loadPage() {
+      setIsLoading(true);
+      setLoadError(undefined);
+
+      try {
+        const response = await fetch(listApiPath, {
+          headers: { Accept: "application/json" },
+          signal: abortController.signal,
+        });
+
+        if (!response.ok) {
+          throw new Error(`Artwork request failed: ${response.status}`);
+        }
+
+        const result = (await response.json()) as {
+          items?: ArtworkApiItem[];
+          total?: number;
+          meta?: ArtworkCatalogMeta;
+        };
+        const nextItems = Array.isArray(result.items) ? result.items : [];
+
+        setArtworks(nextItems);
+        setTotal(typeof result.total === "number" ? result.total : 0);
+        setCatalogMeta(result.meta ?? EMPTY_META);
+        setCuration(pageCurationFromItems(nextItems));
+      } catch (error) {
+        if (abortController.signal.aborted) return;
+        setArtworks([]);
+        setTotal(0);
+        setLoadError(
+          error instanceof Error ? error.message : "Failed to load artworks"
+        );
+      } finally {
+        if (!abortController.signal.aborted) setIsLoading(false);
+      }
+    }
+
+    loadPage();
+
+    return () => abortController.abort();
+  }, [hasLoadedUrlFilters, listApiPath, refreshToken]);
 
   useEffect(() => {
     if (!hasLoadedUrlFilters) return;
@@ -194,10 +194,10 @@ export function ArtworkCurationGrid({
 
   useEffect(() => {
     if (!selectedArtworkId) return;
-    if (!filteredArtworks.some((artwork) => artwork.id === selectedArtworkId)) {
+    if (!pageArtworks.some((artwork) => artwork.id === selectedArtworkId)) {
       setSelectedArtworkId(undefined);
     }
-  }, [filteredArtworks, selectedArtworkId]);
+  }, [pageArtworks, selectedArtworkId]);
 
   useEffect(() => {
     if (!selectedArtwork) return;
@@ -208,14 +208,14 @@ export function ArtworkCurationGrid({
       }
 
       if (event.key === "ArrowLeft" && selectedIndex > 0) {
-        setSelectedArtworkId(filteredArtworks[selectedIndex - 1].id);
+        setSelectedArtworkId(pageArtworks[selectedIndex - 1].id);
       }
 
       if (
         event.key === "ArrowRight" &&
-        selectedIndex < filteredArtworks.length - 1
+        selectedIndex < pageArtworks.length - 1
       ) {
-        setSelectedArtworkId(filteredArtworks[selectedIndex + 1].id);
+        setSelectedArtworkId(pageArtworks[selectedIndex + 1].id);
       }
     }
 
@@ -226,7 +226,7 @@ export function ArtworkCurationGrid({
       document.body.style.overflow = "";
       window.removeEventListener("keydown", handleKeyDown);
     };
-  }, [filteredArtworks, selectedArtwork, selectedIndex]);
+  }, [pageArtworks, selectedArtwork, selectedIndex]);
 
   async function saveItem(id: string, nextItem: ArtworkCurationItem) {
     if (readOnlyCuration) return;
@@ -247,6 +247,11 @@ export function ArtworkCurationGrid({
     }
 
     setCuration((current) => applyCurationItem(current, id, nextItem));
+    setArtworks((current) =>
+      current.map((artwork) =>
+        artwork.id === id ? applyArtworkCuration(artwork, nextItem) : artwork
+      )
+    );
     setSaveStatus("saving");
 
     try {
@@ -259,8 +264,16 @@ export function ArtworkCurationGrid({
       if (!response.ok) throw new Error("Failed to save curation");
 
       setSaveStatus("saved");
+      setRefreshToken((current) => current + 1);
     } catch {
       setCuration((current) => applyCurationItem(current, id, previousItem ?? {}));
+      setArtworks((current) =>
+        current.map((artwork) =>
+          artwork.id === id
+            ? applyArtworkCuration(artwork, previousItem ?? {})
+            : artwork
+        )
+      );
       setSaveStatus("error");
     }
   }
@@ -417,10 +430,11 @@ export function ArtworkCurationGrid({
   return (
     <>
       <div className={styles.curationBar}>
-        <span>{formatPageSummary(pageStart, pageEnd, filteredArtworks.length)}</span>
-        <span>{artworks.length} total</span>
+        <span>{formatPageSummary(pageStart, pageEnd, total)}</span>
+        <span>{catalogMeta.totalCatalogItems} total</span>
         <span>{stats.highlighted} highlighted</span>
         <span>{stats.rated} rated</span>
+        {isLoading ? <span>Loading</span> : null}
         {readOnlyCuration ? <span>Read only</span> : null}
         {!readOnlyCuration ? (
           <span aria-live="polite">
@@ -568,7 +582,9 @@ export function ArtworkCurationGrid({
         />
       </section>
 
-      {filteredArtworks.length === 0 ? (
+      {loadError ? (
+        <p className={styles.empty}>{loadError}</p>
+      ) : !isLoading && total === 0 ? (
         <p className={styles.empty}>No artworks match the current filters.</p>
       ) : (
         <>
@@ -684,7 +700,7 @@ export function ArtworkCurationGrid({
       {selectedArtwork ? (
         <ArtworkPreview
           artwork={selectedArtwork}
-          canGoNext={selectedIndex < filteredArtworks.length - 1}
+          canGoNext={selectedIndex < pageArtworks.length - 1}
           canGoPrevious={selectedIndex > 0}
           copiedRequest={copiedRequest}
           readOnlyCuration={readOnlyCuration}
@@ -692,13 +708,13 @@ export function ArtworkCurationGrid({
           onClose={() => setSelectedArtworkId(undefined)}
           onCopy={copyRequest}
           onNext={() => {
-            if (selectedIndex < filteredArtworks.length - 1) {
-              setSelectedArtworkId(filteredArtworks[selectedIndex + 1].id);
+            if (selectedIndex < pageArtworks.length - 1) {
+              setSelectedArtworkId(pageArtworks[selectedIndex + 1].id);
             }
           }}
           onPrevious={() => {
             if (selectedIndex > 0) {
-              setSelectedArtworkId(filteredArtworks[selectedIndex - 1].id);
+              setSelectedArtworkId(pageArtworks[selectedIndex - 1].id);
             }
           }}
         />
@@ -809,15 +825,16 @@ function ArtworkPreview({
       aria-modal="true"
       aria-labelledby="artwork-preview-title"
     >
+      <button
+        type="button"
+        className={styles.previewCloseButton}
+        onClick={onClose}
+        aria-label="Close preview"
+        title="Close preview"
+      >
+        <span aria-hidden="true" />
+      </button>
       <div className={styles.previewMedia}>
-        <button
-          type="button"
-          className={styles.previewCloseButton}
-          onClick={onClose}
-          aria-label="Close preview"
-        >
-          x
-        </button>
         <button
           type="button"
           className={`${styles.previewNavButton} ${styles.previewNavPrevious}`}
@@ -951,6 +968,35 @@ function applyCurationItem(
   return next;
 }
 
+function applyArtworkCuration(
+  artwork: ArtworkApiItem,
+  item: ArtworkCurationItem
+): ArtworkApiItem {
+  const nextItem = normalizeClientItem(item);
+
+  return {
+    ...artwork,
+    selected: nextItem.highlighted === true,
+    highlighted: nextItem.highlighted === true,
+    rating: nextItem.rating,
+  };
+}
+
+function pageCurationFromItems(items: ArtworkApiItem[]): ArtworkCuration {
+  return Object.fromEntries(
+    items.flatMap((item) => {
+      const curationItem = normalizeClientItem({
+        highlighted: item.highlighted,
+        rating: item.rating,
+      });
+
+      return curationItem.highlighted || curationItem.rating
+        ? [[item.id, curationItem] as const]
+        : [];
+    })
+  );
+}
+
 function normalizeClientItem(item: ArtworkCurationItem): ArtworkCurationItem {
   return {
     ...(item.highlighted ? { highlighted: true } : {}),
@@ -958,16 +1004,7 @@ function normalizeClientItem(item: ArtworkCurationItem): ArtworkCurationItem {
   };
 }
 
-function normalizeSearch(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, " ")
-    .trim();
-}
-
-function readUrlFilters(artworks: Artwork[]): UrlFilters {
+function readUrlFilters(): UrlFilters {
   if (typeof window === "undefined") {
     return defaultUrlFilters();
   }
@@ -977,12 +1014,11 @@ function readUrlFilters(artworks: Artwork[]): UrlFilters {
   const highlightedParam = params.get("highlighted");
   const highlightParam = params.get("highlight");
   const ratingParam = params.get("rating");
-  const knownSources = new Set(artworks.map((artwork) => artwork.source));
 
   return {
     query: params.get("q") ?? "",
     sourceFilter:
-      sourceParam && knownSources.has(sourceParam as Artwork["source"])
+      sourceParam && ARTWORK_SOURCES.includes(sourceParam as Artwork["source"])
         ? (sourceParam as SourceFilter)
         : "all",
     highlightFilter: parseHighlightFilter(highlightedParam, highlightParam),

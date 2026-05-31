@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
-import { loadArtworkCuration } from "@/lib/artwork-curation";
 import {
   corsHeaders,
   isAuthorized,
-  loadArtworks,
   parseArtworkSearchParams,
-  searchArtworks,
+  searchArtworkCatalog,
 } from "@/lib/artworks";
 
 export const dynamic = "force-dynamic";
@@ -28,15 +26,7 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url);
-  const [artworks, curation] = await Promise.all([
-    loadArtworks(),
-    loadArtworkCuration(),
-  ]);
-  const result = searchArtworks(
-    artworks,
-    parseArtworkSearchParams(url.searchParams),
-    curation
-  );
+  const result = searchArtworkCatalog(parseArtworkSearchParams(url.searchParams));
 
   return NextResponse.json(result, { headers });
 }

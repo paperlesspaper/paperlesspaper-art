@@ -1,4 +1,5 @@
-import fs from "node:fs/promises";
+import fs from "node:fs";
+import fsPromises from "node:fs/promises";
 import path from "node:path";
 
 export type ArtworkCurationItem = {
@@ -8,13 +9,22 @@ export type ArtworkCurationItem = {
 
 export type ArtworkCuration = Record<string, ArtworkCurationItem>;
 
-function curationFilePath() {
+export function curationFilePath() {
   return path.join(process.cwd(), "data", "artwork-curation.json");
 }
 
 export async function loadArtworkCuration(): Promise<ArtworkCuration> {
   try {
-    const raw = await fs.readFile(curationFilePath(), "utf8");
+    const raw = await fsPromises.readFile(curationFilePath(), "utf8");
+    return parseArtworkCuration(JSON.parse(raw));
+  } catch {
+    return {};
+  }
+}
+
+export function loadArtworkCurationSync(): ArtworkCuration {
+  try {
+    const raw = fs.readFileSync(curationFilePath(), "utf8");
     return parseArtworkCuration(JSON.parse(raw));
   } catch {
     return {};
@@ -75,7 +85,7 @@ async function writeArtworkCuration(curation: ArtworkCuration) {
   const tmpPath = `${filePath}.tmp`;
   const body = `${JSON.stringify(curation, null, 2)}\n`;
 
-  await fs.mkdir(path.dirname(filePath), { recursive: true });
-  await fs.writeFile(tmpPath, body, "utf8");
-  await fs.rename(tmpPath, filePath);
+  await fsPromises.mkdir(path.dirname(filePath), { recursive: true });
+  await fsPromises.writeFile(tmpPath, body, "utf8");
+  await fsPromises.rename(tmpPath, filePath);
 }

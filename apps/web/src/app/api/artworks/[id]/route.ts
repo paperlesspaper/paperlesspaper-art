@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { loadArtworkCuration } from "@/lib/artwork-curation";
 import {
   corsHeaders,
-  findArtworkById,
+  findArtworkInCatalogById,
   isAuthorized,
-  loadArtworks,
 } from "@/lib/artworks";
 
 export const dynamic = "force-dynamic";
@@ -33,11 +31,7 @@ export async function GET(request: Request, context: RouteContext) {
   }
 
   const { id } = await context.params;
-  const [artworks, curation] = await Promise.all([
-    loadArtworks(),
-    loadArtworkCuration(),
-  ]);
-  const artwork = findArtworkById(artworks, decodeURIComponent(id), curation);
+  const artwork = findArtworkInCatalogById(decodeURIComponent(id));
 
   if (!artwork) {
     return NextResponse.json({ error: "Not found" }, { status: 404, headers });
