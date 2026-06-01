@@ -146,13 +146,8 @@ catalog:
 - Toggle the checkbox on each card to mark an artwork as selected/highlighted.
 - Set a rating from `1` to `5`; click the active rating again to clear it.
 
-Curation is stored separately from the generated catalog in:
-
-```txt
-apps/web/data/artwork-curation.json
-```
-
-The file is keyed by artwork id:
+Curation is stored in the Postgres `artwork_curation` table, keyed by artwork
+id:
 
 ```json
 {
@@ -163,11 +158,13 @@ The file is keyed by artwork id:
 }
 ```
 
+Local JSON files are not used by the web runtime.
+
 The public artwork APIs hydrate this state onto each returned item as
 `selected`, `highlighted`, and `rating`. `selected` and `highlighted` currently
 represent the same checkbox state; `selected` is the consumer-facing field.
 
-The curation JSON can also be read or updated through:
+The curation map can also be read or updated through:
 
 ```txt
 GET /api/curation
@@ -186,6 +183,18 @@ Patch body:
 
 Use `"rating": null` to clear a rating, and `"highlighted": false` to clear the
 selected/highlighted state.
+
+Patch response:
+
+```json
+{
+  "id": "wikimedia:21856227",
+  "item": {
+    "highlighted": true,
+    "rating": 5
+  }
+}
+```
 
 ## Image URLs
 
@@ -297,23 +306,21 @@ Recommended UI behavior for paperlesspaper-web:
 - `GET /api/artworks` returns `200`.
 - `GET /api/artworks/:id` returns `200` or `404`.
 - `GET /api/curation` returns the raw curation map.
-- `PATCH /api/curation` updates one curation entry.
+- `PATCH /api/curation` updates one curation entry and is only available from a local development host.
 - If `ART_API_KEY` is configured, clients must pass either:
   - `Authorization: Bearer <key>`
   - `X-API-Key: <key>`
 - CORS is controlled by `ART_ALLOWED_ORIGINS`.
-- API responses use `Cache-Control: public, max-age=60, stale-while-revalidate=300`.
-- The in-memory catalog cache is controlled by `ART_CATALOG_CACHE_TTL_MS`.
+- Artwork and curation API responses use `Cache-Control: no-store, max-age=0`.
 
 ## Runtime Environment
 
 Dokploy/web runtime:
 
 ```env
-ART_CATALOG_URL=https://fsn1.your-objectstorage.com/paperlesspaper-art/artworks.json
+DATABASE_URL=postgres://...
 ART_ASSET_BASE_URL=https://fsn1.your-objectstorage.com/paperlesspaper-art
 ART_ALLOWED_ORIGINS=https://paperlesspaper.de,https://app.paperlesspaper.de
-ART_CATALOG_CACHE_TTL_MS=300000
 ART_API_KEY=
 ```
 
@@ -329,7 +336,8 @@ AWS_SECRET_ACCESS_KEY=...
 
 Do not put `AWS_ACCESS_KEY_ID` or `AWS_SECRET_ACCESS_KEY` into Dokploy unless the
 server is also responsible for uploading assets. In the normal setup, Dokploy
-only reads public catalog/assets.
+reads catalog and curation data from Postgres and public assets from object
+storage.
 
 ## Hosting With Dokploy
 
@@ -364,7 +372,7 @@ node dist/index.js wikimedia --query "paintings" --limit 100
 node dist/index.js svgrepo --query "cat" --limit 100
 ```
 
-Publish to object storage:
+Publish generated images to object storage:
 
 ```bash
 set -a
@@ -372,17 +380,16 @@ source .env
 set +a
 
 aws s3 sync apps/web/public/images s3://$S3_BUCKET/images --delete --only-show-errors --endpoint-url $S3_ENDPOINT
-aws s3 cp apps/web/data/artworks.json s3://$S3_BUCKET/artworks.json --only-show-errors --endpoint-url $S3_ENDPOINT
 ```
 
-The API picks up the new catalog after `ART_CATALOG_CACHE_TTL_MS`, or immediately
-after restarting the Dokploy app.
+The web API reads the catalog directly from the Postgres `artworks` and
+`artwork_tags` tables; static catalog JSON files are not part of the runtime or
+Docker image.
 
 ## Repository Layout
 
 - `apps/web`: Next.js web/API app
-- `apps/web/data/artworks.json`: generated catalog metadata
-- `apps/web/data/artwork-curation.json`: manual selected/rating state keyed by artwork id
+- Postgres `artworks`, `artwork_tags`, and `artwork_curation` tables: runtime catalog and curation data
 - `apps/web/public/images`: generated local images, ignored by git and Docker
 - `packages/scraper`: Node.js CLI for downloading and resizing assets
 

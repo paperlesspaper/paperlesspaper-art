@@ -20,7 +20,6 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 
 COPY --from=builder /app/apps/web/public ./public
-COPY --from=builder /app/apps/web/data ./data
 COPY --from=builder /app/apps/web/.next/standalone ./
 COPY --from=builder /app/apps/web/.next/static ./.next/static
 

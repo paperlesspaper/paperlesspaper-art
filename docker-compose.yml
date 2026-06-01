@@ -5,10 +5,8 @@ services:
       dockerfile: Dockerfile
     environment:
       DATABASE_URL: ${DATABASE_URL:?DATABASE_URL is required}
-      ART_CATALOG_URL: ${ART_CATALOG_URL:-}
       ART_ASSET_BASE_URL: ${ART_ASSET_BASE_URL:-}
       ART_ALLOWED_ORIGINS: ${ART_ALLOWED_ORIGINS:-*}
       ART_API_KEY: ${ART_API_KEY:-}
-      ART_CATALOG_CACHE_TTL_MS: ${ART_CATALOG_CACHE_TTL_MS:-300000}
     ports:
       - "3000:3000"

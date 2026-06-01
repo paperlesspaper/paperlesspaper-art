@@ -16,30 +16,27 @@ const perSourceCap = Number(process.env.PER_SOURCE_CAP ?? target);
 const categoryLimit = Number(process.env.CATEGORY_LIMIT ?? 50000);
 const searchLimit = Number(process.env.SEARCH_LIMIT ?? 500);
 const concurrency = Number(process.env.CONCURRENCY ?? 10);
-const saveEvery = Number(process.env.SAVE_EVERY ?? 100);
 const sourceDelay = Number(process.env.SOURCE_DELAY ?? 0);
 const thumbnailWidth = Number(process.env.THUMB_WIDTH ?? 3840);
 const scriptDir = path.dirname(fileURLToPath(import.meta.url));
 const scraperRoot = path.resolve(scriptDir, "..");
 const repoRoot = path.resolve(scraperRoot, "..", "..");
 const webRoot = path.join(repoRoot, "apps", "web");
-const dataPath = process.env.ARTWORK_JSON_PATH
-  ? path.resolve(process.env.ARTWORK_JSON_PATH)
-  : path.join(webRoot, "data", "artworks.json");
 const imagesRoot = process.env.ARTWORK_IMAGES_ROOT
   ? path.resolve(process.env.ARTWORK_IMAGES_ROOT)
   : path.join(webRoot, "public", "images");
-const widths = (process.env.WIDTHS ?? "")
+const widths = (process.env.WIDTHS ?? "512,1024")
   .split(",")
   .map((value) => Number(value.trim()))
   .filter((value) => Number.isFinite(value) && value > 0);
 const downloadedAt = new Date().toISOString();
 const prefix = process.env.SEARCH_PREFIX ?? "google-art-project-3840-v1:";
-const syncDatabase =
-  process.env.SYNC_DATABASE === "0" ? false : isArtworkDatabaseConfigured();
-const useDatabaseCatalog =
-  syncDatabase && process.env.CATALOG_SOURCE !== "json";
-const writeJsonCatalog = !useDatabaseCatalog;
+
+if (!isArtworkDatabaseConfigured()) {
+  throw new Error(
+    "DATABASE_URL or POSTGRES_URL is required; static catalog JSON output has been removed"
+  );
+}
 
 const categories = [
   "Google Art Project paintings",
@@ -80,19 +77,7 @@ console.log(
   `duplicate index: ${byId.size} ids, ${titleKeys.size} titles, ${sha1s.size} sha1s`
 );
 console.log(
-  syncDatabase
-    ? "database sync: enabled"
-    : "database sync: disabled; set DATABASE_URL to write new rows to Postgres"
-);
-console.log(
-  useDatabaseCatalog
-    ? "catalog source: database"
-    : `catalog source: json (${dataPath})`
-);
-console.log(
-  writeJsonCatalog
-    ? "json catalog writes: enabled"
-    : "json catalog writes: disabled"
+  "database sync: enabled; catalog source: database"
 );
 
 const stats = {
@@ -109,8 +94,6 @@ const stats = {
   skippedDownload: 0,
   skippedDatabase: 0,
 };
-let lastSavedAdded = 0;
-let saveQueue = Promise.resolve();
 let pendingAdds = 0;
 
 for (const category of categories) {
@@ -123,7 +106,6 @@ for (const category of categories) {
     console.warn(`category failed: ${category}: ${errorMessage(error)}`);
   }
 
-  await saveCatalog();
   console.log(
     `category done: ${category} -> +${added}, total ${stats.added}/${target}`
   );
@@ -145,12 +127,10 @@ for (const query of queries) {
     console.warn(`query failed: ${query}: ${errorMessage(error)}`);
   }
 
-  await saveCatalog();
   console.log(`query done: ${query} -> +${added}, total ${stats.added}/${target}`);
   if (sourceDelay > 0) await sleep(sourceDelay);
 }
 
-await saveCatalog();
 await closeArtworkDatabase();
 console.log(JSON.stringify(stats, null, 2));
 
@@ -217,8 +197,6 @@ async function processCategory(category) {
     if (pages.length === 0) break;
 
     added += await processPages({ pages, label, catalogQuery });
-    await saveCatalog();
-
     if (!nextContinuation) break;
     continuation = nextContinuation;
   }
@@ -378,23 +356,16 @@ async function processPage({
       },
     };
 
-    if (syncDatabase) {
-      try {
-        await upsertArtworkInDatabase(artwork);
-      } catch (error) {
-        stats.skippedDatabase++;
-        console.warn(`database sync failed: ${title}: ${errorMessage(error)}`);
-        return false;
-      }
-    }
-
-    if (writeJsonCatalog) {
-      artworks.unshift(artwork);
+    try {
+      await upsertArtworkInDatabase(artwork);
+    } catch (error) {
+      stats.skippedDatabase++;
+      console.warn(`database sync failed: ${title}: ${errorMessage(error)}`);
+      return false;
     }
 
     stats.added++;
     stats.total++;
-    await maybeSaveCatalog();
 
     console.log(
       `added ${stats.added}/${target}: ${title} (${metadata.width}x${metadata.height}) from ${label}`
@@ -407,41 +378,8 @@ async function processPage({
   }
 }
 
-async function saveCatalog() {
-  if (!writeJsonCatalog) return;
-
-  const tempPath = `${dataPath}.tmp-${process.pid}`;
-  await fs.writeFile(tempPath, `${JSON.stringify(artworks, null, 2)}\n`);
-  await fs.rename(tempPath, dataPath);
-}
-
-async function maybeSaveCatalog() {
-  if (!writeJsonCatalog) return;
-  if (stats.added - lastSavedAdded < saveEvery) return;
-  const addedAtSave = stats.added;
-  saveQueue = saveQueue.then(async () => {
-    await saveCatalog();
-    lastSavedAdded = Math.max(lastSavedAdded, addedAtSave);
-  });
-  await saveQueue;
-}
-
 async function loadExistingArtworks() {
-  if (useDatabaseCatalog) {
-    return loadArtworkDuplicateIndexFromDatabase();
-  }
-
-  try {
-    return JSON.parse(await fs.readFile(dataPath, "utf8"));
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      throw new Error(
-        `Artwork JSON does not exist: ${dataPath}. Set DATABASE_URL or unset CATALOG_SOURCE=json to use Postgres.`
-      );
-    }
-
-    throw error;
-  }
+  return loadArtworkDuplicateIndexFromDatabase();
 }
 
 function sleep(ms) {

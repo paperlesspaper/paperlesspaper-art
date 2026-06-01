@@ -286,7 +286,7 @@ export function corsHeaders(request: Request) {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "GET, OPTIONS",
     "Access-Control-Allow-Headers": "Authorization, Content-Type, X-API-Key",
-    "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+    "Cache-Control": "no-store, max-age=0",
     Vary: "Origin",
   };
 }

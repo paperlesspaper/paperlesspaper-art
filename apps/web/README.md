@@ -21,14 +21,8 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 The artwork catalog is served from Postgres. Curation state for highlights and
 ratings lives in the `artwork_curation` table, not in JSON at runtime.
 
-```bash
-npm run catalog:import
-```
-
-Set `ARTWORK_JSON_PATH` to the catalog JSON you want to import. The import
-command refreshes `artworks` and `artwork_tags` while preserving existing rows
-in `artwork_curation`, then prunes curation rows for artworks that are no longer
-in the catalog.
+Static catalog JSON import is no longer part of the web app. Populate or update
+the `artworks` and `artwork_tags` tables from the scraper pipeline.
 
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 

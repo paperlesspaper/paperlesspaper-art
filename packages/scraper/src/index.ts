@@ -3,7 +3,7 @@
 import path from "node:path";
 import { Command } from "commander";
 import { findWebRoot, parseWidths } from "./paths.js";
-import { defaultWebPaths, upsertArtworks } from "./store.js";
+import { closeArtworkStore, defaultWebPaths, upsertArtworks } from "./store.js";
 import { scrapeMet } from "./sources/met.js";
 import { scrapeArtic } from "./sources/artic.js";
 import { scrapeWikimedia } from "./sources/wikimedia.js";
@@ -22,7 +22,7 @@ const program = new Command();
 
 program
   .name("paperlesspaper-scrape")
-  .description("Download public-domain artworks + store local metadata")
+  .description("Download public-domain artworks + upsert catalog metadata")
   .version("0.1.0");
 
 function addCommonOptions(cmd: Command) {
@@ -37,7 +37,7 @@ addCommonOptions(
   program.command("met").description("Scrape The Met Collection API")
 ).action(async (opts) => {
   const webRoot = await resolveWebRoot(opts.webRoot);
-  const { dataFilePath, imagesRoot } = defaultWebPaths(webRoot);
+  const { imagesRoot } = defaultWebPaths(webRoot);
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
@@ -49,17 +49,15 @@ addCommonOptions(
     imagesRoot,
   });
 
-  const result = await upsertArtworks({ dataFilePath, artworks });
-  console.log(
-    `met: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
-  );
+  const result = await upsertArtworks({ artworks });
+  console.log(`met: upserted ${result.addedOrUpdated} items into Postgres`);
 });
 
 addCommonOptions(
   program.command("artic").description("Scrape Art Institute of Chicago API")
 ).action(async (opts) => {
   const webRoot = await resolveWebRoot(opts.webRoot);
-  const { dataFilePath, imagesRoot } = defaultWebPaths(webRoot);
+  const { imagesRoot } = defaultWebPaths(webRoot);
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
@@ -71,10 +69,8 @@ addCommonOptions(
     imagesRoot,
   });
 
-  const result = await upsertArtworks({ dataFilePath, artworks });
-  console.log(
-    `artic: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
-  );
+  const result = await upsertArtworks({ artworks });
+  console.log(`artic: upserted ${result.addedOrUpdated} items into Postgres`);
 });
 
 addCommonOptions(
@@ -83,7 +79,7 @@ addCommonOptions(
     .description("Scrape Wikimedia Commons (CC/PD-licensed raster images)")
 ).action(async (opts) => {
   const webRoot = await resolveWebRoot(opts.webRoot);
-  const { dataFilePath, imagesRoot } = defaultWebPaths(webRoot);
+  const { imagesRoot } = defaultWebPaths(webRoot);
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
@@ -95,9 +91,9 @@ addCommonOptions(
     imagesRoot,
   });
 
-  const result = await upsertArtworks({ dataFilePath, artworks });
+  const result = await upsertArtworks({ artworks });
   console.log(
-    `wikimedia: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
+    `wikimedia: upserted ${result.addedOrUpdated} items into Postgres`
   );
 });
 
@@ -139,7 +135,7 @@ program
   )
   .action(async (opts) => {
     const webRoot = await resolveWebRoot(opts.webRoot);
-    const { dataFilePath, imagesRoot } = defaultWebPaths(webRoot);
+    const { imagesRoot } = defaultWebPaths(webRoot);
 
     if (opts.allCollections) {
       const collectionsStart = Number(opts.collectionsStart);
@@ -198,11 +194,11 @@ program
               downloadedAt,
             });
 
-            const result = await upsertArtworks({ dataFilePath, artworks });
+            const result = await upsertArtworks({ artworks });
             collectionsProcessed++;
             processedSlugs.add(slug);
             console.log(
-              `svgrepo: collection ${slug}: saved ${artworks.length} items (json total ${result.total})`
+              `svgrepo: collection ${slug}: upserted ${result.addedOrUpdated} items into Postgres`
             );
           }
 
@@ -217,7 +213,7 @@ program
         }
 
         console.log(
-          `svgrepo: collections done (processed ${collectionsProcessed}) -> ${dataFilePath}`
+          `svgrepo: collections done (processed ${collectionsProcessed})`
         );
 
         return { processed: collectionsProcessed };
@@ -271,11 +267,11 @@ program
                 session,
               });
 
-              const result = await upsertArtworks({ dataFilePath, artworks });
+              const result = await upsertArtworks({ artworks });
               collectionsProcessed++;
               processedSlugs.add(slug);
               console.log(
-                `svgrepo: collection ${slug}: saved ${artworks.length} items (json total ${result.total})`
+                `svgrepo: collection ${slug}: upserted ${result.addedOrUpdated} items into Postgres`
               );
             }
 
@@ -290,7 +286,7 @@ program
           }
 
           console.log(
-            `svgrepo: collections done (processed ${processedSlugs.size}) -> ${dataFilePath}`
+            `svgrepo: collections done (processed ${processedSlugs.size})`
           );
         } finally {
           await session.close();
@@ -352,16 +348,21 @@ program
           : undefined,
     });
 
-    const result = await upsertArtworks({ dataFilePath, artworks });
+    const result = await upsertArtworks({ artworks });
     console.log(
-      `svgrepo: saved ${artworks.length} items (json total ${result.total}) -> ${dataFilePath}`
+      `svgrepo: upserted ${result.addedOrUpdated} items into Postgres`
     );
   });
 
-program.parseAsync(process.argv).catch((err) => {
-  console.error(err);
-  process.exitCode = 1;
-});
+program
+  .parseAsync(process.argv)
+  .catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await closeArtworkStore().catch(() => undefined);
+  });
 
 async function resolveWebRoot(flagValue?: string) {
   if (flagValue) return path.resolve(flagValue);

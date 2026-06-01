@@ -9,6 +9,7 @@
   "scripts": {
     "dev": "tsx src/index.ts",
     "build": "tsup src/index.ts --format esm --dts --clean",
+    "images:backfill": "node scripts/backfill-resized-images.mjs",
     "start": "node dist/index.js"
   },
   "dependencies": {

@@ -1,31 +1,42 @@
 import path from "node:path";
-import { readJsonFile, writeJsonAtomic } from "./fsutil.js";
 import type { Artwork } from "./artwork.js";
 
-export async function upsertArtworks(params: {
-  dataFilePath: string;
-  artworks: Artwork[];
-}) {
-  const existing = await readJsonFile<Artwork[]>(params.dataFilePath, []);
-  const byId = new Map(existing.map((a) => [a.id, a]));
+type ArtworkPostgresModule = {
+  closeArtworkDatabase: () => Promise<void>;
+  isArtworkDatabaseConfigured: () => boolean;
+  upsertArtworkInDatabase: (artwork: Artwork) => Promise<boolean>;
+};
+
+export async function upsertArtworks(params: { artworks: Artwork[] }) {
+  const database = await loadArtworkPostgres();
 
   for (const artwork of params.artworks) {
-    byId.set(artwork.id, artwork);
+    await database.upsertArtworkInDatabase(artwork);
   }
 
-  const merged = [...byId.values()].sort((a, b) => {
-    const at = a.search?.downloadedAt ?? "";
-    const bt = b.search?.downloadedAt ?? "";
-    return bt.localeCompare(at);
-  });
+  return { addedOrUpdated: params.artworks.length };
+}
 
-  await writeJsonAtomic(params.dataFilePath, merged);
-  return { total: merged.length, addedOrUpdated: params.artworks.length };
+export async function closeArtworkStore() {
+  const database = await loadArtworkPostgres();
+  await database.closeArtworkDatabase();
 }
 
 export function defaultWebPaths(webRoot: string) {
   return {
-    dataFilePath: path.join(webRoot, "data", "artworks.json"),
     imagesRoot: path.join(webRoot, "public", "images"),
   };
+}
+
+async function loadArtworkPostgres() {
+  const moduleUrl = new URL("../scripts/artwork-postgres.mjs", import.meta.url);
+  const database = (await import(moduleUrl.href)) as ArtworkPostgresModule;
+
+  if (!database.isArtworkDatabaseConfigured()) {
+    throw new Error(
+      "DATABASE_URL or POSTGRES_URL is required; static catalog JSON output has been removed"
+    );
+  }
+
+  return database;
 }

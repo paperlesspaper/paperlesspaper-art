@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { ReactNode } from "react";
 import type {
   Artwork,
@@ -73,6 +73,9 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string>();
   const [saveStatus, setSaveStatus] = useState<SaveStatus>("idle");
+  const [savingArtworkIds, setSavingArtworkIds] = useState<Set<string>>(
+    () => new Set()
+  );
   const [query, setQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [highlightFilter, setHighlightFilter] =
@@ -84,6 +87,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   const [selectedArtworkId, setSelectedArtworkId] = useState<string>();
   const [copiedRequest, setCopiedRequest] = useState<string>();
   const [hasLoadedUrlFilters, setHasLoadedUrlFilters] = useState(false);
+  const saveStatusTimerRef = useRef<number | undefined>(undefined);
 
   const stats = catalogMeta.curation;
 
@@ -161,6 +165,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
 
       try {
         const response = await fetch(listApiPath, {
+          cache: "no-store",
           headers: { Accept: "application/json" },
           signal: abortController.signal,
         });
@@ -232,6 +237,10 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   }, [pageArtworks, selectedArtworkId]);
 
   useEffect(() => {
+    return () => window.clearTimeout(saveStatusTimerRef.current);
+  }, []);
+
+  useEffect(() => {
     if (!selectedArtwork) return;
 
     function handleKeyDown(event: KeyboardEvent) {
@@ -286,19 +295,43 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
         artwork.id === id ? applyArtworkCuration(artwork, nextItem) : artwork
       )
     );
+    setSavingArtworkIds((current) => addSetItem(current, id));
+    window.clearTimeout(saveStatusTimerRef.current);
     setSaveStatus("saving");
 
     try {
       const response = await fetch("/api/curation", {
         method: "PATCH",
+        cache: "no-store",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
       if (!response.ok) throw new Error("Failed to save curation");
 
-      setSaveStatus("saved");
-      updateCatalogCurationStats(previousNormalizedItem, nextNormalizedItem);
+      const result = (await response.json().catch(() => undefined)) as
+        | {
+            item?: ArtworkCurationItem;
+            curation?: ArtworkCuration | ArtworkCurationItem;
+          }
+        | undefined;
+      const savedNormalizedItem = normalizeClientItem(
+        readSavedCurationItem(result, id) ?? nextNormalizedItem
+      );
+
+      setCuration((current) =>
+        applyCurationItem(current, id, savedNormalizedItem)
+      );
+      setArtworks((current) =>
+        current.map((artwork) =>
+          artwork.id === id
+            ? applyArtworkCuration(artwork, savedNormalizedItem)
+            : artwork
+        )
+      );
+
+      setTimedSaveStatus("saved");
+      updateCatalogCurationStats(previousNormalizedItem, savedNormalizedItem);
     } catch {
       setCuration((current) => applyCurationItem(current, id, previousItem ?? {}));
       setArtworks((current) =>
@@ -308,8 +341,18 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
             : artwork
         )
       );
-      setSaveStatus("error");
+      setTimedSaveStatus("error");
+    } finally {
+      setSavingArtworkIds((current) => removeSetItem(current, id));
     }
+  }
+
+  function setTimedSaveStatus(status: Exclude<SaveStatus, "idle" | "saving">) {
+    window.clearTimeout(saveStatusTimerRef.current);
+    setSaveStatus(status);
+    saveStatusTimerRef.current = window.setTimeout(() => {
+      setSaveStatus("idle");
+    }, status === "saved" ? 1400 : 2600);
   }
 
   function updateCatalogCurationStats(
@@ -354,6 +397,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
 
   function renderCurationControls(artwork: Artwork, compact = false) {
     const item = curation[artwork.id] ?? {};
+    const isSavingArtwork = savingArtworkIds.has(artwork.id);
 
     if (readOnlyCuration) {
       return (
@@ -376,6 +420,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
           <input
             type="checkbox"
             checked={item.highlighted ?? false}
+            disabled={isSavingArtwork}
             onChange={(event) =>
               saveItem(artwork.id, {
                 ...item,
@@ -404,12 +449,19 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
                       : (rating as ArtworkCurationItem["rating"]),
                 })
               }
+              disabled={isSavingArtwork}
               aria-pressed={item.rating === rating}
             >
               {rating}
             </button>
           ))}
         </div>
+        {isSavingArtwork ? (
+          <span className={styles.inlineSavingIndicator} role="status">
+            <span className={styles.savingSpinner} aria-hidden="true" />
+            Saving
+          </span>
+        ) : null}
       </div>
     );
   }
@@ -684,8 +736,12 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
 
           <ul className={styles.grid}>
             {pageArtworks.map((artwork) => {
-              const { displayUrl, downloadUrl, isSvg } = getArtworkImageUrls(artwork);
+              const { displayUrl, downloadUrl, isSvg } = getArtworkImageUrls(
+                artwork,
+                "overview"
+              );
               const item = curation[artwork.id] ?? {};
+              const isSavingArtwork = savingArtworkIds.has(artwork.id);
               const cardClassName = item.highlighted
                 ? `${styles.card} ${styles.cardHighlighted}`
                 : styles.card;
@@ -705,6 +761,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
                         type="checkbox"
                         className={styles.highlightCheckbox}
                         checked={item.highlighted ?? false}
+                        disabled={isSavingArtwork}
                         onChange={(event) =>
                           saveItem(artwork.id, {
                             ...item,
@@ -719,6 +776,15 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
                       />
                     </label>
                   )}
+                  {isSavingArtwork ? (
+                    <span
+                      className={styles.cardSavingIndicator}
+                      role="status"
+                      aria-label="Saving curation"
+                    >
+                      <span className={styles.savingSpinner} aria-hidden="true" />
+                    </span>
+                  ) : null}
 
                   <button
                     type="button"
@@ -1092,6 +1158,44 @@ function normalizeClientItem(item: ArtworkCurationItem): ArtworkCurationItem {
   };
 }
 
+function addSetItem<T>(items: Set<T>, item: T) {
+  const next = new Set(items);
+  next.add(item);
+  return next;
+}
+
+function removeSetItem<T>(items: Set<T>, item: T) {
+  const next = new Set(items);
+  next.delete(item);
+  return next;
+}
+
+function readSavedCurationItem(
+  result:
+    | {
+        item?: ArtworkCurationItem;
+        curation?: ArtworkCuration | ArtworkCurationItem;
+      }
+    | undefined,
+  id: string
+): ArtworkCurationItem | undefined {
+  if (!result) return undefined;
+  if (result.item) return result.item;
+  if (!result.curation) return undefined;
+
+  if (isCurationItem(result.curation)) return result.curation;
+
+  const item = result.curation[id];
+  return item && isCurationItem(item) ? item : undefined;
+}
+
+function isCurationItem(value: unknown): value is ArtworkCurationItem {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+
+  const candidate = value as ArtworkCurationItem;
+  return "highlighted" in candidate || "rating" in candidate;
+}
+
 function readUrlFilters(): UrlFilters {
   if (typeof window === "undefined") {
     return defaultUrlFilters();
@@ -1256,12 +1360,20 @@ function downloadFilename(artwork: Artwork, url: string) {
   return `${slug || artwork.sourceId}.${extension}`;
 }
 
-function getArtworkImageUrls(artwork: Artwork) {
+function getArtworkImageUrls(
+  artwork: Artwork,
+  context: "overview" | "preview" = "preview"
+) {
   const displayUrl =
-    artwork.image.localResizedPaths?.["1024"] ??
-    artwork.image.localResizedPaths?.["512"] ??
-    artwork.image.localOriginalPath ??
-    artwork.image.originalUrl;
+    context === "overview"
+      ? artwork.image.localResizedPaths?.["512"] ??
+        artwork.image.localResizedPaths?.["1024"] ??
+        artwork.image.localOriginalPath ??
+        artwork.image.originalUrl
+      : artwork.image.localResizedPaths?.["1024"] ??
+        artwork.image.localResizedPaths?.["512"] ??
+        artwork.image.localOriginalPath ??
+        artwork.image.originalUrl;
   const downloadUrl =
     artwork.image.localOriginalPath ??
     artwork.image.localResizedPaths?.["1024"] ??

@@ -9,35 +9,54 @@ import { isLocalDevelopmentRequest } from "@/lib/local-dev";
 
 export const dynamic = "force-dynamic";
 
+const NO_STORE_HEADERS = {
+  "Cache-Control": "no-store, max-age=0",
+};
+
 export async function GET(request: Request) {
   if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: NO_STORE_HEADERS }
+    );
   }
 
-  return NextResponse.json({ curation: await loadArtworkCuration() });
+  return NextResponse.json(
+    { curation: await loadArtworkCuration() },
+    { headers: NO_STORE_HEADERS }
+  );
 }
 
 export async function PATCH(request: Request) {
   if (!isLocalDevelopmentRequest(request)) {
     return NextResponse.json(
       { error: "Curation updates are only available in local development" },
-      { status: 403 }
+      { status: 403, headers: NO_STORE_HEADERS }
     );
   }
 
   if (!isAuthorized(request)) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json(
+      { error: "Unauthorized" },
+      { status: 401, headers: NO_STORE_HEADERS }
+    );
   }
 
   const body = await request.json().catch(() => undefined);
 
   if (!body || typeof body !== "object" || Array.isArray(body)) {
-    return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Invalid JSON body" },
+      { status: 400, headers: NO_STORE_HEADERS }
+    );
   }
 
   const id = "id" in body && typeof body.id === "string" ? body.id : "";
   if (!id) {
-    return NextResponse.json({ error: "Missing artwork id" }, { status: 400 });
+    return NextResponse.json(
+      { error: "Missing artwork id" },
+      { status: 400, headers: NO_STORE_HEADERS }
+    );
   }
 
   const item: ArtworkCurationItem = {};
@@ -55,12 +74,16 @@ export async function PATCH(request: Request) {
     } else {
       return NextResponse.json(
         { error: "Rating must be an integer from 1 to 5" },
-        { status: 400 }
+        { status: 400, headers: NO_STORE_HEADERS }
       );
     }
   }
 
-  return NextResponse.json({
-    curation: await updateArtworkCurationItem(id, item),
-  });
+  return NextResponse.json(
+    {
+      id,
+      item: await updateArtworkCurationItem(id, item),
+    },
+    { headers: NO_STORE_HEADERS }
+  );
 }

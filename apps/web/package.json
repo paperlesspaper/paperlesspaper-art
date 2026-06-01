@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "catalog:import": "node scripts/import-artworks-to-postgres.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

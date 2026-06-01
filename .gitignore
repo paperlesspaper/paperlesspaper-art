@@ -50,8 +50,6 @@ packages/scraper/dist/
 
 # Downloaded assets (usually large)
 apps/web/public/images/
-apps/web/data/artworks.sqlite
-apps/web/data/artworks.sqlite-*
 
 # OS
 .DS_Store
