@@ -16,6 +16,20 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Artwork Catalog
+
+The artwork catalog is served from Postgres. Curation state for highlights and
+ratings lives in the `artwork_curation` table, not in JSON at runtime.
+
+```bash
+npm run catalog:import
+```
+
+Set `ARTWORK_JSON_PATH` to the catalog JSON you want to import. The import
+command refreshes `artworks` and `artwork_tags` while preserving existing rows
+in `artwork_curation`, then prunes curation rows for artworks that are no longer
+in the catalog.
+
 You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.

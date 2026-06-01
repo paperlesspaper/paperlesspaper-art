@@ -1,4 +1,3 @@
-import path from "node:path";
 import { ensureArtworkDatabase, getArtworkPool } from "@/lib/artwork-database";
 
 export type ArtworkCurationItem = {
@@ -7,10 +6,6 @@ export type ArtworkCurationItem = {
 };
 
 export type ArtworkCuration = Record<string, ArtworkCurationItem>;
-
-export function curationFilePath() {
-  return path.join(process.cwd(), "data", "artwork-curation.json");
-}
 
 export async function loadArtworkCuration(): Promise<ArtworkCuration> {
   await ensureArtworkDatabase();
@@ -69,7 +64,7 @@ export async function updateArtworkCurationItem(
     ]);
   }
 
-  return loadArtworkCuration();
+  return nextItem;
 }
 
 function normalizeCurationItem(value: unknown): ArtworkCurationItem {

@@ -2,7 +2,14 @@
 
 import fs from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import {
+  closeArtworkDatabase,
+  isArtworkDatabaseConfigured,
+  loadArtworkDuplicateIndexFromDatabase,
+  upsertArtworkInDatabase,
+} from "./artwork-postgres.mjs";
 
 const target = Number(process.env.TARGET ?? 1000);
 const perSourceCap = Number(process.env.PER_SOURCE_CAP ?? target);
@@ -12,14 +19,27 @@ const concurrency = Number(process.env.CONCURRENCY ?? 10);
 const saveEvery = Number(process.env.SAVE_EVERY ?? 100);
 const sourceDelay = Number(process.env.SOURCE_DELAY ?? 0);
 const thumbnailWidth = Number(process.env.THUMB_WIDTH ?? 3840);
-const dataPath = path.resolve("../../apps/web/data/artworks.json");
-const imagesRoot = path.resolve("../../apps/web/public/images");
+const scriptDir = path.dirname(fileURLToPath(import.meta.url));
+const scraperRoot = path.resolve(scriptDir, "..");
+const repoRoot = path.resolve(scraperRoot, "..", "..");
+const webRoot = path.join(repoRoot, "apps", "web");
+const dataPath = process.env.ARTWORK_JSON_PATH
+  ? path.resolve(process.env.ARTWORK_JSON_PATH)
+  : path.join(webRoot, "data", "artworks.json");
+const imagesRoot = process.env.ARTWORK_IMAGES_ROOT
+  ? path.resolve(process.env.ARTWORK_IMAGES_ROOT)
+  : path.join(webRoot, "public", "images");
 const widths = (process.env.WIDTHS ?? "")
   .split(",")
   .map((value) => Number(value.trim()))
   .filter((value) => Number.isFinite(value) && value > 0);
 const downloadedAt = new Date().toISOString();
 const prefix = process.env.SEARCH_PREFIX ?? "google-art-project-3840-v1:";
+const syncDatabase =
+  process.env.SYNC_DATABASE === "0" ? false : isArtworkDatabaseConfigured();
+const useDatabaseCatalog =
+  syncDatabase && process.env.CATALOG_SOURCE !== "json";
+const writeJsonCatalog = !useDatabaseCatalog;
 
 const categories = [
   "Google Art Project paintings",
@@ -42,7 +62,7 @@ const queries = [
   '"Google Cultural Institute" artwork',
 ];
 
-const artworks = JSON.parse(await fs.readFile(dataPath, "utf8"));
+const artworks = await loadExistingArtworks();
 const byId = new Set(artworks.map((artwork) => artwork.id));
 const titleKeys = new Set(
   artworks
@@ -59,6 +79,21 @@ const sha1s = new Set(
 console.log(
   `duplicate index: ${byId.size} ids, ${titleKeys.size} titles, ${sha1s.size} sha1s`
 );
+console.log(
+  syncDatabase
+    ? "database sync: enabled"
+    : "database sync: disabled; set DATABASE_URL to write new rows to Postgres"
+);
+console.log(
+  useDatabaseCatalog
+    ? "catalog source: database"
+    : `catalog source: json (${dataPath})`
+);
+console.log(
+  writeJsonCatalog
+    ? "json catalog writes: enabled"
+    : "json catalog writes: disabled"
+);
 
 const stats = {
   added: 0,
@@ -72,9 +107,11 @@ const stats = {
   skippedTitleDup: 0,
   skippedOutput: 0,
   skippedDownload: 0,
+  skippedDatabase: 0,
 };
 let lastSavedAdded = 0;
 let saveQueue = Promise.resolve();
+let pendingAdds = 0;
 
 for (const category of categories) {
   if (stats.added >= target) break;
@@ -114,7 +151,8 @@ for (const query of queries) {
 }
 
 await saveCatalog();
-console.log(JSON.stringify({ ...stats, total: artworks.length }, null, 2));
+await closeArtworkDatabase();
+console.log(JSON.stringify(stats, null, 2));
 
 if (process.env.STOP_ON_EMPTY === "1" && stats.added === 0) {
   process.exitCode = 20;
@@ -123,6 +161,22 @@ if (process.env.STOP_ON_EMPTY === "1" && stats.added === 0) {
 async function processPages({ pages, label, catalogQuery }) {
   let cursor = 0;
   let added = 0;
+  let pendingPageAdds = 0;
+
+  const reserveAddSlot = () => {
+    if (stats.added + pendingAdds >= target) return false;
+    if (added + pendingPageAdds >= perSourceCap) return false;
+
+    pendingAdds++;
+    pendingPageAdds++;
+    return true;
+  };
+
+  const releaseAddSlot = (didAdd) => {
+    pendingAdds = Math.max(0, pendingAdds - 1);
+    pendingPageAdds = Math.max(0, pendingPageAdds - 1);
+    if (didAdd) added++;
+  };
 
   const workerCount = Math.min(concurrency, pages.length);
   await Promise.all(
@@ -131,8 +185,13 @@ async function processPages({ pages, label, catalogQuery }) {
         const page = pages[cursor++];
         if (!page) break;
 
-        const didAdd = await processPage({ page, label, catalogQuery });
-        if (didAdd) added++;
+        await processPage({
+          page,
+          label,
+          catalogQuery,
+          reserveAddSlot,
+          releaseAddSlot,
+        });
       }
     })
   );
@@ -167,7 +226,13 @@ async function processCategory(category) {
   return added;
 }
 
-async function processPage({ page, label, catalogQuery }) {
+async function processPage({
+  page,
+  label,
+  catalogQuery,
+  reserveAddSlot,
+  releaseAddSlot,
+}) {
   stats.candidates++;
 
   const ii = page.imageinfo?.[0];
@@ -214,117 +279,144 @@ async function processPage({ page, label, catalogQuery }) {
     return false;
   }
 
-  byId.add(id);
-  if (key) titleKeys.add(key);
-  if (ii.sha1) sha1s.add(ii.sha1);
-
-  let buffer;
-  try {
-    const response = await fetch(originalUrl, {
-      headers: { Referer: sourceUrl(page.title) },
-    });
-    if (!response.ok) throw new Error(String(response.status));
-    buffer = Buffer.from(await response.arrayBuffer());
-  } catch {
-    stats.skippedDownload++;
+  if (!reserveAddSlot()) {
     return false;
   }
 
-  let metadata;
+  let didAdd = false;
   try {
-    metadata = await sharp(buffer).metadata();
-    if (!metadata.width || !metadata.height) throw new Error("missing size");
-  } catch {
-    stats.skippedDownload++;
-    return false;
-  }
+    byId.add(id);
+    if (key) titleKeys.add(key);
+    if (ii.sha1) sha1s.add(ii.sha1);
 
-  const extension = extFromMimeOrUrl(ii.mime || "", originalUrl);
-  const outputDir = path.join(imagesRoot, "wikimedia", sourceId);
-  const resized = {};
+    let buffer;
+    try {
+      const response = await fetch(originalUrl, {
+        headers: { Referer: sourceUrl(page.title) },
+      });
+      if (!response.ok) throw new Error(String(response.status));
+      buffer = Buffer.from(await response.arrayBuffer());
+    } catch {
+      stats.skippedDownload++;
+      return false;
+    }
 
-  try {
-    await fs.mkdir(outputDir, { recursive: true });
+    let metadata;
+    try {
+      metadata = await sharp(buffer).metadata();
+      if (!metadata.width || !metadata.height) throw new Error("missing size");
+    } catch {
+      stats.skippedDownload++;
+      return false;
+    }
 
-    const originalPath = path.join(outputDir, `original${extension}`);
-    await fs.writeFile(originalPath, buffer);
+    const extension = extFromMimeOrUrl(ii.mime || "", originalUrl);
+    const outputDir = path.join(imagesRoot, "wikimedia", sourceId);
+    const resized = {};
 
-    await Promise.all(
-      widths.map(async (width) => {
-        const outputPath = path.join(outputDir, `w${width}.jpg`);
-        await sharp(buffer)
-          .rotate()
-          .resize({ width, withoutEnlargement: true })
-          .jpeg({ quality: 82, mozjpeg: true })
-          .toFile(outputPath);
-        resized[String(width)] = `/images/wikimedia/${sourceId}/w${width}.jpg`;
-      })
+    try {
+      await fs.mkdir(outputDir, { recursive: true });
+
+      const originalPath = path.join(outputDir, `original${extension}`);
+      await fs.writeFile(originalPath, buffer);
+
+      await Promise.all(
+        widths.map(async (width) => {
+          const outputPath = path.join(outputDir, `w${width}.jpg`);
+          await sharp(buffer)
+            .rotate()
+            .resize({ width, withoutEnlargement: true })
+            .jpeg({ quality: 82, mozjpeg: true })
+            .toFile(outputPath);
+          resized[String(width)] = `/images/wikimedia/${sourceId}/w${width}.jpg`;
+        })
+      );
+    } catch (error) {
+      stats.skippedOutput++;
+      console.warn(`output failed: ${title}: ${errorMessage(error)}`);
+      await fs.rm(outputDir, { recursive: true, force: true }).catch(() => {});
+      return false;
+    }
+
+    const pageCategories = (page.categories || [])
+      .map((category) =>
+        category.title.replace(/^Category:/, "").replace(/_/g, " ").trim()
+      )
+      .filter(Boolean)
+      .slice(0, 25);
+
+    const artwork = {
+      id,
+      source: "wikimedia",
+      sourceId,
+      title,
+      description:
+        ext(meta, "ObjectName") || ext(meta, "ImageDescription") || undefined,
+      artist: ext(meta, "Artist") || undefined,
+      date:
+        ext(meta, "DateTimeOriginal") ||
+        ext(meta, "DateTime") ||
+        ext(meta, "Date") ||
+        undefined,
+      isPublicDomain: license.isPublicDomain,
+      license: license.license,
+      licenseUrl: license.licenseUrl,
+      rights: ext(meta, "Credit") || undefined,
+      sourceUrl: sourceUrl(page.title),
+      tags: [...pageCategories, "google art project batch"],
+      image: {
+        originalUrl,
+        width: metadata.width,
+        height: metadata.height,
+        wikimediaSha1: ii.sha1 || undefined,
+        localOriginalPath: `/images/wikimedia/${sourceId}/original${extension}`,
+        localResizedPaths: resized,
+      },
+      search: {
+        query: prefix + catalogQuery,
+        downloadedAt,
+      },
+    };
+
+    if (syncDatabase) {
+      try {
+        await upsertArtworkInDatabase(artwork);
+      } catch (error) {
+        stats.skippedDatabase++;
+        console.warn(`database sync failed: ${title}: ${errorMessage(error)}`);
+        return false;
+      }
+    }
+
+    if (writeJsonCatalog) {
+      artworks.unshift(artwork);
+    }
+
+    stats.added++;
+    stats.total++;
+    await maybeSaveCatalog();
+
+    console.log(
+      `added ${stats.added}/${target}: ${title} (${metadata.width}x${metadata.height}) from ${label}`
     );
-  } catch (error) {
-    stats.skippedOutput++;
-    console.warn(`output failed: ${title}: ${errorMessage(error)}`);
-    await fs.rm(outputDir, { recursive: true, force: true }).catch(() => {});
-    return false;
+
+    didAdd = true;
+    return true;
+  } finally {
+    releaseAddSlot(didAdd);
   }
-
-  const pageCategories = (page.categories || [])
-    .map((category) =>
-      category.title.replace(/^Category:/, "").replace(/_/g, " ").trim()
-    )
-    .filter(Boolean)
-    .slice(0, 25);
-
-  artworks.unshift({
-    id,
-    source: "wikimedia",
-    sourceId,
-    title,
-    description:
-      ext(meta, "ObjectName") || ext(meta, "ImageDescription") || undefined,
-    artist: ext(meta, "Artist") || undefined,
-    date:
-      ext(meta, "DateTimeOriginal") ||
-      ext(meta, "DateTime") ||
-      ext(meta, "Date") ||
-      undefined,
-    isPublicDomain: license.isPublicDomain,
-    license: license.license,
-    licenseUrl: license.licenseUrl,
-    rights: ext(meta, "Credit") || undefined,
-    sourceUrl: sourceUrl(page.title),
-    tags: [...pageCategories, "google art project batch"],
-    image: {
-      originalUrl,
-      width: metadata.width,
-      height: metadata.height,
-      wikimediaSha1: ii.sha1 || undefined,
-      localOriginalPath: `/images/wikimedia/${sourceId}/original${extension}`,
-      localResizedPaths: resized,
-    },
-    search: {
-      query: prefix + catalogQuery,
-      downloadedAt,
-    },
-  });
-
-  stats.added++;
-  stats.total = artworks.length;
-  await maybeSaveCatalog();
-
-  console.log(
-    `added ${stats.added}/${target}: ${title} (${metadata.width}x${metadata.height}) from ${label}`
-  );
-
-  return true;
 }
 
 async function saveCatalog() {
+  if (!writeJsonCatalog) return;
+
   const tempPath = `${dataPath}.tmp-${process.pid}`;
   await fs.writeFile(tempPath, `${JSON.stringify(artworks, null, 2)}\n`);
   await fs.rename(tempPath, dataPath);
 }
 
 async function maybeSaveCatalog() {
+  if (!writeJsonCatalog) return;
   if (stats.added - lastSavedAdded < saveEvery) return;
   const addedAtSave = stats.added;
   saveQueue = saveQueue.then(async () => {
@@ -332,6 +424,24 @@ async function maybeSaveCatalog() {
     lastSavedAdded = Math.max(lastSavedAdded, addedAtSave);
   });
   await saveQueue;
+}
+
+async function loadExistingArtworks() {
+  if (useDatabaseCatalog) {
+    return loadArtworkDuplicateIndexFromDatabase();
+  }
+
+  try {
+    return JSON.parse(await fs.readFile(dataPath, "utf8"));
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      throw new Error(
+        `Artwork JSON does not exist: ${dataPath}. Set DATABASE_URL or unset CATALOG_SOURCE=json to use Postgres.`
+      );
+    }
+
+    throw error;
+  }
 }
 
 function sleep(ms) {

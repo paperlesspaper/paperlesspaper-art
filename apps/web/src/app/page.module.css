@@ -122,7 +122,7 @@
 .filterPanel {
   display: grid;
   width: 100%;
-  grid-template-columns: minmax(280px, 2fr) repeat(4, minmax(118px, 1fr)) auto;
+  grid-template-columns: minmax(280px, 2fr) repeat(5, minmax(118px, 1fr)) auto;
   gap: 10px;
   margin-top: 16px;
   align-items: end;

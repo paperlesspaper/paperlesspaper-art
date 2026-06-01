@@ -1,5 +1,3 @@
-import fs from "node:fs/promises";
-import path from "node:path";
 import {
   ensureArtworkDatabase,
   getArtworkPool,
@@ -64,9 +62,22 @@ export type ArtworkSearchFilters = {
   selected?: boolean;
   highlighted?: boolean;
   rating?: 1 | 2 | 3 | 4 | 5 | "rated" | "unrated";
+  sort?: ArtworkSort;
   limit?: number;
   offset?: number;
 };
+
+export type ArtworkSort =
+  | "curated"
+  | "relevance"
+  | "title-asc"
+  | "title-desc"
+  | "date-desc"
+  | "date-asc"
+  | "downloaded-desc"
+  | "downloaded-asc"
+  | "rating-desc"
+  | "rating-asc";
 
 export type ArtworkCatalogMeta = {
   totalCatalogItems: number;
@@ -88,149 +99,7 @@ export type ArtworkCatalogSearchResult = {
 
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 200;
-const DEFAULT_CACHE_TTL_MS = 5 * 60 * 1000;
-
-let cachedCatalog:
-  | {
-      items: Artwork[];
-      loadedAt: number;
-      sourceKey: string;
-    }
-  | undefined;
-
-function dataFilePath() {
-  return path.join(process.cwd(), "data", "artworks.json");
-}
-
-export async function loadArtworks(): Promise<Artwork[]> {
-  const catalogUrl = process.env.ART_CATALOG_URL?.trim();
-  const sourceKey = catalogUrl || dataFilePath();
-  const cacheTtlMs = parsePositiveInt(
-    process.env.ART_CATALOG_CACHE_TTL_MS,
-    DEFAULT_CACHE_TTL_MS
-  );
-  const now = Date.now();
-
-  if (
-    cachedCatalog &&
-    cachedCatalog.sourceKey === sourceKey &&
-    now - cachedCatalog.loadedAt < cacheTtlMs
-  ) {
-    return cachedCatalog.items;
-  }
-
-  try {
-    const raw = catalogUrl
-      ? await fetchTextCatalog(catalogUrl)
-      : await fs.readFile(dataFilePath(), "utf8");
-    const parsed = JSON.parse(raw);
-    const items = Array.isArray(parsed) ? (parsed as Artwork[]) : [];
-    cachedCatalog = { items, loadedAt: now, sourceKey };
-    return items;
-  } catch {
-    if (cachedCatalog?.sourceKey === sourceKey) return cachedCatalog.items;
-    return [];
-  }
-}
-
-export function searchArtworks(
-  artworks: Artwork[],
-  filters: ArtworkSearchFilters,
-  curation: Record<string, ArtworkCurationItem> = {}
-) {
-  const q = normalizeText(filters.q);
-  const queryTerms = q.length > 0 ? q.split(" ").filter(Boolean) : [];
-  const source = filters.source;
-  const license = normalizeText(filters.license);
-  const tag = normalizeText(filters.tag);
-  const collection = normalizeText(filters.collection);
-  const publicDomain = filters.publicDomain;
-  const selected =
-    typeof filters.selected === "boolean"
-      ? filters.selected
-      : filters.highlighted;
-  const rating = filters.rating;
-  const limit = clampLimit(filters.limit);
-  const offset = Math.max(0, filters.offset ?? 0);
-
-  const scored = artworks
-    .map((artwork, index) => {
-      const curationItem = curation[artwork.id] ?? {};
-      const isSelected = curationItem.highlighted === true;
-
-      if (source && artwork.source !== source) return null;
-      if (
-        typeof publicDomain === "boolean" &&
-        artwork.isPublicDomain !== publicDomain
-      ) {
-        return null;
-      }
-      if (license && !normalizeText(artwork.license).includes(license)) {
-        return null;
-      }
-      if (
-        tag &&
-        !(artwork.tags ?? []).some((candidate) =>
-          normalizeText(candidate).includes(tag)
-        )
-      ) {
-        return null;
-      }
-      if (
-        collection &&
-        !normalizeText(artwork.collection?.name).includes(collection)
-      ) {
-        return null;
-      }
-      if (typeof selected === "boolean" && isSelected !== selected) {
-        return null;
-      }
-      if (rating === "rated" && !curationItem.rating) {
-        return null;
-      }
-      if (rating === "unrated" && curationItem.rating) {
-        return null;
-      }
-      if (
-        typeof rating === "number" &&
-        curationItem.rating !== rating
-      ) {
-        return null;
-      }
-
-      const score = queryTerms.length > 0 ? scoreArtwork(artwork, queryTerms) : 0;
-      if (queryTerms.length > 0 && score === 0) return null;
-
-      return { artwork, score, index };
-    })
-    .filter((item): item is { artwork: Artwork; score: number; index: number } =>
-      Boolean(item)
-    );
-
-  scored.sort((a, b) => {
-    const ratingDifference =
-      getRatingSortValue(curation[b.artwork.id]) -
-      getRatingSortValue(curation[a.artwork.id]);
-    if (ratingDifference !== 0) return ratingDifference;
-
-    if (queryTerms.length > 0 && b.score !== a.score) {
-      return b.score - a.score;
-    }
-
-    return (
-      a.artwork.title.localeCompare(b.artwork.title) ||
-      compareDownloadedAt(a.artwork, b.artwork) ||
-      a.index - b.index
-    );
-  });
-
-  const total = scored.length;
-  const items = scored
-    .slice(offset, offset + limit)
-    .map(({ artwork }) => toApiArtwork(artwork, curation[artwork.id]));
-
-  return { items, total, limit, offset };
-}
+const DEFAULT_SORT: ArtworkSort = "curated";
 
 export async function searchArtworkCatalog(
   filters: ArtworkSearchFilters
@@ -263,12 +132,7 @@ export async function searchArtworkCatalog(
        FROM artworks a
        LEFT JOIN artwork_curation c ON c.id = a.id
        ${query.whereSql}
-       ORDER BY
-          COALESCE(c.rating, 0) DESC,
-          ${query.rankOrder}
-          LOWER(a.title) ASC,
-          a.downloaded_at DESC,
-          a.id ASC
+       ORDER BY ${query.orderSql}
        LIMIT $${selectParams.length - 1} OFFSET $${selectParams.length}`,
       selectParams
     )
@@ -340,15 +204,6 @@ export async function getArtworkCatalogMeta(): Promise<ArtworkCatalogMeta> {
   };
 }
 
-export function findArtworkById(
-  artworks: Artwork[],
-  id: string,
-  curation: Record<string, ArtworkCurationItem> = {}
-) {
-  const artwork = artworks.find((candidate) => candidate.id === id);
-  return artwork ? toApiArtwork(artwork, curation[artwork.id]) : undefined;
-}
-
 export function toApiArtwork(
   artwork: Artwork,
   curationItem: ArtworkCurationItem = {}
@@ -397,6 +252,7 @@ export function parseArtworkSearchParams(searchParams: URLSearchParams) {
     selected: parseBoolean(searchParams.get("selected")),
     highlighted: parseBoolean(searchParams.get("highlighted")),
     rating: parseRatingFilter(searchParams.get("rating")),
+    sort: parseArtworkSort(searchParams.get("sort")),
     limit: parsePositiveInt(searchParams.get("limit"), DEFAULT_LIMIT),
     offset: parseNonNegativeInt(searchParams.get("offset"), 0),
   } satisfies ArtworkSearchFilters;
@@ -433,50 +289,6 @@ export function corsHeaders(request: Request) {
     "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
     Vary: "Origin",
   };
-}
-
-function scoreArtwork(artwork: Artwork, queryTerms: string[]) {
-  const title = normalizeText(artwork.title);
-  const artist = normalizeText(artwork.artist);
-  const source = normalizeText(artwork.source);
-  const sourceId = normalizeText(artwork.sourceId);
-  const license = normalizeText(artwork.license);
-  const collection = normalizeText(artwork.collection?.name);
-  const author = normalizeText(artwork.author?.name);
-  const tags = (artwork.tags ?? []).map(normalizeText);
-  const searchable = [
-    title,
-    artist,
-    source,
-    sourceId,
-    license,
-    collection,
-    author,
-    ...tags,
-  ].join(" ");
-
-  if (!queryTerms.every((term) => searchable.includes(term))) return 0;
-
-  return queryTerms.reduce((score, term) => {
-    if (title === term) return score + 100;
-    if (title.startsWith(term)) return score + 80;
-    if (title.includes(term)) return score + 60;
-    if (tags.some((candidate) => candidate === term)) return score + 45;
-    if (tags.some((candidate) => candidate.includes(term))) return score + 35;
-    if (artist.includes(term) || author.includes(term)) return score + 25;
-    if (collection.includes(term)) return score + 20;
-    return score + 10;
-  }, 0);
-}
-
-function compareDownloadedAt(a: Artwork, b: Artwork) {
-  return (b.search?.downloadedAt ?? "").localeCompare(
-    a.search?.downloadedAt ?? ""
-  );
-}
-
-function getRatingSortValue(curationItem?: ArtworkCurationItem) {
-  return typeof curationItem?.rating === "number" ? curationItem.rating : 0;
 }
 
 function toAssetUrl(value?: string) {
@@ -527,6 +339,25 @@ function parseRatingFilter(value: string | null) {
   return undefined;
 }
 
+function parseArtworkSort(value: string | null): ArtworkSort | undefined {
+  if (
+    value === "curated" ||
+    value === "relevance" ||
+    value === "title-asc" ||
+    value === "title-desc" ||
+    value === "date-desc" ||
+    value === "date-asc" ||
+    value === "downloaded-desc" ||
+    value === "downloaded-asc" ||
+    value === "rating-desc" ||
+    value === "rating-asc"
+  ) {
+    return value;
+  }
+
+  return undefined;
+}
+
 function parsePositiveInt(value: string | null | undefined, fallback: number) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed <= 0) return fallback;
@@ -551,7 +382,7 @@ type ArtworkRow = {
 
 type ArtworkSql = {
   rankSql: string;
-  rankOrder: string;
+  orderSql: string;
   whereSql: string;
   params: QueryParam[];
 };
@@ -561,7 +392,6 @@ function buildArtworkSql(filters: ArtworkSearchFilters): ArtworkSql {
   const params: QueryParam[] = [];
   const ftsQuery = toPostgresTsQuery(filters.q);
   let rankSql = "0";
-  let rankOrder = "";
 
   const addParam = (value: QueryParam) => {
     params.push(value);
@@ -573,7 +403,6 @@ function buildArtworkSql(filters: ArtworkSearchFilters): ArtworkSql {
     const tsQuery = `to_tsquery('simple', ${placeholder})`;
     where.push(`a.search_vector @@ ${tsQuery}`);
     rankSql = `ts_rank_cd(a.search_vector, ${tsQuery})`;
-    rankOrder = "search_rank DESC,";
   }
 
   if (filters.source) {
@@ -626,10 +455,116 @@ function buildArtworkSql(filters: ArtworkSearchFilters): ArtworkSql {
 
   return {
     rankSql,
-    rankOrder,
+    orderSql: buildArtworkOrderSql(
+      filters.sort ?? DEFAULT_SORT,
+      Boolean(ftsQuery)
+    ),
     whereSql: where.length > 0 ? `WHERE ${where.join(" AND ")}` : "",
     params,
   };
+}
+
+function buildArtworkOrderSql(sort: ArtworkSort, hasQuery: boolean) {
+  const relevanceOrder = hasQuery ? "search_rank DESC" : "";
+  const ratingDesc = "COALESCE(c.rating, 0) DESC";
+  const ratingAsc = "COALESCE(c.rating, 0) ASC";
+  const titleAsc = "LOWER(a.title) ASC";
+  const titleDesc = "LOWER(a.title) DESC";
+  const downloadedDesc = "a.downloaded_at DESC";
+  const downloadedAsc = "a.downloaded_at ASC";
+  const fallbackDateYear = `NULLIF(
+    substring(a.date FROM '(-?[0-9]{1,4})'),
+    ''
+  )::integer`;
+  const dateYear = `COALESCE(
+    NULLIF(
+      substring(a.date FROM '([+-][0-9]{1,6})-[0-9]{2}-[0-9]{2}T'),
+      ''
+    )::integer,
+    CASE
+      WHEN a.date ~* '(b\\.?\\s*c\\.?|bce)' THEN -ABS(${fallbackDateYear})
+      ELSE ${fallbackDateYear}
+    END
+  )`;
+
+  switch (sort) {
+    case "relevance":
+      return orderClauses(
+        relevanceOrder,
+        ratingDesc,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "title-asc":
+      return orderClauses(titleAsc, relevanceOrder, downloadedDesc, "a.id ASC");
+    case "title-desc":
+      return orderClauses(
+        titleDesc,
+        relevanceOrder,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "date-desc":
+      return orderClauses(
+        `${dateYear} DESC NULLS LAST`,
+        relevanceOrder,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "date-asc":
+      return orderClauses(
+        `${dateYear} ASC NULLS LAST`,
+        relevanceOrder,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "downloaded-desc":
+      return orderClauses(
+        downloadedDesc,
+        relevanceOrder,
+        titleAsc,
+        "a.id ASC"
+      );
+    case "downloaded-asc":
+      return orderClauses(
+        `${downloadedAsc} NULLS LAST`,
+        relevanceOrder,
+        titleAsc,
+        "a.id ASC"
+      );
+    case "rating-desc":
+      return orderClauses(
+        ratingDesc,
+        relevanceOrder,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "rating-asc":
+      return orderClauses(
+        ratingAsc,
+        relevanceOrder,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+    case "curated":
+    default:
+      return orderClauses(
+        ratingDesc,
+        relevanceOrder,
+        titleAsc,
+        downloadedDesc,
+        "a.id ASC"
+      );
+  }
+}
+
+function orderClauses(...clauses: string[]) {
+  return clauses.filter(Boolean).join(", ");
 }
 
 function toPostgresTsQuery(value?: string) {
@@ -656,17 +591,4 @@ function rowToApiArtwork(row: ArtworkRow) {
   }
 
   return toApiArtwork(artwork, curationItem);
-}
-
-async function fetchTextCatalog(url: string) {
-  const response = await fetch(url, {
-    headers: { Accept: "application/json" },
-    next: { revalidate: 300 },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Catalog request failed: ${response.status}`);
-  }
-
-  return response.text();
 }

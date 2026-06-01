@@ -4,6 +4,7 @@ set -u
 max_failures="${MAX_FAILURES:-0}"
 restart_delay="${RESTART_DELAY:-10}"
 success_delay="${SUCCESS_DELAY:-5}"
+empty_delay="${EMPTY_DELAY:-300}"
 failure_count=0
 run_count=0
 
@@ -17,8 +18,10 @@ while true; do
   status="$?"
 
   if [ "$status" -eq 20 ]; then
-    echo "download-google-art-project: run ${run_count} added no new items; stopping to avoid hammering Wikimedia" >&2
-    exit 0
+    failure_count=0
+    echo "download-google-art-project: run ${run_count} added no new items; retrying in ${empty_delay}s" >&2
+    sleep "$empty_delay"
+    continue
   fi
 
   if [ "$status" -eq 0 ]; then

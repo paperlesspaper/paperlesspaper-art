@@ -2,7 +2,12 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
-import type { Artwork, ArtworkApiItem, ArtworkCatalogMeta } from "@/lib/artworks";
+import type {
+  Artwork,
+  ArtworkApiItem,
+  ArtworkCatalogMeta,
+  ArtworkSort,
+} from "@/lib/artworks";
 import type {
   ArtworkCuration,
   ArtworkCurationItem,
@@ -22,13 +27,27 @@ type UrlFilters = {
   sourceFilter: SourceFilter;
   highlightFilter: HighlightFilter;
   ratingFilter: RatingFilter;
+  sort: ArtworkSort;
   page: number;
   pageSize: number;
 };
 
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 60;
+const DEFAULT_SORT: ArtworkSort = "curated";
 const PAGE_SIZE_OPTIONS = [40, 60, 100, 160];
+const SORT_OPTIONS: Array<{ value: ArtworkSort; label: string }> = [
+  { value: "curated", label: "Curated" },
+  { value: "relevance", label: "Relevance" },
+  { value: "date-desc", label: "Artwork date, newest" },
+  { value: "date-asc", label: "Artwork date, oldest" },
+  { value: "downloaded-desc", label: "Downloaded, newest" },
+  { value: "downloaded-asc", label: "Downloaded, oldest" },
+  { value: "title-asc", label: "Title A-Z" },
+  { value: "title-desc", label: "Title Z-A" },
+  { value: "rating-desc", label: "Rating, high first" },
+  { value: "rating-asc", label: "Rating, low first" },
+];
 const ARTWORK_SOURCES: Array<Artwork["source"]> = [
   "artic",
   "met",
@@ -59,12 +78,12 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   const [highlightFilter, setHighlightFilter] =
     useState<HighlightFilter>("all");
   const [ratingFilter, setRatingFilter] = useState<RatingFilter>("all");
+  const [sort, setSort] = useState<ArtworkSort>(DEFAULT_SORT);
   const [page, setPage] = useState(DEFAULT_PAGE);
   const [pageSize, setPageSize] = useState(DEFAULT_PAGE_SIZE);
   const [selectedArtworkId, setSelectedArtworkId] = useState<string>();
   const [copiedRequest, setCopiedRequest] = useState<string>();
   const [hasLoadedUrlFilters, setHasLoadedUrlFilters] = useState(false);
-  const [refreshToken, setRefreshToken] = useState(0);
 
   const stats = catalogMeta.curation;
 
@@ -94,10 +113,19 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
         sourceFilter,
         highlightFilter,
         ratingFilter,
+        sort,
         pageSize,
         offset: pageStart,
       }),
-    [highlightFilter, pageSize, pageStart, query, ratingFilter, sourceFilter]
+    [
+      highlightFilter,
+      pageSize,
+      pageStart,
+      query,
+      ratingFilter,
+      sort,
+      sourceFilter,
+    ]
   );
   const listCurl = useMemo(() => toCurlRequest(listApiPath), [listApiPath]);
 
@@ -106,6 +134,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     sourceFilter !== "all" ||
     highlightFilter !== "all" ||
     ratingFilter !== "all" ||
+    sort !== DEFAULT_SORT ||
     currentPage !== DEFAULT_PAGE ||
     pageSize !== DEFAULT_PAGE_SIZE;
 
@@ -115,6 +144,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     setSourceFilter(filters.sourceFilter);
     setHighlightFilter(filters.highlightFilter);
     setRatingFilter(filters.ratingFilter);
+    setSort(filters.sort);
     setPage(filters.page);
     setPageSize(filters.pageSize);
     setHasLoadedUrlFilters(true);
@@ -165,7 +195,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     loadPage();
 
     return () => abortController.abort();
-  }, [hasLoadedUrlFilters, listApiPath, refreshToken]);
+  }, [hasLoadedUrlFilters, listApiPath]);
 
   useEffect(() => {
     if (!hasLoadedUrlFilters) return;
@@ -175,6 +205,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       sourceFilter,
       highlightFilter,
       ratingFilter,
+      sort,
       page: currentPage,
       pageSize,
     });
@@ -185,6 +216,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     pageSize,
     query,
     ratingFilter,
+    sort,
     sourceFilter,
   ]);
 
@@ -232,6 +264,8 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     if (readOnlyCuration) return;
 
     const previousItem = curation[id];
+    const previousNormalizedItem = normalizeClientItem(previousItem ?? {});
+    const nextNormalizedItem = normalizeClientItem(nextItem);
     const payload: {
       id: string;
       highlighted?: boolean;
@@ -264,7 +298,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       if (!response.ok) throw new Error("Failed to save curation");
 
       setSaveStatus("saved");
-      setRefreshToken((current) => current + 1);
+      updateCatalogCurationStats(previousNormalizedItem, nextNormalizedItem);
     } catch {
       setCuration((current) => applyCurationItem(current, id, previousItem ?? {}));
       setArtworks((current) =>
@@ -276,6 +310,31 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       );
       setSaveStatus("error");
     }
+  }
+
+  function updateCatalogCurationStats(
+    previousItem: ArtworkCurationItem,
+    nextItem: ArtworkCurationItem
+  ) {
+    const highlightedDelta =
+      Number(nextItem.highlighted === true) -
+      Number(previousItem.highlighted === true);
+    const ratedDelta =
+      Number(typeof nextItem.rating === "number") -
+      Number(typeof previousItem.rating === "number");
+
+    if (highlightedDelta === 0 && ratedDelta === 0) return;
+
+    setCatalogMeta((current) => ({
+      ...current,
+      curation: {
+        highlighted: Math.max(
+          0,
+          current.curation.highlighted + highlightedDelta
+        ),
+        rated: Math.max(0, current.curation.rated + ratedDelta),
+      },
+    }));
   }
 
   async function copyRequest(key: string, value: string) {
@@ -408,6 +467,17 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       });
     }
 
+    if (sort !== DEFAULT_SORT) {
+      filters.push({
+        key: "sort",
+        label: `Sort: ${getSortLabel(sort)}`,
+        onClear: () => {
+          setSort(DEFAULT_SORT);
+          resetToFirstPage();
+        },
+      });
+    }
+
     if (filters.length === 0) return null;
 
     return (
@@ -528,6 +598,23 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
         </label>
 
         <label className={styles.filterField}>
+          <span>Sort by</span>
+          <select
+            value={sort}
+            onChange={(event) => {
+              setSort(event.target.value as ArtworkSort);
+              resetToFirstPage();
+            }}
+          >
+            {SORT_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+
+        <label className={styles.filterField}>
           <span>Page size</span>
           <select
             value={pageSize}
@@ -553,6 +640,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
             setSourceFilter("all");
             setHighlightFilter("all");
             setRatingFilter("all");
+            setSort(DEFAULT_SORT);
             setPage(DEFAULT_PAGE);
             setPageSize(DEFAULT_PAGE_SIZE);
           }}
@@ -1023,6 +1111,7 @@ function readUrlFilters(): UrlFilters {
         : "all",
     highlightFilter: parseHighlightFilter(highlightedParam, highlightParam),
     ratingFilter: parseRatingFilter(ratingParam),
+    sort: parseArtworkSort(params.get("sort")),
     page: parsePage(params.get("page")),
     pageSize: parsePageSize(params.get("pageSize") ?? params.get("limit")),
   };
@@ -1034,6 +1123,7 @@ function defaultUrlFilters(): UrlFilters {
     sourceFilter: "all",
     highlightFilter: "all",
     ratingFilter: "all",
+    sort: DEFAULT_SORT,
     page: DEFAULT_PAGE,
     pageSize: DEFAULT_PAGE_SIZE,
   };
@@ -1060,6 +1150,11 @@ function writeUrlFilters(filters: UrlFilters) {
     url.searchParams,
     "rating",
     filters.ratingFilter === "all" ? "" : filters.ratingFilter
+  );
+  setOrDeleteParam(
+    url.searchParams,
+    "sort",
+    filters.sort === DEFAULT_SORT ? "" : filters.sort
   );
   setOrDeleteParam(
     url.searchParams,
@@ -1119,6 +1214,19 @@ function parseRatingFilter(value: string | null): RatingFilter {
   return "all";
 }
 
+function parseArtworkSort(value: string | null): ArtworkSort {
+  return SORT_OPTIONS.some((option) => option.value === value)
+    ? (value as ArtworkSort)
+    : DEFAULT_SORT;
+}
+
+function getSortLabel(value: ArtworkSort) {
+  return (
+    SORT_OPTIONS.find((option) => option.value === value)?.label ??
+    SORT_OPTIONS[0].label
+  );
+}
+
 function parsePage(value: string | null) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_PAGE;
@@ -1171,6 +1279,7 @@ function buildArtworkListApiPath({
   sourceFilter,
   highlightFilter,
   ratingFilter,
+  sort,
   pageSize,
   offset,
 }: {
@@ -1178,6 +1287,7 @@ function buildArtworkListApiPath({
   sourceFilter: SourceFilter;
   highlightFilter: HighlightFilter;
   ratingFilter: RatingFilter;
+  sort: ArtworkSort;
   pageSize: number;
   offset: number;
 }) {
@@ -1190,6 +1300,7 @@ function buildArtworkListApiPath({
     highlightFilter === "all" ? "" : String(highlightFilter === "highlighted")
   );
   setOrDeleteParam(params, "rating", ratingFilter === "all" ? "" : ratingFilter);
+  setOrDeleteParam(params, "sort", sort === DEFAULT_SORT ? "" : sort);
   params.set("limit", String(pageSize));
   params.set("offset", String(offset));
 

@@ -13,18 +13,18 @@ loadEnvFile(path.join(repoRoot, ".env"));
 loadEnvFile(path.join(webRoot, ".env.local"));
 loadEnvFile(path.join(webRoot, ".env"));
 
-const dataDir = path.join(webRoot, "data");
-const sourcePath = process.env.ARTWORK_JSON_PATH
+const sourcePath = process.env.ARTWORK_JSON_PATH?.trim()
   ? path.resolve(process.env.ARTWORK_JSON_PATH)
-  : path.join(dataDir, "artworks.json");
-const curationPath = process.env.ARTWORK_CURATION_PATH
-  ? path.resolve(process.env.ARTWORK_CURATION_PATH)
-  : path.join(dataDir, "artwork-curation.json");
+  : undefined;
 const connectionString =
   process.env.DATABASE_URL?.trim() || process.env.POSTGRES_URL?.trim();
 
 if (!connectionString) {
   throw new Error("DATABASE_URL is not configured");
+}
+
+if (!sourcePath) {
+  throw new Error("ARTWORK_JSON_PATH is required for catalog imports");
 }
 
 if (!fs.existsSync(sourcePath)) {
@@ -38,9 +38,6 @@ if (!Array.isArray(artworks)) {
   throw new Error(`Artwork JSON must contain an array: ${sourcePath}`);
 }
 
-const curation = fs.existsSync(curationPath)
-  ? parseCuration(JSON.parse(fs.readFileSync(curationPath, "utf8")))
-  : {};
 const pool = new Pool({
   connectionString,
   max: parsePositiveInt(process.env.DATABASE_POOL_MAX, 10),
@@ -55,7 +52,8 @@ const client = await pool.connect();
 try {
   await client.query("BEGIN");
   await client.query(getSchemaSql());
-  await client.query("TRUNCATE artwork_tags, artwork_curation, artworks");
+
+  await client.query("TRUNCATE artwork_tags, artworks");
 
   const artworkRows = [];
   const tagRows = [];
@@ -68,7 +66,8 @@ try {
 
   await insertArtworkRows(client, artworkRows);
   await insertTagRows(client, tagRows);
-  await insertCurationRows(client, curation);
+
+  const prunedCuration = await pruneOrphanedCurationRows(client);
 
   const count = Number(
     (await client.query("SELECT COUNT(*) AS count FROM artworks")).rows[0]
@@ -86,9 +85,11 @@ try {
     JSON.stringify(
       {
         source: path.relative(webRoot, sourcePath),
-        curation: path.relative(webRoot, curationPath),
         artworks: artworks.length,
-        curated: Object.keys(curation).length,
+        curation: {
+          table: "artwork_curation",
+          prunedOrphans: prunedCuration,
+        },
       },
       null,
       2
@@ -120,33 +121,6 @@ function normalizeText(value) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim();
-}
-
-function parseCuration(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-
-  return Object.fromEntries(
-    Object.entries(value).flatMap(([id, item]) => {
-      const normalized = normalizeCurationItem(item);
-      return normalized.highlighted || normalized.rating
-        ? [[id, normalized]]
-        : [];
-    })
-  );
-}
-
-function normalizeCurationItem(value) {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
-
-  const item = {};
-  if (value.highlighted === true) item.highlighted = true;
-
-  const rating = Number(value.rating);
-  if (Number.isInteger(rating) && rating >= 1 && rating <= 5) {
-    item.rating = rating;
-  }
-
-  return item;
 }
 
 function prepareArtworkRow(artwork, index) {
@@ -270,28 +244,17 @@ async function insertTagRows(client, rows) {
   }
 }
 
-async function insertCurationRows(client, curation) {
-  const rows = Object.entries(curation).map(([id, item]) => [
-    id,
-    item.highlighted === true,
-    item.rating ?? null,
-  ]);
+async function pruneOrphanedCurationRows(client) {
+  const result = await client.query(
+    `DELETE FROM artwork_curation c
+     WHERE NOT EXISTS (
+       SELECT 1
+       FROM artworks a
+       WHERE a.id = c.id
+     )`
+  );
 
-  for (const batch of chunks(rows, 10000)) {
-    const values = batch.flat();
-    const placeholders = batch.map((row, rowIndex) => {
-      const base = rowIndex * row.length;
-      return `($${base + 1}, $${base + 2}, $${base + 3})`;
-    });
-
-    await client.query(
-      `INSERT INTO artwork_curation (id, highlighted, rating)
-       VALUES ${placeholders.join(", ")}
-       ON CONFLICT (id)
-       DO UPDATE SET highlighted = EXCLUDED.highlighted, rating = EXCLUDED.rating`,
-      values
-    );
-  }
+  return result.rowCount ?? 0;
 }
 
 function chunks(items, size) {

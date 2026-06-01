@@ -1,3 +1,5 @@
+import { headers } from "next/headers";
+import { isLocalDevelopmentHeaders } from "@/lib/local-dev";
 import styles from "./page.module.css";
 import { ArtworkCurationGrid } from "./ArtworkCurationGrid";
 
@@ -8,6 +10,8 @@ function PaperlesspaperLogo({ className }: { className?: string }) {
 }
 
 export default async function Home() {
+  const requestHeaders = await headers();
+
   return (
     <div className={styles.page}>
       <main className={styles.main}>
@@ -24,15 +28,10 @@ export default async function Home() {
           </nav>
         </div>
 
-        <ArtworkCurationGrid readOnlyCuration={isProductionRuntime()} />
+        <ArtworkCurationGrid
+          readOnlyCuration={!isLocalDevelopmentHeaders(requestHeaders)}
+        />
       </main>
     </div>
-  );
-}
-
-function isProductionRuntime() {
-  return (
-    process.env.NODE_ENV === "production" ||
-    process.env.VERCEL_ENV === "production"
   );
 }
