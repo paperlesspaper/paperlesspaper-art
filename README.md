@@ -55,7 +55,10 @@ Query parameters:
 - `selected`: `true` or `false`, filters by the curation checkbox state
 - `highlighted`: alias for `selected`
 - `rating`: `1`, `2`, `3`, `4`, `5`, `rated`, or `unrated`
-- `limit`: defaults to `40`, max `200`
+- `sort`: `curated`, `relevance`, `title-asc`, `title-desc`, `date-desc`,
+  `date-asc`, `downloaded-desc`, `downloaded-asc`, `rating-desc`, or
+  `rating-asc`
+- `limit`: defaults to `100`, max `200`
 - `offset`: pagination offset
 
 Response shape:
@@ -100,7 +103,19 @@ Response shape:
   ],
   "total": 45,
   "limit": 10,
-  "offset": 0
+  "offset": 0,
+  "meta": {
+    "totalCatalogItems": 12000,
+    "sourceCounts": {
+      "svgrepo": 9000,
+      "wikimedia": 3000
+    },
+    "sources": ["svgrepo", "wikimedia"],
+    "curation": {
+      "highlighted": 42,
+      "rated": 120
+    }
+  }
 }
 ```
 
@@ -235,6 +250,15 @@ type ArtworkSearchResponse = {
   total: number;
   limit: number;
   offset: number;
+  meta: {
+    totalCatalogItems: number;
+    sourceCounts: Partial<Record<Artwork["source"], number>>;
+    sources: Artwork["source"][];
+    curation: {
+      highlighted: number;
+      rated: number;
+    };
+  };
 };
 
 type Artwork = {
@@ -327,6 +351,7 @@ ART_API_KEY=
 Local/CI sync environment:
 
 ```env
+DATABASE_URL=postgres://...
 S3_BUCKET=paperlesspaper-art
 S3_ENDPOINT=https://fsn1.your-objectstorage.com
 S3_REGION=fsn1
@@ -363,18 +388,134 @@ Generate/update locally or in CI:
 
 ```bash
 cd packages/scraper
-yarn install
-yarn build
+npm ci
+npm run build
 
 node dist/index.js met --query "landscape" --limit 100
 node dist/index.js artic --query "portrait" --limit 100
 node dist/index.js wikimedia --query "paintings" --limit 100
+node dist/index.js wikimedia --query "paintings" --limit 100 --min-global-usage 5 --min-local-usage 2 --thumb-width 1024 --download-delay-ms 1000
 node dist/index.js svgrepo --query "cat" --limit 100
 ```
+
+If a non-interactive shell cannot find `node`, use the absolute Node binary, for
+example `/usr/local/bin/node dist/index.js wikimedia --query "paintings" --limit
+100`, or export a PATH that includes your Node install.
+
+The scraper writes catalog metadata directly to Postgres and requires
+`DATABASE_URL` or `POSTGRES_URL`. It writes downloaded assets to
+`apps/web/public/images` by default. Use `--web-root` for the compiled CLI, or
+`ARTWORK_IMAGES_ROOT` for scripts, when running outside the repo layout.
+Scraper database helpers load environment values from the repo-root `.env`,
+then `apps/web/.env.local`, then `apps/web/.env`; already-exported shell values
+take precedence.
+All scraper commands skip artwork IDs that already exist in Postgres before
+downloading assets. Pass `--refresh-existing` to intentionally redownload and
+update existing catalog rows.
+
+### Wikimedia Search Loop
+
+To keep rerunning the finite Wikimedia search scraper, use:
+
+```bash
+cd packages/scraper
+npm ci
+npm run build
+
+QUERY=paintings \
+LIMIT=100 \
+MIN_GLOBAL_USAGE=5 \
+MIN_LOCAL_USAGE=2 \
+THUMB_WIDTH=1024 \
+DOWNLOAD_DELAY_MS=5000 \
+WIKIMEDIA_USER_AGENT="paperlesspaper-art/0.1 (https://github.com/paperlesspaper/paperlesspaper-art; you@example.com)" \
+bash scripts/scrape-wikimedia-loop.sh
+```
+
+This loops the equivalent of:
+
+```bash
+node dist/index.js wikimedia --query "paintings" --limit 100 --min-global-usage 5 --min-local-usage 2 --thumb-width 1024 --download-delay-ms 5000
+```
+
+Useful environment variables:
+
+- `QUERY`: Wikimedia search query, default `paintings`
+- `LIMIT`: results per run, default `100`
+- `WIDTHS`: resized image widths, default `512,1024`
+- `MIN_GLOBAL_USAGE`: minimum global Wikimedia usage count, default `0`
+- `MIN_LOCAL_USAGE`: minimum local Commons usage count, default `0`
+- `THUMB_WIDTH`: Wikimedia thumbnail width to request, default `1024`
+- `DOWNLOAD_DELAY_MS`: delay between image downloads, default `5000`
+- `WIKIMEDIA_USER_AGENT`: descriptive Wikimedia request User-Agent with contact
+  info; strongly recommended for long-running Commons scraping
+- `WIKIMEDIA_MAXLAG`: Commons Action API `maxlag` value, default `5`; set `0`
+  to omit it
+- `SEARCH_OFFSET`: initial Wikimedia search offset, default `0` or the saved
+  offset file value
+- `OFFSET_FILE`: file used to persist the next search offset, default
+  `.wikimedia-search-offset`
+- `REFRESH_EXISTING`: redownload artwork IDs already in Postgres, default `0`
+- `WEB_ROOT`: optional path to `apps/web`
+- `NODE_BIN`: Node executable, default `node`
+- `SUCCESS_DELAY`: delay before the next run after success, default `60`
+- `RESTART_DELAY`: delay after a failed run, default `10`
+- `MAX_FAILURES`: stop after this many failures; `0` means retry forever
+
+The loop persists the next Wikimedia search offset in `OFFSET_FILE` and advances
+by `LIMIT` after each successful run, so later runs continue through the search
+results instead of reprocessing only the first page. For a broader Wikimedia
+backfill that actively hunts for Google Art Project images across categories,
+use the Google Art Project continuous scraper below.
+
+For large Wikimedia runs, set `WIKIMEDIA_USER_AGENT` to identify your scraper
+with a contact URL or email. If Wikimedia reports `HTTP 429 Too many requests`
+or `HTTP 503 Service Unavailable`, the scraper now retries with backoff and
+honors the `Retry-After` response header when Wikimedia sends one. If throttling
+continues, lower `LIMIT`, temporarily lower `THUMB_WIDTH`, increase
+`DOWNLOAD_DELAY_MS`, increase `SUCCESS_DELAY`/`RESTART_DELAY`, and let the client
+cool down before retrying. The scraper logs per-run skip stats so you can see
+whether candidates were filtered out or downloads were throttled.
+
+### Google Art Project Continuous Scraper
+
+For long-running Wikimedia/Google Art Project backfills, use the dedicated loop
+script:
+
+```bash
+cd packages/scraper
+npm ci
+
+TARGET=1000 \
+CONCURRENCY=10 \
+bash scripts/download-google-art-project-loop.sh
+```
+
+The loop runs `scripts/download-google-art-project.mjs`, then restarts it until
+you stop it with `Ctrl-C`.
+
+Useful environment variables:
+
+- `TARGET`: items to add per run, default `1000`
+- `PER_SOURCE_CAP`: max items per category/search source per run, defaults to
+  `TARGET`
+- `CATEGORY_LIMIT`: max Wikimedia category members to inspect, default `50000`
+- `SEARCH_LIMIT`: max Wikimedia search results to inspect, default `500`
+- `CONCURRENCY`: parallel page workers, default `10`
+- `WIDTHS`: resized image widths, default `512,1024`
+- `THUMB_WIDTH`: Wikimedia thumbnail width to download, default `3840`
+- `ARTWORK_IMAGES_ROOT`: override the local image output directory
+- `SUCCESS_DELAY`: delay before the next run after success, default `5`
+- `EMPTY_DELAY`: delay after a run adds no new items, default `300`
+- `RESTART_DELAY`: delay after a failed run, default `10`
+- `MAX_FAILURES`: stop after this many failures; `0` means retry forever
+- `STOP_ON_EMPTY`: defaults to `1` in the loop, causing empty runs to exit with
+  status `20` so the loop can wait longer before retrying
 
 Publish generated images to object storage:
 
 ```bash
+cd ../..
 set -a
 source .env
 set +a

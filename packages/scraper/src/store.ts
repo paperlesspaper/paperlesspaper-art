@@ -4,17 +4,37 @@ import type { Artwork } from "./artwork.js";
 type ArtworkPostgresModule = {
   closeArtworkDatabase: () => Promise<void>;
   isArtworkDatabaseConfigured: () => boolean;
-  upsertArtworkInDatabase: (artwork: Artwork) => Promise<boolean>;
+  loadArtworkDuplicateIndexFromDatabase: () => Promise<Array<{ id: string }>>;
+  upsertArtworkInDatabase: (artwork: Artwork) => Promise<ArtworkUpsertResult>;
+};
+
+type ArtworkUpsertResult = {
+  inserted: boolean;
+  updated: boolean;
 };
 
 export async function upsertArtworks(params: { artworks: Artwork[] }) {
   const database = await loadArtworkPostgres();
+  let inserted = 0;
+  let updated = 0;
 
   for (const artwork of params.artworks) {
-    await database.upsertArtworkInDatabase(artwork);
+    const result = await database.upsertArtworkInDatabase(artwork);
+    if (result.inserted) inserted++;
+    if (result.updated) updated++;
   }
 
-  return { addedOrUpdated: params.artworks.length };
+  return {
+    inserted,
+    updated,
+    addedOrUpdated: inserted + updated,
+  };
+}
+
+export async function loadExistingArtworkIds() {
+  const database = await loadArtworkPostgres();
+  const artworks = await database.loadArtworkDuplicateIndexFromDatabase();
+  return new Set(artworks.map((artwork) => artwork.id));
 }
 
 export async function closeArtworkStore() {

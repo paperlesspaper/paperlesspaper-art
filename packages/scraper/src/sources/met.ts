@@ -30,6 +30,7 @@ export async function scrapeMet(params: {
   limit: number;
   widths: number[];
   imagesRoot: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const searchUrl = new URL(
     "https://collectionapi.metmuseum.org/public/collection/v1/search"
@@ -50,6 +51,8 @@ export async function scrapeMet(params: {
   const artworks: Artwork[] = [];
 
   for (const objectID of ids) {
+    if (params.existingArtworkIds?.has(`met:${objectID}`)) continue;
+
     const objectRes = await metFetch(
       `https://collectionapi.metmuseum.org/public/collection/v1/objects/${objectID}`
     );
@@ -136,6 +139,7 @@ export async function scrapeMetAllPaintings(params: {
   concurrency: number;
   departmentId?: number;
   query?: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const departmentId = params.departmentId ?? 11;
   const query = params.query ?? "painting";
@@ -169,6 +173,8 @@ export async function scrapeMetAllPaintings(params: {
         if (results.length >= params.limit) return;
 
         const objectID = allIds[i];
+        if (params.existingArtworkIds?.has(`met:${objectID}`)) continue;
+
         const artwork = await processMetObjectId({
           objectID,
           widths: params.widths,

@@ -191,7 +191,13 @@
 .inlineHighlightToggle:has(input:focus-visible),
 .previewCloseButton:focus-visible,
 .previewNavButton:focus-visible,
-.previewActions a:focus-visible {
+.previewActions a:focus-visible,
+.epdAutoButton:focus-visible,
+.segmentedControl button:focus-visible,
+.epdField select:focus,
+.epdField input:focus,
+.epdCheckbox:has(input:focus-visible),
+.rangeControl input:focus-visible {
   border-color: #0a84ff;
   outline: 2px solid rgb(10 132 255 / 20%);
   outline-offset: 1px;
@@ -810,6 +816,24 @@
   color: rgb(255 255 255 / 72%);
 }
 
+.previewRenderStatus {
+  position: absolute;
+  bottom: 22px;
+  left: 50%;
+  z-index: 1;
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid rgb(255 255 255 / 18%);
+  border-radius: 6px;
+  background: rgb(0 0 0 / 72%);
+  color: #fff;
+  font-size: 13px;
+  padding: 0 12px;
+  transform: translateX(-50%);
+}
+
 .previewCloseButton,
 .previewNavButton {
   position: absolute;
@@ -935,6 +959,229 @@
 .previewActions a:hover {
   border-color: #0a84ff;
   color: #0a84ff;
+}
+
+.epdPanel {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  background: #f7f7f7;
+  padding: 12px;
+}
+
+.epdPanelHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.epdPanel h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.epdPanelActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.epdPanelHeader p,
+.epdAutoSummary {
+  margin: 3px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.epdAutoButton {
+  height: 32px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 10px;
+}
+
+.epdAutoButton:hover:not(:disabled),
+.segmentedControl button:hover,
+.epdField select:hover,
+.epdField input:hover:not(:disabled) {
+  border-color: #0a84ff;
+}
+
+.epdAutoButton:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.5;
+}
+
+.segmentedControl {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 7px;
+  background: var(--foreground);
+  padding: 3px;
+}
+
+.segmentedControl button {
+  min-width: 0;
+  height: 30px;
+  border: 1px solid transparent;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.segmentedControl .segmentActive {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.epdStepList {
+  display: grid;
+  gap: 12px;
+}
+
+.epdStep {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+  border-top: 1px solid var(--button-secondary-border);
+  padding-top: 12px;
+}
+
+.epdStep h4 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 18px;
+}
+
+.epdControlGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.epdFieldFull {
+  grid-column: 1 / -1;
+}
+
+.epdField {
+  display: grid;
+  gap: 5px;
+  min-width: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.epdField select,
+.epdField input {
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+  padding: 0 8px;
+}
+
+.epdField select:disabled,
+.epdField input:disabled,
+.rangeControl input:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.epdActionRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.epdToggleRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.epdCheckbox {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0 9px;
+}
+
+.epdCheckbox input {
+  width: 14px;
+  height: 14px;
+  accent-color: #0a84ff;
+}
+
+.epdCheckbox:has(input:disabled) {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.55;
+}
+
+.epdSliders {
+  display: grid;
+  gap: 10px;
+}
+
+.rangeControl {
+  display: grid;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.rangeControl span {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rangeControl output {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.rangeControl input {
+  width: 100%;
+  accent-color: #0a84ff;
 }
 
 .previewDescription {
@@ -1103,9 +1350,22 @@
     transform: none;
   }
 
+  .previewRenderStatus {
+    bottom: 58px;
+  }
+
   .detailList {
     grid-template-columns: 90px minmax(0, 1fr);
     gap: 6px 10px;
+  }
+
+  .epdPanelHeader,
+  .epdControlGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .epdAutoButton {
+    width: fit-content;
   }
 }
 
@@ -1131,7 +1391,8 @@
   }
 
   .apiPanel,
-  .previewApiPanel {
+  .previewApiPanel,
+  .epdPanel {
     background: #050505;
   }
 
@@ -1149,5 +1410,11 @@
     border-color: #ededed !important;
     background: #ededed !important;
     color: #000 !important;
+  }
+
+  .segmentedControl .segmentActive {
+    border-color: #ededed;
+    background: #ededed;
+    color: #000;
   }
 }

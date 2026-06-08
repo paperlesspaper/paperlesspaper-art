@@ -100,6 +100,7 @@ export type ArtworkCatalogSearchResult = {
 const DEFAULT_LIMIT = 100;
 const MAX_LIMIT = 200;
 const DEFAULT_SORT: ArtworkSort = "curated";
+const HIDDEN_PRODUCTION_RATING = 1;
 
 export async function searchArtworkCatalog(
   filters: ArtworkSearchFilters
@@ -150,6 +151,9 @@ export async function searchArtworkCatalog(
 export async function findArtworkInCatalogById(id: string) {
   await ensureArtworkDatabase();
 
+  const productionRatingFilter = shouldHideOneStarArtworks()
+    ? ` AND c.rating IS DISTINCT FROM ${HIDDEN_PRODUCTION_RATING}`
+    : "";
   const row = (
     await getArtworkPool().query<ArtworkRow>(
       `SELECT
@@ -158,7 +162,7 @@ export async function findArtworkInCatalogById(id: string) {
           c.rating AS rating
        FROM artworks a
        LEFT JOIN artwork_curation c ON c.id = a.id
-       WHERE a.id = $1
+       WHERE a.id = $1${productionRatingFilter}
        LIMIT 1`,
       [id]
     )
@@ -453,6 +457,10 @@ function buildArtworkSql(filters: ArtworkSearchFilters): ArtworkSql {
     where.push(`c.rating = ${addParam(filters.rating)}`);
   }
 
+  if (shouldHideOneStarArtworks()) {
+    where.push(`c.rating IS DISTINCT FROM ${HIDDEN_PRODUCTION_RATING}`);
+  }
+
   return {
     rankSql,
     orderSql: buildArtworkOrderSql(
@@ -571,6 +579,10 @@ function toPostgresTsQuery(value?: string) {
   const terms = normalizeText(value).split(" ").filter(Boolean).slice(0, 12);
   if (terms.length === 0) return undefined;
   return terms.map((term) => `${term}:*`).join(" & ");
+}
+
+function shouldHideOneStarArtworks() {
+  return process.env.NODE_ENV === "production";
 }
 
 function rowToApiArtwork(row: ArtworkRow) {

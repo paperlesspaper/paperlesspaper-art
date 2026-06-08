@@ -3,7 +3,12 @@
 import path from "node:path";
 import { Command } from "commander";
 import { findWebRoot, parseWidths } from "./paths.js";
-import { closeArtworkStore, defaultWebPaths, upsertArtworks } from "./store.js";
+import {
+  closeArtworkStore,
+  defaultWebPaths,
+  loadExistingArtworkIds,
+  upsertArtworks,
+} from "./store.js";
 import { scrapeMet } from "./sources/met.js";
 import { scrapeArtic } from "./sources/artic.js";
 import { scrapeWikimedia } from "./sources/wikimedia.js";
@@ -30,7 +35,11 @@ function addCommonOptions(cmd: Command) {
     .requiredOption("-q, --query <string>", "Search query")
     .option("-l, --limit <number>", "Max results", "25")
     .option("-w, --widths <csv>", "Resize widths, e.g. 512,1024", "512,1024")
-    .option("--web-root <path>", "Path to apps/web (autodetected if omitted)");
+    .option("--web-root <path>", "Path to apps/web (autodetected if omitted)")
+    .option(
+      "--refresh-existing",
+      "Refresh artwork IDs that already exist in Postgres instead of skipping them"
+    );
 }
 
 addCommonOptions(
@@ -41,16 +50,18 @@ addCommonOptions(
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
+  const existingArtworkIds = await resolveExistingArtworkIds(opts.refreshExisting);
 
   const artworks = await scrapeMet({
     query: opts.query,
     limit: Number.isFinite(limit) ? limit : 25,
     widths,
     imagesRoot,
+    existingArtworkIds,
   });
 
   const result = await upsertArtworks({ artworks });
-  console.log(`met: upserted ${result.addedOrUpdated} items into Postgres`);
+  console.log(formatUpsertSummary("met", result));
 });
 
 addCommonOptions(
@@ -61,40 +72,89 @@ addCommonOptions(
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
+  const existingArtworkIds = await resolveExistingArtworkIds(opts.refreshExisting);
 
   const artworks = await scrapeArtic({
     query: opts.query,
     limit: Number.isFinite(limit) ? limit : 25,
     widths,
     imagesRoot,
+    existingArtworkIds,
   });
 
   const result = await upsertArtworks({ artworks });
-  console.log(`artic: upserted ${result.addedOrUpdated} items into Postgres`);
+  console.log(formatUpsertSummary("artic", result));
 });
 
 addCommonOptions(
   program
     .command("wikimedia")
     .description("Scrape Wikimedia Commons (CC/PD-licensed raster images)")
+    .option(
+      "--min-global-usage <number>",
+      "Minimum global Wikimedia usage count",
+      "0"
+    )
+    .option(
+      "--min-local-usage <number>",
+      "Minimum local Commons usage count",
+      "0"
+    )
+    .option(
+      "--thumb-width <number>",
+      "Wikimedia thumbnail width to request",
+      "1024"
+    )
+    .option(
+      "--download-delay-ms <number>",
+      "Delay between Wikimedia image downloads",
+      "1000"
+    )
+    .option(
+      "--search-offset <number>",
+      "Wikimedia search offset for pagination",
+      "0"
+    )
+    .option(
+      "--category <title>",
+      "Wikimedia Commons category to recurse, e.g. 'Category:Works by Ernst Ludwig Kirchner'"
+    )
+    .option(
+      "--category-depth <number>",
+      "Maximum subcategory recursion depth when --category is used",
+      "5"
+    )
 ).action(async (opts) => {
   const webRoot = await resolveWebRoot(opts.webRoot);
   const { imagesRoot } = defaultWebPaths(webRoot);
 
   const limit = Number(opts.limit);
   const widths = parseWidths(opts.widths);
+  const minGlobalUsage = parseNonNegativeInt(opts.minGlobalUsage, 0);
+  const minLocalUsage = parseNonNegativeInt(opts.minLocalUsage, 0);
+  const thumbWidth = parseNonNegativeInt(opts.thumbWidth, 1024);
+  const downloadDelayMs = parseNonNegativeInt(opts.downloadDelayMs, 1000);
+  const searchOffset = parseNonNegativeInt(opts.searchOffset, 0);
+  const categoryDepth = parseNonNegativeInt(opts.categoryDepth, 5);
+  const existingArtworkIds = await resolveExistingArtworkIds(opts.refreshExisting);
 
   const artworks = await scrapeWikimedia({
     query: opts.query,
     limit: Number.isFinite(limit) ? limit : 25,
     widths,
     imagesRoot,
+    minGlobalUsage,
+    minLocalUsage,
+    thumbWidth,
+    downloadDelayMs,
+    searchOffset,
+    category: opts.category,
+    categoryDepth,
+    existingArtworkIds,
   });
 
   const result = await upsertArtworks({ artworks });
-  console.log(
-    `wikimedia: upserted ${result.addedOrUpdated} items into Postgres`
-  );
+  console.log(formatUpsertSummary("wikimedia", result));
 });
 
 program
@@ -129,6 +189,10 @@ program
   .option("-l, --limit <number>", "Max results")
   .option("--web-root <path>", "Path to apps/web (autodetected if omitted)")
   .option(
+    "--refresh-existing",
+    "Refresh artwork IDs that already exist in Postgres instead of skipping them"
+  )
+  .option(
     "--cdp-url <url>",
     "Connect to an existing Chrome via CDP (e.g. http://127.0.0.1:9222)",
     ""
@@ -136,6 +200,9 @@ program
   .action(async (opts) => {
     const webRoot = await resolveWebRoot(opts.webRoot);
     const { imagesRoot } = defaultWebPaths(webRoot);
+    const existingArtworkIds = await resolveExistingArtworkIds(
+      opts.refreshExisting
+    );
 
     if (opts.allCollections) {
       const collectionsStart = Number(opts.collectionsStart);
@@ -192,13 +259,14 @@ program
               limit: perCollectionLimit,
               imagesRoot,
               downloadedAt,
+              existingArtworkIds,
             });
 
             const result = await upsertArtworks({ artworks });
             collectionsProcessed++;
             processedSlugs.add(slug);
             console.log(
-              `svgrepo: collection ${slug}: upserted ${result.addedOrUpdated} items into Postgres`
+              formatUpsertSummary(`svgrepo: collection ${slug}`, result)
             );
           }
 
@@ -265,13 +333,14 @@ program
                 imagesRoot,
                 downloadedAt,
                 session,
+                existingArtworkIds,
               });
 
               const result = await upsertArtworks({ artworks });
               collectionsProcessed++;
               processedSlugs.add(slug);
               console.log(
-                `svgrepo: collection ${slug}: upserted ${result.addedOrUpdated} items into Postgres`
+                formatUpsertSummary(`svgrepo: collection ${slug}`, result)
               );
             }
 
@@ -342,6 +411,7 @@ program
           : undefined,
       limit,
       imagesRoot,
+      existingArtworkIds,
       cdpUrl:
         typeof opts.cdpUrl === "string" && opts.cdpUrl.length > 0
           ? opts.cdpUrl
@@ -349,9 +419,7 @@ program
     });
 
     const result = await upsertArtworks({ artworks });
-    console.log(
-      `svgrepo: upserted ${result.addedOrUpdated} items into Postgres`
-    );
+    console.log(formatUpsertSummary("svgrepo", result));
   });
 
 program
@@ -374,4 +442,32 @@ async function resolveWebRoot(flagValue?: string) {
     );
   }
   return detected;
+}
+
+function parseNonNegativeInt(value: unknown, fallback: number) {
+  const parsed =
+    typeof value === "string" && value.trim().length > 0
+      ? Number(value)
+      : value;
+
+  if (
+    typeof parsed !== "number" ||
+    !Number.isFinite(parsed) ||
+    parsed < 0
+  ) {
+    return fallback;
+  }
+
+  return Math.trunc(parsed);
+}
+
+async function resolveExistingArtworkIds(refreshExisting?: boolean) {
+  return refreshExisting ? undefined : await loadExistingArtworkIds();
+}
+
+function formatUpsertSummary(
+  label: string,
+  result: { inserted: number; updated: number; addedOrUpdated: number }
+) {
+  return `${label}: upserted ${result.addedOrUpdated} items into Postgres (${result.inserted} inserted, ${result.updated} updated)`;
 }

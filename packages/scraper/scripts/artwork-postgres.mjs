@@ -74,7 +74,7 @@ async function upsertArtworkInDatabaseNow(artwork) {
     await ensureArtworkDatabase(client);
 
     const prepared = prepareArtworkRow(artwork);
-    await client.query(
+    const result = await client.query(
       `INSERT INTO artworks (
           id,
           search_rowid,
@@ -144,7 +144,8 @@ async function upsertArtworkInDatabaseNow(artwork) {
           search_query = EXCLUDED.search_query,
           downloaded_at = EXCLUDED.downloaded_at,
           payload_json = EXCLUDED.payload_json,
-          search_vector = EXCLUDED.search_vector`,
+          search_vector = EXCLUDED.search_vector
+       RETURNING (xmax = 0) AS inserted`,
       prepared.artwork
     );
 
@@ -168,7 +169,8 @@ async function upsertArtworkInDatabaseNow(artwork) {
     }
 
     await client.query("COMMIT");
-    return true;
+    const inserted = result.rows[0]?.inserted === true;
+    return { inserted, updated: !inserted };
   } catch (error) {
     await client.query("ROLLBACK").catch(() => undefined);
     throw error;

@@ -131,6 +131,7 @@ export async function scrapeSvgrepoCollectionTerm(params: {
   imagesRoot: string;
   downloadedAt: string;
   session: SvgrepoSession;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const hrefs = await collectSvgHrefsFromCollectionApi({
     requestContext: params.session.requestContext,
@@ -145,6 +146,7 @@ export async function scrapeSvgrepoCollectionTerm(params: {
     downloadedAt: params.downloadedAt,
     page: params.session.page,
     requestContext: params.session.requestContext,
+    existingArtworkIds: params.existingArtworkIds,
   });
 }
 
@@ -153,6 +155,7 @@ export async function scrapeSvgrepoCollectionTermApiOnly(params: {
   limit: number;
   imagesRoot: string;
   downloadedAt: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const hrefs = await collectSvgHrefsFromCollectionApiApiOnly({
     term: params.term,
@@ -174,6 +177,7 @@ export async function scrapeSvgrepoCollectionTermApiOnly(params: {
     limit: params.limit,
     query: `collection:${params.term}`,
     downloadedAt: params.downloadedAt,
+    existingArtworkIds: params.existingArtworkIds,
   });
 }
 
@@ -183,6 +187,7 @@ export async function scrapeSvgrepo(params: {
   imagesRoot: string;
   cdpUrl?: string;
   collectionUrl?: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const downloadedAt = new Date().toISOString();
 
@@ -219,6 +224,7 @@ export async function scrapeSvgrepo(params: {
       downloadedAt,
       page: session.page,
       requestContext: session.requestContext,
+      existingArtworkIds: params.existingArtworkIds,
     });
   } finally {
     await session.close();
@@ -421,6 +427,7 @@ async function scrapeFromHrefCandidates(params: {
   imagesRoot: string;
   page: import("playwright").Page;
   requestContext: import("playwright").APIRequestContext;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const candidates = unique(
     params.hrefs
@@ -438,6 +445,7 @@ async function scrapeFromHrefCandidates(params: {
         imagesRoot: params.imagesRoot,
         query: params.query,
         downloadedAt: params.downloadedAt,
+        existingArtworkIds: params.existingArtworkIds,
       })
     );
 
@@ -450,6 +458,8 @@ async function scrapeFromHrefCandidates(params: {
 
     const sourceId = match[1];
     const slug = match[2];
+    if (params.existingArtworkIds?.has(`svgrepo:${sourceId}`)) continue;
+
     const sourceUrl = `https://www.svgrepo.com${href}`;
 
     const outDir = path.join(params.imagesRoot, "svgrepo", sourceId);
@@ -952,6 +962,7 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
   query: string;
   downloadedAt: string;
   imagesRoot: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const candidates = unique(
     params.hrefs
@@ -968,6 +979,8 @@ async function scrapeFromHrefCandidatesApiOnly(params: {
 
     const sourceId = match[1];
     const slug = match[2];
+    if (params.existingArtworkIds?.has(`svgrepo:${sourceId}`)) continue;
+
     const sourceUrl = `https://www.svgrepo.com${href}`;
 
     const outDir = path.join(params.imagesRoot, "svgrepo", sourceId);
@@ -1075,12 +1088,15 @@ async function scrapeApiOnlyCandidate(params: {
   imagesRoot: string;
   query: string;
   downloadedAt: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }): Promise<Artwork | null> {
   const match = params.href.match(/^\/svg\/(\d+)\/([^/?#]+)$/);
   if (!match) return null;
 
   const sourceId = match[1];
   const slug = match[2];
+  if (params.existingArtworkIds?.has(`svgrepo:${sourceId}`)) return null;
+
   const sourceUrl = `https://www.svgrepo.com${params.href}`;
 
   const outDir = path.join(params.imagesRoot, "svgrepo", sourceId);

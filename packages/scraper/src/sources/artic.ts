@@ -33,6 +33,7 @@ export async function scrapeArtic(params: {
   limit: number;
   widths: number[];
   imagesRoot: string;
+  existingArtworkIds?: ReadonlySet<string>;
 }) {
   const searchUrl = new URL("https://api.artic.edu/api/v1/artworks/search");
   searchUrl.searchParams.set("q", params.query);
@@ -51,6 +52,8 @@ export async function scrapeArtic(params: {
   const artworks: Artwork[] = [];
 
   for (const item of searchJson.data) {
+    if (params.existingArtworkIds?.has(`artic:${item.id}`)) continue;
+
     const detailsUrl = new URL(
       `https://api.artic.edu/api/v1/artworks/${item.id}`
     );
