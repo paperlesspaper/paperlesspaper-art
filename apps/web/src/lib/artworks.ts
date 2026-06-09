@@ -83,10 +83,20 @@ export type ArtworkCatalogMeta = {
   totalCatalogItems: number;
   sourceCounts: Partial<Record<ArtworkSource, number>>;
   sources: ArtworkSource[];
+  tags: ArtworkTagCloudItem[];
+  topicClouds: {
+    art: ArtworkTagCloudItem[];
+    svg: ArtworkTagCloudItem[];
+  };
   curation: {
     highlighted: number;
     rated: number;
   };
+};
+
+export type ArtworkTagCloudItem = {
+  tag: string;
+  count: number;
 };
 
 export type ArtworkCatalogSearchResult = {
@@ -174,7 +184,8 @@ export async function findArtworkInCatalogById(id: string) {
 export async function getArtworkCatalogMeta(): Promise<ArtworkCatalogMeta> {
   await ensureArtworkDatabase();
 
-  const [sourceRows, totalRow, curationRow] = await Promise.all([
+  const [sourceRows, totalRow, curationRow, artTopicRows, svgTopicRows] =
+    await Promise.all([
     getArtworkPool().query<{ source: ArtworkSource; count: string }>(
       `SELECT source, COUNT(*) AS count
        FROM artworks
@@ -190,22 +201,225 @@ export async function getArtworkCatalogMeta(): Promise<ArtworkCatalogMeta> {
           COUNT(*) FILTER (WHERE rating IS NOT NULL) AS rated
        FROM artwork_curation`
     ),
+    getArtworkTopicRows("wikimedia"),
+    getArtworkTopicRows("svgrepo"),
   ]);
 
   const sourceCounts = Object.fromEntries(
     sourceRows.rows.map((row) => [row.source, Number(row.count)])
   ) as Partial<Record<ArtworkSource, number>>;
   const curation = curationRow.rows[0] ?? { highlighted: "0", rated: "0" };
+  const artTopics = buildTopicCloud(artTopicRows.rows);
+  const svgTopics = buildTopicCloud(svgTopicRows.rows);
 
   return {
     totalCatalogItems: Number(totalRow.rows[0]?.count ?? 0),
     sourceCounts,
     sources: sourceRows.rows.map((row) => row.source),
+    tags: [...artTopics, ...svgTopics]
+      .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+      .slice(0, 48),
+    topicClouds: {
+      art: artTopics,
+      svg: svgTopics,
+    },
     curation: {
       highlighted: Number(curation.highlighted ?? 0),
       rated: Number(curation.rated ?? 0),
     },
   };
+}
+
+async function getArtworkTopicRows(source: ArtworkSource) {
+  const hiddenRating = shouldHideOneStarArtworks()
+    ? HIDDEN_PRODUCTION_RATING
+    : null;
+
+  return getArtworkPool().query<{ value: string | null; count: string }>(
+    `SELECT value, COUNT(DISTINCT artwork_id) AS count
+     FROM (
+       SELECT a.id AS artwork_id, a.collection_name AS value
+       FROM artworks a
+       LEFT JOIN artwork_curation c ON c.id = a.id
+       WHERE a.source = $1
+         AND a.collection_name IS NOT NULL
+         AND a.collection_name_normalized <> ''
+         AND ($2::integer IS NULL OR c.rating IS DISTINCT FROM $2)
+
+       UNION ALL
+
+       SELECT a.id AS artwork_id, a.search_query AS value
+       FROM artworks a
+       LEFT JOIN artwork_curation c ON c.id = a.id
+       WHERE a.source = $1
+         AND a.search_query IS NOT NULL
+         AND btrim(a.search_query) <> ''
+         AND ($2::integer IS NULL OR c.rating IS DISTINCT FROM $2)
+     ) topic_candidates
+     GROUP BY value
+     ORDER BY count DESC, value ASC
+     LIMIT 300`,
+    [source, hiddenRating]
+  );
+}
+
+function buildTopicCloud(
+  rows: Array<{ value: string | null; count: string }>
+): ArtworkTagCloudItem[] {
+  const topics = new Map<string, ArtworkTagCloudItem>();
+
+  for (const row of rows) {
+    const tag = toTopicLabel(row.value);
+    if (!tag) continue;
+
+    const key = normalizeText(tag);
+    if (!key || isNoisyTopic(key)) continue;
+
+    const count = Number(row.count);
+    if (!Number.isFinite(count) || count <= 0) continue;
+
+    const current = topics.get(key);
+    if (!current) {
+      topics.set(key, { tag, count });
+      continue;
+    }
+
+    topics.set(key, {
+      tag: chooseTopicLabel(current.tag, tag),
+      count: Math.max(current.count, count),
+    });
+  }
+
+  return Array.from(topics.values())
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+    .slice(0, 48);
+}
+
+function toTopicLabel(value: string | null) {
+  const source = extractTopicSource(value);
+  const cleaned = source
+    .replace(/^collection:/i, "")
+    .replace(/[_+/.-]+/g, " ")
+    .replace(/\bgoogle\s+art\s+project\b/gi, " ")
+    .replace(/\bwikimedia\s+commons\b/gi, " ")
+    .replace(/\bpublic\s+domain\b/gi, " ")
+    .replace(/\b(svg|vector|vectors|icon|icons|batch)\b/gi, " ")
+    .replace(
+      /\b(artwork|bold|broken|category|cfpb|chunk|clarity|collection|color|colored|dark|dazzle|design\s+system|duotone|eink|evericons|fill|filled|flat|forge|glyph|icooon|iconcino|interface|kalai|light|line|linea|metriz|minimal|modern|mono|moon|mt\s+web|olicons|oval|outline|outlined|pack|paintings|puppylinux|sepia|set|sign|simple|solid|solar|sensa|system|thick|thin|ui|variety|various|v[0-9]+)\b/gi,
+      " "
+    )
+    .replace(/\b[0-9]+px\b/gi, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  if (!cleaned) return undefined;
+  return titleCaseTopic(cleaned);
+}
+
+function extractTopicSource(value: string | null) {
+  let text = (value ?? "").trim();
+  const collectionMatch = text.match(/svgrepo\.com\/collection\/([^/?#]+)/i);
+  if (collectionMatch?.[1]) {
+    text = collectionMatch[1];
+  }
+
+  const categoryIndex = text.toLowerCase().lastIndexOf("category:");
+  if (categoryIndex >= 0) {
+    text = text.slice(categoryIndex + "category:".length);
+  }
+
+  const colonIndex = text.lastIndexOf(":");
+  if (colonIndex >= 0 && colonIndex < text.length - 1) {
+    text = text.slice(colonIndex + 1);
+  }
+
+  return text;
+}
+
+function titleCaseTopic(value: string) {
+  return value
+    .split(" ")
+    .map((word) => {
+      if (/^(ai|api|ui|ux|url|pdf|png|jpg|qr|tv)$/i.test(word)) {
+        return word.toUpperCase();
+      }
+      if (/^3d$/i.test(word)) return "3D";
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .join(" ");
+}
+
+function chooseTopicLabel(current: string, next: string) {
+  if (next.length < current.length) return next;
+  if (next.length === current.length && next.localeCompare(current) < 0) {
+    return next;
+  }
+  return current;
+}
+
+function isNoisyTopic(normalized: string) {
+  const words = normalized.split(" ").filter(Boolean);
+  const exactNoisyTopics = new Set([
+    "afiado sharp pixel",
+    "and symbols",
+    "asoka",
+    "art",
+    "bordered",
+    "bowtie",
+    "brankic",
+    "collection",
+    "cornered",
+    "dedupe title hash",
+    "design",
+    "doodle",
+    "ficons",
+    "foundation",
+    "futicons futuristic",
+    "google art project",
+    "icona",
+    "maki",
+    "metriz circled",
+    "metrize circled",
+    "moriarty",
+    "online",
+    "open web",
+    "other",
+    "paintings",
+    "pixeden",
+    "poster",
+    "sargam",
+    "small",
+    "start universal tiny",
+    "super basic",
+    "svg",
+    "svgrepo",
+    "symbols",
+    "system",
+    "typicons",
+    "ui",
+    "wave",
+    "wikimedia art",
+    "zondicons",
+  ]);
+  const noisyWords = new Set([
+    "arrow",
+    "batch",
+    "dedupe",
+    "file",
+    "folder",
+    "hash",
+    "icon",
+    "icons",
+    "svg",
+    "vector",
+    "vectors",
+  ]);
+
+  return (
+    normalized.length < 3 ||
+    exactNoisyTopics.has(normalized) ||
+    words.some((word) => noisyWords.has(word))
+  );
 }
 
 export function toApiArtwork(
@@ -424,12 +638,17 @@ function buildArtworkSql(filters: ArtworkSearchFilters): ArtworkSql {
 
   const tag = normalizeText(filters.tag);
   if (tag) {
+    const tagPlaceholder = addParam(`%${tag}%`);
     where.push(
-      `EXISTS (
-        SELECT 1
-        FROM artwork_tags t
-        WHERE t.artwork_id = a.id
-          AND t.tag_normalized LIKE ${addParam(`%${tag}%`)}
+      `(
+        a.collection_name_normalized LIKE ${tagPlaceholder}
+        OR regexp_replace(lower(COALESCE(a.search_query, '')), '[^a-z0-9]+', ' ', 'g') LIKE ${tagPlaceholder}
+        OR EXISTS (
+          SELECT 1
+          FROM artwork_tags t
+          WHERE t.artwork_id = a.id
+            AND t.tag_normalized LIKE ${tagPlaceholder}
+        )
       )`
     );
   }

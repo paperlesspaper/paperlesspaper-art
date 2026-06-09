@@ -101,6 +101,7 @@ type EpdControls = {
 };
 type UrlFilters = {
   query: string;
+  tagFilter: string;
   sourceFilter: SourceFilter;
   highlightFilter: HighlightFilter;
   ratingFilter: RatingFilter;
@@ -296,6 +297,11 @@ const EMPTY_META: ArtworkCatalogMeta = {
   totalCatalogItems: 0,
   sourceCounts: {},
   sources: [],
+  tags: [],
+  topicClouds: {
+    art: [],
+    svg: [],
+  },
   curation: {
     highlighted: 0,
     rated: 0,
@@ -315,6 +321,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     () => new Set()
   );
   const [query, setQuery] = useState("");
+  const [tagFilter, setTagFilter] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [highlightFilter, setHighlightFilter] =
     useState<HighlightFilter>("all");
@@ -352,6 +359,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     () =>
       buildArtworkListApiPath({
         query,
+        tagFilter,
         sourceFilter,
         highlightFilter,
         ratingFilter,
@@ -367,12 +375,14 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       ratingFilter,
       sort,
       sourceFilter,
+      tagFilter,
     ]
   );
   const listCurl = useMemo(() => toCurlRequest(listApiPath), [listApiPath]);
 
   const hasActiveFilters =
     query.length > 0 ||
+    tagFilter.length > 0 ||
     sourceFilter !== "all" ||
     highlightFilter !== "all" ||
     ratingFilter !== "all" ||
@@ -383,6 +393,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   useEffect(() => {
     const filters = readUrlFilters();
     setQuery(filters.query);
+    setTagFilter(filters.tagFilter);
     setSourceFilter(filters.sourceFilter);
     setHighlightFilter(filters.highlightFilter);
     setRatingFilter(filters.ratingFilter);
@@ -445,6 +456,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
 
     writeUrlFilters({
       query,
+      tagFilter,
       sourceFilter,
       highlightFilter,
       ratingFilter,
@@ -461,6 +473,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
     ratingFilter,
     sort,
     sourceFilter,
+    tagFilter,
   ]);
 
   useEffect(() => {
@@ -718,6 +731,17 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
       });
     }
 
+    if (tagFilter.trim()) {
+      filters.push({
+        key: "tag",
+        label: `Topic: ${tagFilter.trim()}`,
+        onClear: () => {
+          setTagFilter("");
+          resetToFirstPage();
+        },
+      });
+    }
+
     if (sourceFilter !== "all") {
       filters.push({
         key: "source",
@@ -783,6 +807,97 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
             <span aria-hidden="true">x</span>
           </button>
         ))}
+      </div>
+    );
+  }
+
+  function renderTagCloud(
+    id: string,
+    title: string,
+    source: Extract<SourceFilter, Artwork["source"]>,
+    tags: ArtworkCatalogMeta["tags"]
+  ) {
+    if (tags.length === 0) return null;
+
+    const counts = tags.map((tag) => tag.count);
+    const minCount = Math.min(...counts);
+    const maxCount = Math.max(...counts);
+    const hasActiveCloudFilter = sourceFilter === source && tagFilter.trim();
+
+    return (
+      <section className={styles.tagCloud} aria-labelledby={id}>
+        <div className={styles.tagCloudHeader}>
+          <h2 id={id}>{title}</h2>
+          {hasActiveCloudFilter ? (
+            <button
+              type="button"
+              className={styles.tagCloudClear}
+              onClick={() => {
+                setTagFilter("");
+                setSourceFilter("all");
+                resetToFirstPage();
+              }}
+            >
+              Clear
+            </button>
+          ) : null}
+        </div>
+        <div className={styles.tagCloudList}>
+          {tags.map((item) => {
+            const level = getTagCloudLevel(item.count, minCount, maxCount);
+            const isActive = sourceFilter === source && item.tag === tagFilter;
+
+            return (
+              <button
+                key={item.tag}
+                type="button"
+                className={[
+                  styles.tagCloudTag,
+                  styles[`tagCloudTagLevel${level}`],
+                  isActive ? styles.tagCloudTagActive : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
+                onClick={() => {
+                  setTagFilter(isActive ? "" : item.tag);
+                  setSourceFilter(isActive ? "all" : source);
+                  resetToFirstPage();
+                }}
+                aria-pressed={isActive}
+                title={`${item.count} artworks`}
+              >
+                <span>{item.tag}</span>
+                <small>{item.count}</small>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    );
+  }
+
+  function renderTagClouds() {
+    const artTags = catalogMeta.topicClouds?.art ?? [];
+    const svgTags = catalogMeta.topicClouds?.svg ?? [];
+
+    if (artTags.length === 0 && svgTags.length === 0) {
+      return renderTagCloud(
+        "tag-cloud-all-title",
+        "Topics",
+        "wikimedia",
+        catalogMeta.tags ?? []
+      );
+    }
+
+    return (
+      <div className={styles.tagClouds}>
+        {renderTagCloud(
+          "tag-cloud-art-title",
+          "Art topics",
+          "wikimedia",
+          artTags
+        )}
+        {renderTagCloud("tag-cloud-svg-title", "SVG topics", "svgrepo", svgTags)}
       </div>
     );
   }
@@ -927,6 +1042,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
           disabled={!hasActiveFilters}
           onClick={() => {
             setQuery("");
+            setTagFilter("");
             setSourceFilter("all");
             setHighlightFilter("all");
             setRatingFilter("all");
@@ -938,6 +1054,8 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
           Reset
         </button>
       </div>
+
+      {renderTagClouds()}
 
       {renderActiveFilters()}
 
@@ -2786,6 +2904,7 @@ function readUrlFilters(): UrlFilters {
 
   return {
     query: params.get("q") ?? "",
+    tagFilter: params.get("tag") ?? "",
     sourceFilter:
       sourceParam && ARTWORK_SOURCES.includes(sourceParam as Artwork["source"])
         ? (sourceParam as SourceFilter)
@@ -2801,6 +2920,7 @@ function readUrlFilters(): UrlFilters {
 function defaultUrlFilters(): UrlFilters {
   return {
     query: "",
+    tagFilter: "",
     sourceFilter: "all",
     highlightFilter: "all",
     ratingFilter: "all",
@@ -2815,6 +2935,7 @@ function writeUrlFilters(filters: UrlFilters) {
 
   const url = new URL(window.location.href);
   setOrDeleteParam(url.searchParams, "q", filters.query.trim());
+  setOrDeleteParam(url.searchParams, "tag", filters.tagFilter.trim());
   setOrDeleteParam(
     url.searchParams,
     "source",
@@ -2965,6 +3086,7 @@ function getArtworkImageUrls(
 
 function buildArtworkListApiPath({
   query,
+  tagFilter,
   sourceFilter,
   highlightFilter,
   ratingFilter,
@@ -2973,6 +3095,7 @@ function buildArtworkListApiPath({
   offset,
 }: {
   query: string;
+  tagFilter: string;
   sourceFilter: SourceFilter;
   highlightFilter: HighlightFilter;
   ratingFilter: RatingFilter;
@@ -2982,6 +3105,7 @@ function buildArtworkListApiPath({
 }) {
   const params = new URLSearchParams();
   setOrDeleteParam(params, "q", query.trim());
+  setOrDeleteParam(params, "tag", tagFilter.trim());
   setOrDeleteParam(params, "source", sourceFilter === "all" ? "" : sourceFilter);
   setOrDeleteParam(
     params,
@@ -3003,6 +3127,14 @@ function toCurlRequest(path: string) {
 function formatPageSummary(start: number, end: number, total: number) {
   if (total === 0) return "0 matches";
   return `${start + 1}-${end} of ${total} matches`;
+}
+
+function getTagCloudLevel(count: number, minCount: number, maxCount: number) {
+  if (maxCount <= minCount) return 2;
+  return Math.min(
+    4,
+    Math.max(0, Math.round(((count - minCount) / (maxCount - minCount)) * 4))
+  );
 }
 
 function getVisiblePages(currentPage: number, pageCount: number) {

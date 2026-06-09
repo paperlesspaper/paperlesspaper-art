@@ -184,6 +184,14 @@ export async function scrapeWikimedia(params: {
     Number(process.env.WIKIMEDIA_API_DELAY_MS ?? String(DEFAULT_API_DELAY_MS)),
     DEFAULT_API_DELAY_MS
   );
+  const pageBatchSize = Math.max(
+    1,
+    normalizeUsageThreshold(
+      Number(process.env.WIKIMEDIA_PAGE_BATCH_SIZE ?? "20"),
+      20
+    )
+  );
+  const includeUsage = minGlobalUsage > 0 || minLocalUsage > 0;
   const resultLimit = normalizeResultLimit(params.limit);
 
   const pages = params.category
@@ -194,6 +202,8 @@ export async function scrapeWikimedia(params: {
         thumbWidth,
         maxlag,
         apiDelayMs,
+        pageBatchSize,
+        includeUsage,
       })
     : await fetchWikimediaSearchPages({
         query: params.query,
@@ -202,6 +212,7 @@ export async function scrapeWikimedia(params: {
         thumbWidth,
         maxlag,
         apiDelayMs,
+        includeUsage,
       });
 
   const artworks: Artwork[] = [];
@@ -320,10 +331,14 @@ export async function scrapeWikimedia(params: {
     const originalPublic = toPublicPath(params.imagesRoot, originalPath);
 
     try {
-      if (downloadDelayMs > 0) await sleep(downloadDelayMs);
-      await downloadToFile(originalUrl, originalPath, {
-        Referer: sourceUrl,
-      });
+      if (await fileExists(originalPath)) {
+        console.log(`Wikimedia file ${page.title} already exists locally`);
+      } else {
+        if (downloadDelayMs > 0) await sleep(downloadDelayMs);
+        await downloadToFile(originalUrl, originalPath, {
+          Referer: sourceUrl,
+        });
+      }
     } catch (error) {
       stats.skippedDownload++;
       await removeEmptyOutputDir(outDir);
@@ -403,10 +418,12 @@ async function fetchWikimediaSearchPages(params: {
   thumbWidth: number;
   maxlag: number;
   apiDelayMs: number;
+  includeUsage: boolean;
 }) {
   const apiUrl = baseWikimediaPagesUrl({
     thumbWidth: params.thumbWidth,
     maxlag: params.maxlag,
+    includeUsage: params.includeUsage,
   });
   apiUrl.searchParams.set("generator", "search");
   apiUrl.searchParams.set("gsrnamespace", "6"); // File:
@@ -429,6 +446,8 @@ async function fetchWikimediaCategoryPages(params: {
   thumbWidth: number;
   maxlag: number;
   apiDelayMs: number;
+  pageBatchSize: number;
+  includeUsage: boolean;
 }) {
   const pageIds = await collectWikimediaCategoryFileIds({
     category: params.category,
@@ -439,10 +458,18 @@ async function fetchWikimediaCategoryPages(params: {
   });
   const pages: WikimediaPage[] = [];
 
-  for (const batch of chunks(pageIds, 50)) {
+  const pageIdBatches = chunks(pageIds, params.pageBatchSize);
+  let batchIndex = 0;
+
+  for (const batch of pageIdBatches) {
+    batchIndex++;
+    console.log(
+      `Wikimedia metadata batch ${batchIndex}/${pageIdBatches.length} (${batch.length} files)`
+    );
     const apiUrl = baseWikimediaPagesUrl({
       thumbWidth: params.thumbWidth,
       maxlag: params.maxlag,
+      includeUsage: params.includeUsage,
     });
     apiUrl.searchParams.set("pageids", batch.join("|"));
     pages.push(...(await fetchWikimediaPages(apiUrl, params.apiDelayMs)));
@@ -539,19 +566,30 @@ async function collectWikimediaCategoryFileIds(params: {
   return pageIds;
 }
 
-function baseWikimediaPagesUrl(params: { thumbWidth: number; maxlag: number }) {
+function baseWikimediaPagesUrl(params: {
+  thumbWidth: number;
+  maxlag: number;
+  includeUsage: boolean;
+}) {
   const apiUrl = new URL("https://commons.wikimedia.org/w/api.php");
   apiUrl.searchParams.set("action", "query");
   apiUrl.searchParams.set("format", "json");
   apiUrl.searchParams.set("formatversion", "2");
-  apiUrl.searchParams.set("prop", "imageinfo|categories|globalusage|fileusage");
+  apiUrl.searchParams.set(
+    "prop",
+    params.includeUsage
+      ? "imageinfo|categories|globalusage|fileusage"
+      : "imageinfo|categories"
+  );
   apiUrl.searchParams.set("cllimit", "50");
   apiUrl.searchParams.set("clshow", "!hidden");
   apiUrl.searchParams.set("iiprop", "url|mime|size|extmetadata");
-  apiUrl.searchParams.set("gulimit", "200");
-  apiUrl.searchParams.set("gunamespace", "*");
-  apiUrl.searchParams.set("fulimit", "200");
-  apiUrl.searchParams.set("funamespace", "0|6|10|14|100|828");
+  if (params.includeUsage) {
+    apiUrl.searchParams.set("gulimit", "200");
+    apiUrl.searchParams.set("gunamespace", "*");
+    apiUrl.searchParams.set("fulimit", "200");
+    apiUrl.searchParams.set("funamespace", "0|6|10|14|100|828");
+  }
   apiUrl.searchParams.set("redirects", "1");
   if (params.maxlag > 0) {
     apiUrl.searchParams.set("maxlag", String(params.maxlag));
@@ -650,6 +688,15 @@ async function removeEmptyOutputDir(dir: string) {
     await fs.rmdir(dir);
   } catch {
     // Keep non-empty directories intact.
+  }
+}
+
+async function fileExists(filePath: string) {
+  try {
+    await fs.access(filePath);
+    return true;
+  } catch {
+    return false;
   }
 }
 

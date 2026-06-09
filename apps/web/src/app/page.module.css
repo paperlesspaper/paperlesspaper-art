@@ -184,6 +184,8 @@
 .resetFiltersButton:focus-visible,
 .clearSearchButton:focus-visible,
 .filterChip:focus-visible,
+.tagCloudClear:focus-visible,
+.tagCloudTag:focus-visible,
 .pagination button:focus-visible,
 .apiRequestRow button:focus-visible,
 .previewButton:focus-visible,
@@ -246,6 +248,118 @@
 
 .filterChip span {
   color: var(--text-secondary);
+}
+
+.tagClouds {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 14px;
+  align-items: start;
+}
+
+.tagCloud {
+  display: grid;
+  width: 100%;
+  gap: 10px;
+}
+
+.tagCloudHeader {
+  display: flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.tagCloudHeader h2 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.tagCloudClear {
+  height: 30px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.tagCloudList {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tagCloudTag {
+  display: inline-flex;
+  max-width: 100%;
+  min-height: 32px;
+  align-items: baseline;
+  gap: 7px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1;
+  padding: 0 11px;
+}
+
+.tagCloudTag span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tagCloudTag small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 1;
+}
+
+.tagCloudTagLevel0 {
+  font-size: 12px;
+}
+
+.tagCloudTagLevel1 {
+  font-size: 13px;
+}
+
+.tagCloudTagLevel2 {
+  font-size: 14px;
+}
+
+.tagCloudTagLevel3 {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.tagCloudTagLevel4 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.tagCloudTagActive {
+  border-color: #111;
+  background: #111;
+  color: #fff;
+}
+
+.tagCloudTagActive small {
+  color: rgb(255 255 255 / 70%);
 }
 
 .apiPanel,
@@ -327,7 +441,9 @@
 .pagination button:hover:not(:disabled),
 .filterChip:hover,
 .resetFiltersButton:hover:not(:disabled),
-.clearSearchButton:hover {
+.clearSearchButton:hover,
+.tagCloudClear:hover,
+.tagCloudTag:hover {
   border-color: #0a84ff;
 }
 
@@ -1276,6 +1392,10 @@
     grid-template-columns: 1fr 1fr;
   }
 
+  .tagClouds {
+    grid-template-columns: 1fr;
+  }
+
   .searchField {
     grid-column: 1 / -1;
   }
@@ -1410,6 +1530,16 @@
     border-color: #ededed !important;
     background: #ededed !important;
     color: #000 !important;
+  }
+
+  .tagCloudTagActive {
+    border-color: #ededed;
+    background: #ededed;
+    color: #000;
+  }
+
+  .tagCloudTagActive small {
+    color: rgb(0 0 0 / 62%);
   }
 
   .segmentedControl .segmentActive {

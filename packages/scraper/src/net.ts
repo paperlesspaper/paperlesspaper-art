@@ -46,11 +46,26 @@ export async function fetchWithBackoff(
   const urlText = String(url);
 
   for (let attempt = 1; attempt <= attempts; attempt++) {
-    const res = await fetch(url, {
-      ...init,
-      signal: init.signal ?? AbortSignal.timeout(timeoutMs),
-      headers: withDefaultHeaders(init.headers),
-    });
+    let res: Response;
+
+    try {
+      res = await fetch(url, {
+        ...init,
+        signal: init.signal ?? AbortSignal.timeout(timeoutMs),
+        headers: withDefaultHeaders(init.headers),
+      });
+    } catch (error) {
+      if (attempt === attempts) throw error;
+
+      const delayMs = Math.min(baseDelayMs * 2 ** (attempt - 1), maxDelayMs);
+      console.warn(
+        `${errorName(error)} for ${urlText}; retrying in ${Math.ceil(
+          delayMs / 1000
+        )}s (${attempt}/${attempts})`
+      );
+      await sleep(delayMs);
+      continue;
+    }
 
     if (!RETRYABLE_STATUSES.has(res.status) || attempt === attempts) {
       return res;
@@ -72,6 +87,10 @@ export async function fetchWithBackoff(
   }
 
   throw new Error("fetchWithBackoff exhausted without returning a response");
+}
+
+function errorName(error: unknown) {
+  return error instanceof Error ? error.name || error.message : String(error);
 }
 
 export async function downloadToFile(
