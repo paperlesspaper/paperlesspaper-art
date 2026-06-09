@@ -322,6 +322,7 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
   );
   const [query, setQuery] = useState("");
   const [tagFilter, setTagFilter] = useState("");
+  const [showTags, setShowTags] = useState(false);
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [highlightFilter, setHighlightFilter] =
     useState<HighlightFilter>("all");
@@ -1053,9 +1054,18 @@ export function ArtworkCurationGrid({ readOnlyCuration }: Props) {
         >
           Reset
         </button>
+
+        <button
+          type="button"
+          className={styles.tagsToggleButton}
+          onClick={() => setShowTags((current) => !current)}
+          aria-expanded={showTags}
+        >
+          {showTags ? "Hide tags" : "Show tags"}
+        </button>
       </div>
 
-      {renderTagClouds()}
+      {showTags ? renderTagClouds() : null}
 
       {renderActiveFilters()}
 
@@ -1346,6 +1356,18 @@ function ArtworkPreview({
   const mediaUrl =
     previewMode === "original" ? displayUrl : selectedPreviewUrl ?? displayUrl;
   const mediaIsOriginal = previewMode === "original" || !selectedPreviewUrl;
+  const previewDownloadUrl =
+    previewMode === "original"
+      ? downloadUrl
+      : epdStatus === "ready"
+        ? selectedPreviewUrl
+        : undefined;
+  const previewDownloadLabel = getPreviewDownloadLabel(previewMode, epdStatus);
+  const previewDownloadName = getPreviewDownloadFilename(
+    artwork,
+    previewMode,
+    downloadUrl
+  );
   const selectedPalette = getEpdPalette(epdControls.paletteKey);
 
   useEffect(() => {
@@ -1666,6 +1688,24 @@ function ArtworkPreview({
               </button>
             ))}
           </div>
+
+          {previewDownloadUrl ? (
+            <a
+              className={styles.previewDownloadButton}
+              href={previewDownloadUrl}
+              download={previewDownloadName}
+            >
+              {previewDownloadLabel}
+            </a>
+          ) : (
+            <button
+              type="button"
+              className={styles.previewDownloadButton}
+              disabled
+            >
+              {previewDownloadLabel}
+            </button>
+          )}
 
           <div className={styles.epdStepList}>
             <section className={styles.epdStep} aria-label="Display">
@@ -3047,6 +3087,36 @@ function parsePageSize(value: string | null) {
 
 function downloadFilename(artwork: Artwork, url: string) {
   const extension = url.split("?")[0].split(".").pop() || "jpg";
+  return `${downloadBaseName(artwork)}.${extension}`;
+}
+
+function getPreviewDownloadFilename(
+  artwork: Artwork,
+  previewMode: EpdPreviewMode,
+  originalUrl: string
+) {
+  if (previewMode === "original") {
+    return downloadFilename(artwork, originalUrl);
+  }
+
+  return `${downloadBaseName(artwork)}-${previewMode}.png`;
+}
+
+function getPreviewDownloadLabel(
+  previewMode: EpdPreviewMode,
+  epdStatus: "idle" | "rendering" | "ready" | "error"
+) {
+  if (previewMode === "original") return "Download original image";
+
+  const name = previewMode === "device" ? "device image" : "dithered image";
+
+  if (epdStatus === "rendering") return `Rendering ${name}`;
+  if (epdStatus === "error") return `${capitalize(name)} unavailable`;
+
+  return `Download ${name}`;
+}
+
+function downloadBaseName(artwork: Artwork) {
   const slug = artwork.title
     .toLowerCase()
     .normalize("NFKD")
@@ -3055,7 +3125,7 @@ function downloadFilename(artwork: Artwork, url: string) {
     .replace(/^-|-$/g, "")
     .slice(0, 80);
 
-  return `${slug || artwork.sourceId}.${extension}`;
+  return slug || artwork.sourceId;
 }
 
 function getArtworkImageUrls(
