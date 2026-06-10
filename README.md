@@ -1,6 +1,6 @@
 # paperlesspaper Art
 
-![paperlesspaper Art hero](assets/readme-hero.png)
+![paperlesspaper Art hero](frames.jpg)
 
 Curated public-domain and Creative Commons artworks/icons for
 [paperlesspaper.de](https://paperlesspaper.de). The catalog is generated
@@ -9,10 +9,9 @@ that paperlesspaper-web can search.
 
 ## Support Open Source
 
-paperlesspaper.de is built to make everyday paperwork simpler, calmer, and more
-accessible. If this catalog is useful to your project, support the open-source
-work behind it by visiting [paperlesspaper.de](https://paperlesspaper.de) and
-sharing it with people who could use better digital documents.
+Check out [paperlesspaper.de](https://paperlesspaper.de).
+
+![paperlesspaper Art hero](art-browser.jpg)
 
 ## Integration Reference
 
