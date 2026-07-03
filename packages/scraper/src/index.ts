@@ -7,7 +7,12 @@ import {
   closeArtworkStore,
   defaultWebPaths,
   loadExistingArtworkIds,
+  loadWikimediaPreviewDecisions,
+  loadWikimediaPreviewDecisionRatings,
+  setArtworkCurationRating,
+  upsertArtwork,
   upsertArtworks,
+  upsertWikimediaPreviewDecision,
 } from "./store.js";
 import { scrapeMet } from "./sources/met.js";
 import { scrapeArtic } from "./sources/artic.js";
@@ -106,6 +111,51 @@ addCommonOptions(
       "1024"
     )
     .option(
+      "--allow-duplicate-titles",
+      "Do not skip files whose normalized titles match an earlier accepted item"
+    )
+    .option(
+      "--revisit-rejected-previews",
+      "Show previews again even if they were rejected before"
+    )
+    .option(
+      "--ignore-usage-filter",
+      "Do not skip files because of Wikimedia usage/category thresholds"
+    )
+    .option(
+      "--disable-candidate-filters",
+      "Do not skip candidates because of art/usage filters"
+    )
+    .option(
+      "--art-filter <mode>",
+      "Art heuristic mode: broad or strict",
+      "broad"
+    )
+    .option(
+      "--review-mode <mode>",
+      "Preview review mode: both, previews, or full",
+      "both"
+    )
+    .option(
+      "--full-download-concurrency <number>",
+      "Number of full-size Wikimedia downloads to run in parallel",
+      "3"
+    )
+    .option(
+      "--preview-review",
+      "Download a small preview and wait for an approved/rejected decision before the full download"
+    )
+    .option(
+      "--preview-width <number>",
+      "Wikimedia preview thumbnail width to request when --preview-review is enabled",
+      "160"
+    )
+    .option(
+      "--preview-review-dir <path>",
+      "Directory used for preview review handoff files",
+      ".wikimedia-preview-review"
+    )
+    .option(
       "--download-delay-ms <number>",
       "Delay between Wikimedia image downloads",
       "1000"
@@ -133,12 +183,25 @@ addCommonOptions(
   const minGlobalUsage = parseNonNegativeInt(opts.minGlobalUsage, 0);
   const minLocalUsage = parseNonNegativeInt(opts.minLocalUsage, 0);
   const thumbWidth = parseNonNegativeInt(opts.thumbWidth, 1024);
+  const fullDownloadConcurrency = Math.min(
+    8,
+    Math.max(1, parseNonNegativeInt(opts.fullDownloadConcurrency, 3))
+  );
+  const previewWidth = parseNonNegativeInt(opts.previewWidth, 160);
   const downloadDelayMs = parseNonNegativeInt(opts.downloadDelayMs, 1000);
   const searchOffset = parseNonNegativeInt(opts.searchOffset, 0);
   const categoryDepth = parseNonNegativeInt(opts.categoryDepth, 5);
   const existingArtworkIds = await resolveExistingArtworkIds(opts.refreshExisting);
+  const existingPreviewDecisions = await loadWikimediaPreviewDecisions();
+  const previewDecisionRatings = await loadWikimediaPreviewDecisionRatings();
 
-  const artworks = await scrapeWikimedia({
+  const totalResult = {
+    inserted: 0,
+    updated: 0,
+    addedOrUpdated: 0,
+  };
+
+  const { stats } = await scrapeWikimedia({
     query: opts.query,
     limit: Number.isFinite(limit) ? limit : 25,
     widths,
@@ -146,15 +209,50 @@ addCommonOptions(
     minGlobalUsage,
     minLocalUsage,
     thumbWidth,
+    allowDuplicateTitles: opts.allowDuplicateTitles === true,
+    revisitRejectedPreviews: opts.revisitRejectedPreviews === true,
+    disableCandidateFilters: opts.disableCandidateFilters === true,
+    ignoreUsageFilter: opts.ignoreUsageFilter === true,
+    artFilterMode: opts.artFilter === "strict" ? "strict" : "broad",
+    reviewMode:
+      opts.reviewMode === "previews" || opts.reviewMode === "full"
+        ? opts.reviewMode
+        : "both",
+    fullDownloadConcurrency,
+    previewReview: opts.previewReview === true,
+    previewWidth,
     downloadDelayMs,
     searchOffset,
     category: opts.category,
     categoryDepth,
     existingArtworkIds,
+    existingPreviewDecisions,
+    onArtwork: async (artwork) => {
+      console.log(`Wikimedia upserting ${artwork.title}`);
+      const result = await upsertArtwork(artwork);
+      totalResult.inserted += result.inserted;
+      totalResult.updated += result.updated;
+      totalResult.addedOrUpdated += result.addedOrUpdated;
+      console.log(formatUpsertSummary("wikimedia", result));
+      const rating = previewDecisionRatings.get(artwork.id);
+      if (rating) {
+        await setArtworkCurationRating(artwork.id, rating);
+        console.log(`Wikimedia rated ${artwork.title} ${rating}`);
+      }
+      console.log(`Wikimedia upserted ${artwork.title}`);
+    },
+    onPreviewDecision: async (decision) => {
+      await upsertWikimediaPreviewDecision(decision);
+    },
   });
 
-  const result = await upsertArtworks({ artworks });
-  console.log(formatUpsertSummary("wikimedia", result));
+  console.log(formatUpsertSummary("wikimedia total", totalResult));
+  if (
+    opts.previewReview === true &&
+    (stats.previewPending > 0 || stats.skippedPreviewPending > 0)
+  ) {
+    process.exitCode = 75;
+  }
 });
 
 program

@@ -1,8 +1,9 @@
 import { headers } from "next/headers";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { isLocalDevelopmentHeaders } from "@/lib/local-dev";
-import styles from "./page.module.css";
-import { ArtworkCurationGrid } from "./ArtworkCurationGrid";
+import { ScraperControlPanel } from "../ScraperControlPanel";
+import styles from "../page.module.css";
 
 export const dynamic = "force-dynamic";
 
@@ -10,9 +11,12 @@ function PaperlesspaperLogo({ className }: { className?: string }) {
   return <span className={className}>paperlesspaper</span>;
 }
 
-export default async function Home() {
+export default async function ScraperPage() {
   const requestHeaders = await headers();
-  const isLocalDevelopment = isLocalDevelopmentHeaders(requestHeaders);
+
+  if (!isLocalDevelopmentHeaders(requestHeaders)) {
+    notFound();
+  }
 
   return (
     <div className={styles.page}>
@@ -21,19 +25,16 @@ export default async function Home() {
           <h1 className={styles.headerTitle}>
             <PaperlesspaperLogo className={styles.logoLarge} />
           </h1>
-          <div className={styles.artLabel}>Art</div>
+          <div className={styles.artLabel}>Scraper</div>
           <nav className={styles.headerLinks} aria-label="Project links">
-            {isLocalDevelopment ? <Link href="/scraper">Scraper</Link> : null}
-            <a href="https://paperlesspaper.de">paperlesspaper</a>
+            <Link href="/">Art catalog</Link>
             <a href="https://github.com/paperlesspaper/paperlesspaper-art">
               GitHub project
             </a>
           </nav>
         </div>
 
-        <ArtworkCurationGrid
-          readOnlyCuration={!isLocalDevelopment}
-        />
+        <ScraperControlPanel />
       </main>
     </div>
   );

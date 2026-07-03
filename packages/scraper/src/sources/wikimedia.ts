@@ -36,6 +36,24 @@ const WikimediaPage = z.object({
 
 type WikimediaPage = z.infer<typeof WikimediaPage>;
 
+type WikimediaPreviewDecision = "pending" | "approved" | "rejected";
+
+type WikimediaPreviewDecisionRecord = {
+  id: string;
+  sourceId: string;
+  title: string;
+  query: string;
+  decision: WikimediaPreviewDecision;
+  previewUrl: string;
+  previewLocalPath: string;
+  sourceUrl: string;
+  decidedAt: string;
+  metadata: Record<string, unknown>;
+};
+
+type WikimediaArtFilterMode = "broad" | "strict";
+type WikimediaReviewMode = "both" | "previews" | "full";
+
 const WikimediaApiResponse = z
   .object({
     query: z
@@ -69,6 +87,7 @@ const ALLOWED_RASTER_EXT = new Set([".jpg", ".jpeg", ".png", ".webp"]);
 const DEFAULT_MIN_GLOBAL_USAGE = 0;
 const DEFAULT_MIN_LOCAL_USAGE = 0;
 const DEFAULT_THUMB_WIDTH = 1024;
+const DEFAULT_PREVIEW_WIDTH = 160;
 const DEFAULT_DOWNLOAD_DELAY_MS = 1000;
 const DEFAULT_CATEGORY_DEPTH = 5;
 const DEFAULT_API_DELAY_MS = 250;
@@ -148,11 +167,25 @@ export async function scrapeWikimedia(params: {
   minGlobalUsage?: number;
   minLocalUsage?: number;
   thumbWidth?: number;
+  allowDuplicateTitles?: boolean;
+  revisitRejectedPreviews?: boolean;
+  disableCandidateFilters?: boolean;
+  ignoreUsageFilter?: boolean;
+  artFilterMode?: WikimediaArtFilterMode;
+  reviewMode?: WikimediaReviewMode;
+  fullDownloadConcurrency?: number;
   downloadDelayMs?: number;
   searchOffset?: number;
   category?: string;
   categoryDepth?: number;
   existingArtworkIds?: ReadonlySet<string>;
+  existingPreviewDecisions?: ReadonlyMap<string, WikimediaPreviewDecision>;
+  previewReview?: boolean;
+  previewWidth?: number;
+  onArtwork?: (artwork: Artwork) => Promise<void>;
+  onPreviewDecision?: (
+    decision: WikimediaPreviewDecisionRecord
+  ) => Promise<void>;
 }) {
   const downloadedAt = new Date().toISOString();
   const minGlobalUsage = normalizeUsageThreshold(
@@ -166,6 +199,10 @@ export async function scrapeWikimedia(params: {
   const thumbWidth = normalizeUsageThreshold(
     params.thumbWidth,
     DEFAULT_THUMB_WIDTH
+  );
+  const previewWidth = Math.max(
+    64,
+    normalizeUsageThreshold(params.previewWidth, DEFAULT_PREVIEW_WIDTH)
   );
   const downloadDelayMs = normalizeUsageThreshold(
     params.downloadDelayMs,
@@ -191,15 +228,39 @@ export async function scrapeWikimedia(params: {
       20
     )
   );
-  const includeUsage = minGlobalUsage > 0 || minLocalUsage > 0;
   const resultLimit = normalizeResultLimit(params.limit);
+  const previewReview = params.previewReview === true;
+  const allowDuplicateTitles = params.allowDuplicateTitles === true;
+  const revisitRejectedPreviews = params.revisitRejectedPreviews === true;
+  const disableCandidateFilters = params.disableCandidateFilters === true;
+  const ignoreUsageFilter = params.ignoreUsageFilter === true;
+  const artFilterMode =
+    params.artFilterMode === "strict" ? "strict" : "broad";
+  const reviewMode =
+    params.reviewMode === "previews" || params.reviewMode === "full"
+      ? params.reviewMode
+      : "both";
+  const previewOnly = previewReview && reviewMode === "previews";
+  const fullOnly = previewReview && reviewMode === "full";
+  const fullDownloadConcurrency = Math.max(
+    1,
+    Math.min(
+      8,
+      normalizeUsageThreshold(params.fullDownloadConcurrency, 3)
+    )
+  );
+  const includeUsage =
+    !disableCandidateFilters &&
+    !ignoreUsageFilter &&
+    (minGlobalUsage > 0 || minLocalUsage > 0);
+  const metadataThumbWidth = previewReview ? previewWidth : thumbWidth;
 
   const pages = params.category
     ? await fetchWikimediaCategoryPages({
         category: params.category,
         depth: categoryDepth,
         limit: resultLimit,
-        thumbWidth,
+        thumbWidth: metadataThumbWidth,
         maxlag,
         apiDelayMs,
         pageBatchSize,
@@ -209,7 +270,7 @@ export async function scrapeWikimedia(params: {
         query: params.query,
         limit: resultLimit,
         searchOffset,
-        thumbWidth,
+        thumbWidth: metadataThumbWidth,
         maxlag,
         apiDelayMs,
         includeUsage,
@@ -217,6 +278,8 @@ export async function scrapeWikimedia(params: {
 
   const artworks: Artwork[] = [];
   const seenTitleKeys = new Set<string>();
+  const queuedTitleKeys = new Set<string>();
+  const fullDownloadTasks: Array<() => Promise<void>> = [];
   const stats = {
     pages: pages.length,
     searchOffset,
@@ -232,9 +295,21 @@ export async function scrapeWikimedia(params: {
     skippedNonArt: 0,
     skippedUsage: 0,
     skippedDownload: 0,
+    skippedPreviewDownload: 0,
+    skippedPreviewPending: 0,
+    skippedPreviewRejected: 0,
+    skippedPreviewApproved: 0,
     skippedMetadata: 0,
     skippedResize: 0,
+    previewed: 0,
+    previewPending: 0,
+    previewApproved: 0,
+    previewRejected: 0,
   };
+
+  console.log(
+    `Wikimedia full downloads concurrency ${fullDownloadConcurrency}`
+  );
 
   for (const page of pages) {
     const ii = page.imageinfo?.[0];
@@ -245,6 +320,7 @@ export async function scrapeWikimedia(params: {
 
     const mime = (ii.mime ?? "").toLowerCase();
     const originalUrl = ii.thumburl ?? ii.url;
+    const sourceFileUrl = ii.url;
     if (!originalUrl) {
       stats.skippedNoImageUrl++;
       continue;
@@ -278,8 +354,29 @@ export async function scrapeWikimedia(params: {
     }
 
     const title = pageTitleToDisplay(page.title);
+    const existingPreviewDecision = params.existingPreviewDecisions?.get(id);
+    if (previewReview && existingPreviewDecision === "pending") {
+      stats.skippedPreviewPending++;
+      console.log(`Wikimedia preview skipped pending ${page.title}`);
+      continue;
+    }
+    if (existingPreviewDecision === "rejected" && !revisitRejectedPreviews) {
+      stats.skippedPreviewRejected++;
+      console.log(`Wikimedia preview skipped rejected ${page.title}`);
+      continue;
+    }
+    if (previewReview && existingPreviewDecision === "approved") {
+      stats.skippedPreviewApproved++;
+      console.log(`Wikimedia preview skipped approved ${page.title}`);
+      if (previewOnly) continue;
+    }
+
     const titleKey = normalizeTitleForDedupe(title);
-    if (titleKey && seenTitleKeys.has(titleKey)) {
+    if (
+      !allowDuplicateTitles &&
+      titleKey &&
+      (seenTitleKeys.has(titleKey) || queuedTitleKeys.has(titleKey))
+    ) {
       stats.skippedDuplicateTitle++;
       continue;
     }
@@ -289,11 +386,13 @@ export async function scrapeWikimedia(params: {
       ext(meta, "ObjectName") || ext(meta, "ImageDescription") || undefined;
 
     if (
+      !disableCandidateFilters &&
       !looksLikeScreenArt({
         query: params.query,
         title,
         description,
         categories: page.categories,
+        mode: artFilterMode,
       })
     ) {
       stats.skippedNonArt++;
@@ -307,6 +406,8 @@ export async function scrapeWikimedia(params: {
     );
 
     if (
+      !disableCandidateFilters &&
+      !ignoreUsageFilter &&
       !isImportantCommonsFile({
         globalUsageCount,
         localUsageCount,
@@ -323,92 +424,261 @@ export async function scrapeWikimedia(params: {
     const date = ext(meta, "DateTimeOriginal") || undefined;
     const credit = ext(meta, "Credit") || undefined;
 
-    const outDir = path.join(params.imagesRoot, "wikimedia", sourceId);
-    await ensureDir(outDir);
+    if (fullOnly && existingPreviewDecision !== "approved") {
+      stats.skippedPreviewPending++;
+      console.log(`Wikimedia preview skipped unreviewed ${page.title}`);
+      continue;
+    }
 
-    const originalExt = extFromMimeOrUrl(mime, originalUrl);
-    const originalPath = path.join(outDir, `original${originalExt}`);
-    const originalPublic = toPublicPath(params.imagesRoot, originalPath);
+    if (previewReview && existingPreviewDecision !== "approved") {
+      let previewDecision: WikimediaPreviewDecisionRecord;
 
-    try {
-      if (await fileExists(originalPath)) {
-        console.log(`Wikimedia file ${page.title} already exists locally`);
-      } else {
-        if (downloadDelayMs > 0) await sleep(downloadDelayMs);
-        await downloadToFile(originalUrl, originalPath, {
-          Referer: sourceUrl,
+      try {
+        previewDecision = await createWikimediaPreviewDecision({
+          id,
+          sourceId,
+          rawTitle: page.title,
+          title,
+          query: params.query,
+          sourceUrl,
+          mime,
+          previewUrl: ii.thumburl ?? originalUrl,
+          previewWidth,
+          imagesRoot: params.imagesRoot,
+          license: licenseInfo.license,
+          licenseUrl: licenseInfo.licenseUrl,
+          artist,
+          date,
+          description,
+          globalUsageCount,
+          localUsageCount,
+          downloadDelayMs,
         });
+      } catch (error) {
+        stats.skippedPreviewDownload++;
+        console.warn(
+          `Wikimedia preview failed for ${page.title}: ${errorMessage(error)}`
+        );
+        continue;
       }
-    } catch (error) {
-      stats.skippedDownload++;
-      await removeEmptyOutputDir(outDir);
-      console.warn(`Wikimedia download failed for ${page.title}: ${errorMessage(error)}`);
+
+      stats.previewed++;
+      await params.onPreviewDecision?.(previewDecision);
+      stats.previewPending++;
+      console.log(`Wikimedia preview pending ${page.title}`);
       continue;
     }
 
-    const dimensions = await getImageDimensions(originalPath).catch(
-      () => undefined
-    );
-    if (!dimensions) {
-      stats.skippedMetadata++;
-      await removeOutputDir(outDir);
-      console.warn(`Wikimedia metadata failed for ${page.title}`);
-      continue;
-    }
+    const fullDownloadUrl =
+      previewReview && sourceFileUrl ? sourceFileUrl : originalUrl;
+    if (titleKey) queuedTitleKeys.add(titleKey);
+    console.log(`Wikimedia queued full download ${page.title}`);
 
-    const resized: Record<string, string> = {};
-    const outByWidth: Record<number, string> = {};
+    fullDownloadTasks.push(async () => {
+      const outDir = path.join(params.imagesRoot, "wikimedia", sourceId);
+      await ensureDir(outDir);
 
-    for (const w of params.widths) {
-      const p = path.join(outDir, `w${w}.jpg`);
-      outByWidth[w] = p;
-      resized[String(w)] = toPublicPath(params.imagesRoot, p);
-    }
+      const originalExt = extFromMimeOrUrl(mime, fullDownloadUrl);
+      const originalPath = path.join(outDir, `original${originalExt}`);
+      const originalPublic = toPublicPath(params.imagesRoot, originalPath);
 
-    try {
-      await resizeToJpegs({
-        inputPath: originalPath,
-        outputPathsByWidth: outByWidth,
-      });
-    } catch (error) {
-      stats.skippedResize++;
-      await removeOutputDir(outDir);
-      console.warn(`Wikimedia resize failed for ${page.title}: ${errorMessage(error)}`);
-      continue;
-    }
+      try {
+        if (await fileExists(originalPath)) {
+          console.log(`Wikimedia file ${page.title} already exists locally`);
+        } else {
+          if (downloadDelayMs > 0) await sleep(downloadDelayMs);
+          console.log(`Wikimedia downloading ${page.title}`);
+          await downloadToFile(fullDownloadUrl, originalPath, {
+            Referer: sourceUrl,
+          });
+          console.log(`Wikimedia downloaded ${page.title}`);
+        }
+      } catch (error) {
+        stats.skippedDownload++;
+        await removeEmptyOutputDir(outDir);
+        console.warn(
+          `Wikimedia download failed for ${page.title}: ${errorMessage(error)}`
+        );
+        return;
+      }
 
-    if (titleKey) seenTitleKeys.add(titleKey);
-    stats.accepted++;
+      const dimensions = await getImageDimensions(originalPath).catch(
+        () => undefined
+      );
+      if (!dimensions) {
+        stats.skippedMetadata++;
+        await removeOutputDir(outDir);
+        console.warn(`Wikimedia metadata failed for ${page.title}`);
+        return;
+      }
 
-    artworks.push({
-      id,
-      source: "wikimedia",
-      sourceId,
-      title,
-      description,
-      artist,
-      date,
-      isPublicDomain: licenseInfo.isPublicDomain,
-      license: licenseInfo.license,
-      licenseUrl: licenseInfo.licenseUrl,
-      rights: credit,
-      sourceUrl,
-      tags: categoriesToTags(page.categories),
-      image: {
-        originalUrl,
-        ...dimensions,
-        localOriginalPath: originalPublic,
-        localResizedPaths: resized,
-      },
-      search: {
-        query: params.query,
-        downloadedAt,
-      },
+      const resized: Record<string, string> = {};
+      const outByWidth: Record<number, string> = {};
+
+      for (const w of params.widths) {
+        const p = path.join(outDir, `w${w}.jpg`);
+        outByWidth[w] = p;
+        resized[String(w)] = toPublicPath(params.imagesRoot, p);
+      }
+
+      try {
+        console.log(`Wikimedia resizing ${page.title}`);
+        await resizeToJpegs({
+          inputPath: originalPath,
+          outputPathsByWidth: outByWidth,
+        });
+      } catch (error) {
+        stats.skippedResize++;
+        await removeOutputDir(outDir);
+        console.warn(
+          `Wikimedia resize failed for ${page.title}: ${errorMessage(error)}`
+        );
+        return;
+      }
+
+      if (titleKey) seenTitleKeys.add(titleKey);
+      stats.accepted++;
+      console.log(`Wikimedia accepted ${page.title}`);
+
+      const artwork: Artwork = {
+        id,
+        source: "wikimedia",
+        sourceId,
+        title,
+        description,
+        artist,
+        date,
+        isPublicDomain: licenseInfo.isPublicDomain,
+        license: licenseInfo.license,
+        licenseUrl: licenseInfo.licenseUrl,
+        rights: credit,
+        sourceUrl,
+        tags: categoriesToTags(page.categories),
+        image: {
+          originalUrl: fullDownloadUrl,
+          ...dimensions,
+          localOriginalPath: originalPublic,
+          localResizedPaths: resized,
+        },
+        search: {
+          query: params.query,
+          downloadedAt,
+        },
+      };
+
+      if (params.onArtwork) {
+        await params.onArtwork(artwork);
+      }
+
+      artworks.push(artwork);
     });
   }
 
+  if (fullDownloadTasks.length > 0) {
+    console.log(
+      `Wikimedia running ${fullDownloadTasks.length} full downloads with concurrency ${fullDownloadConcurrency}`
+    );
+    await runLimited(fullDownloadTasks, fullDownloadConcurrency);
+  }
+
   console.log(`Wikimedia scrape stats: ${JSON.stringify(stats)}`);
-  return artworks;
+  return { artworks, stats };
+}
+
+async function createWikimediaPreviewDecision(params: {
+  id: string;
+  sourceId: string;
+  rawTitle: string;
+  title: string;
+  query: string;
+  sourceUrl: string;
+  mime: string;
+  previewUrl: string;
+  previewWidth: number;
+  imagesRoot: string;
+  license: string;
+  licenseUrl?: string;
+  artist?: string;
+  date?: string;
+  description?: string;
+  globalUsageCount: number;
+  localUsageCount: number;
+  downloadDelayMs: number;
+}): Promise<WikimediaPreviewDecisionRecord> {
+  const previewDir = path.join(
+    params.imagesRoot,
+    "wikimedia-previews",
+    params.sourceId
+  );
+  await ensureDir(previewDir);
+
+  const previewExt = extFromMimeOrUrl(params.mime, params.previewUrl);
+  const previewPath = path.join(previewDir, `preview${previewExt}`);
+  const requestedAt = new Date().toISOString();
+
+  if (await fileExists(previewPath)) {
+    console.log(`Wikimedia preview file ${params.rawTitle} already exists locally`);
+  } else {
+    if (params.downloadDelayMs > 0) await sleep(params.downloadDelayMs);
+    console.log(`Wikimedia preview downloading ${params.rawTitle}`);
+    await downloadToFile(params.previewUrl, previewPath, {
+      Referer: params.sourceUrl,
+    });
+  }
+
+  const previewDimensions = await getImageDimensions(previewPath).catch(
+    () => undefined
+  );
+
+  const pendingPreview = {
+    id: params.id,
+    sourceId: params.sourceId,
+    title: params.title,
+    rawTitle: params.rawTitle,
+    query: params.query,
+    sourceUrl: params.sourceUrl,
+    previewUrl: params.previewUrl,
+    previewLocalPath: previewPath,
+    previewPublicPath: toPublicPath(params.imagesRoot, previewPath),
+    previewWidth: params.previewWidth,
+    license: params.license,
+    licenseUrl: params.licenseUrl,
+    artist: params.artist,
+    date: params.date,
+    description: params.description,
+    usage: {
+      global: params.globalUsageCount,
+      local: params.localUsageCount,
+    },
+    dimensions: previewDimensions,
+    requestedAt,
+  };
+
+  console.log(`Wikimedia preview ready ${params.rawTitle}`);
+
+  return {
+    id: params.id,
+    sourceId: params.sourceId,
+    title: params.title,
+    query: params.query,
+    decision: "pending",
+    previewUrl: params.previewUrl,
+    previewLocalPath: previewPath,
+    sourceUrl: params.sourceUrl,
+    decidedAt: requestedAt,
+    metadata: {
+      rawTitle: params.rawTitle,
+      license: params.license,
+      licenseUrl: params.licenseUrl,
+      artist: params.artist,
+      date: params.date,
+      description: params.description,
+      usage: pendingPreview.usage,
+      dimensions: previewDimensions,
+      previewWidth: params.previewWidth,
+      requestedAt,
+    },
+  };
 }
 
 async function fetchWikimediaSearchPages(params: {
@@ -708,6 +978,20 @@ function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+async function runLimited(tasks: Array<() => Promise<void>>, concurrency: number) {
+  let nextIndex = 0;
+  const workerCount = Math.min(concurrency, tasks.length);
+
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (nextIndex < tasks.length) {
+        const task = tasks[nextIndex++];
+        await task();
+      }
+    })
+  );
+}
+
 function errorMessage(error: unknown) {
   return error instanceof Error ? error.message : String(error);
 }
@@ -717,6 +1001,7 @@ function looksLikeScreenArt(params: {
   title: string;
   description?: string;
   categories: Array<{ title: string }> | undefined;
+  mode: WikimediaArtFilterMode;
 }) {
   const categoryText = (params.categories ?? []).map((c) => c.title).join(" ");
   const haystack = normalizeForMatch(
@@ -725,10 +1010,10 @@ function looksLikeScreenArt(params: {
       .join(" ")
   );
 
-  // if (EXCLUDED_NON_ART_HINTS.some((t) => haystack.includes(t))) return false;
+  if (params.mode === "broad") return true;
+
+  if (EXCLUDED_NON_ART_HINTS.some((t) => haystack.includes(t))) return false;
   if (INCLUDED_ART_HINTS.some((t) => haystack.includes(t))) return true;
-  return true;
-  // Default to conservative behavior: only accept when we have a positive signal.
   return false;
 }
 

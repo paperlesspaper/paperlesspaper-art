@@ -97,8 +97,30 @@ const SCHEMA_SQL = `
     rating INTEGER CHECK (rating BETWEEN 1 AND 5)
   );
 
+  CREATE TABLE IF NOT EXISTS wikimedia_preview_decisions (
+    id TEXT PRIMARY KEY,
+    source_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    search_query TEXT,
+    decision TEXT NOT NULL CHECK (decision IN ('pending', 'approved', 'rejected')),
+    preview_url TEXT,
+    preview_local_path TEXT,
+    source_url TEXT,
+    decided_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    metadata_json JSONB NOT NULL DEFAULT '{}'::jsonb
+  );
+
   ALTER TABLE artwork_curation
     DROP CONSTRAINT IF EXISTS artwork_curation_id_fkey;
+
+  ALTER TABLE wikimedia_preview_decisions
+    DROP CONSTRAINT IF EXISTS wikimedia_preview_decisions_decision_check;
+
+  ALTER TABLE wikimedia_preview_decisions
+    ADD CONSTRAINT wikimedia_preview_decisions_decision_check
+    CHECK (decision IN ('pending', 'approved', 'rejected'));
 
   CREATE INDEX IF NOT EXISTS idx_artworks_source ON artworks(source);
   CREATE INDEX IF NOT EXISTS idx_artworks_public_domain ON artworks(is_public_domain);
@@ -109,4 +131,6 @@ const SCHEMA_SQL = `
   CREATE INDEX IF NOT EXISTS idx_artwork_tags_lookup ON artwork_tags(tag_normalized, artwork_id);
   CREATE INDEX IF NOT EXISTS idx_artwork_curation_highlighted ON artwork_curation(highlighted);
   CREATE INDEX IF NOT EXISTS idx_artwork_curation_rating ON artwork_curation(rating);
+  CREATE INDEX IF NOT EXISTS idx_wikimedia_preview_decisions_decision ON wikimedia_preview_decisions(decision);
+  CREATE INDEX IF NOT EXISTS idx_wikimedia_preview_decisions_decided_at ON wikimedia_preview_decisions(decided_at);
 `;

@@ -66,6 +66,52 @@ export async function loadArtworkDuplicateIndexFromDatabase() {
   }
 }
 
+export async function loadWikimediaPreviewDecisionsFromDatabase() {
+  if (!isArtworkDatabaseConfigured()) return [];
+
+  const client = await (await getPool()).connect();
+
+  try {
+    await ensureArtworkDatabase(client);
+
+    const result = await client.query(
+      `SELECT
+          id,
+          source_id AS "sourceId",
+          decision,
+          (metadata_json ->> 'rating')::integer AS rating
+       FROM wikimedia_preview_decisions`
+    );
+
+    return result.rows.map((row) => ({
+      id: row.id,
+      sourceId: row.sourceId,
+      decision: row.decision,
+      rating: row.rating,
+    }));
+  } finally {
+    client.release();
+  }
+}
+
+export async function setArtworkCurationRatingInDatabase(id, rating) {
+  if (!isArtworkDatabaseConfigured()) return false;
+
+  writeQueue = writeQueue.then(() =>
+    setArtworkCurationRatingInDatabaseNow(id, rating)
+  );
+  return writeQueue;
+}
+
+export async function upsertWikimediaPreviewDecisionInDatabase(decision) {
+  if (!isArtworkDatabaseConfigured()) return false;
+
+  writeQueue = writeQueue.then(() =>
+    upsertWikimediaPreviewDecisionInDatabaseNow(decision)
+  );
+  return writeQueue;
+}
+
 async function upsertArtworkInDatabaseNow(artwork) {
   const client = await (await getPool()).connect();
 
@@ -174,6 +220,95 @@ async function upsertArtworkInDatabaseNow(artwork) {
   } catch (error) {
     await client.query("ROLLBACK").catch(() => undefined);
     throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function upsertWikimediaPreviewDecisionInDatabaseNow(decision) {
+  const client = await (await getPool()).connect();
+
+  try {
+    await ensureArtworkDatabase(client);
+
+    const decidedAt =
+      optionalString(decision.decidedAt) ?? new Date().toISOString();
+    const metadata =
+      decision.metadata && typeof decision.metadata === "object"
+        ? decision.metadata
+        : {};
+
+    await client.query(
+      `INSERT INTO wikimedia_preview_decisions (
+          id,
+          source_id,
+          title,
+          search_query,
+          decision,
+          preview_url,
+          preview_local_path,
+          source_url,
+          decided_at,
+          created_at,
+          updated_at,
+          metadata_json
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $9, $9, $10)
+       ON CONFLICT (id)
+       DO UPDATE SET
+          source_id = EXCLUDED.source_id,
+          title = EXCLUDED.title,
+          search_query = EXCLUDED.search_query,
+          decision = EXCLUDED.decision,
+          preview_url = EXCLUDED.preview_url,
+          preview_local_path = EXCLUDED.preview_local_path,
+          source_url = EXCLUDED.source_url,
+          decided_at = EXCLUDED.decided_at,
+          updated_at = EXCLUDED.updated_at,
+          metadata_json = EXCLUDED.metadata_json`,
+      [
+        requiredString(decision.id, "id"),
+        requiredString(decision.sourceId, "sourceId"),
+        requiredString(decision.title, "title"),
+        optionalString(decision.query),
+        requiredPreviewDecision(decision.decision),
+        optionalString(decision.previewUrl),
+        optionalString(decision.previewLocalPath),
+        optionalString(decision.sourceUrl),
+        decidedAt,
+        JSON.stringify(metadata),
+      ]
+    );
+
+    return true;
+  } finally {
+    client.release();
+  }
+}
+
+async function setArtworkCurationRatingInDatabaseNow(id, rating) {
+  const normalizedRating = Number(rating);
+  if (
+    !Number.isInteger(normalizedRating) ||
+    normalizedRating < 1 ||
+    normalizedRating > 5
+  ) {
+    return false;
+  }
+
+  const client = await (await getPool()).connect();
+
+  try {
+    await ensureArtworkDatabase(client);
+    await client.query(
+      `INSERT INTO artwork_curation (id, highlighted, rating)
+       VALUES ($1, FALSE, $2)
+       ON CONFLICT (id)
+       DO UPDATE SET rating = EXCLUDED.rating`,
+      [requiredString(id, "id"), normalizedRating]
+    );
+
+    return true;
   } finally {
     client.release();
   }
@@ -288,6 +423,13 @@ function requiredString(value, field) {
   return value;
 }
 
+function requiredPreviewDecision(value) {
+  if (value === "pending" || value === "approved" || value === "rejected") {
+    return value;
+  }
+  throw new Error("Preview decision must be pending, approved, or rejected");
+}
+
 function optionalString(value) {
   return typeof value === "string" && value.length > 0 ? value : null;
 }
@@ -374,8 +516,30 @@ const SCHEMA_SQL = `
     rating INTEGER CHECK (rating BETWEEN 1 AND 5)
   );
 
+  CREATE TABLE IF NOT EXISTS wikimedia_preview_decisions (
+    id TEXT PRIMARY KEY,
+    source_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    search_query TEXT,
+    decision TEXT NOT NULL CHECK (decision IN ('pending', 'approved', 'rejected')),
+    preview_url TEXT,
+    preview_local_path TEXT,
+    source_url TEXT,
+    decided_at TEXT NOT NULL,
+    created_at TEXT NOT NULL,
+    updated_at TEXT NOT NULL,
+    metadata_json JSONB NOT NULL DEFAULT '{}'::jsonb
+  );
+
   ALTER TABLE artwork_curation
     DROP CONSTRAINT IF EXISTS artwork_curation_id_fkey;
+
+  ALTER TABLE wikimedia_preview_decisions
+    DROP CONSTRAINT IF EXISTS wikimedia_preview_decisions_decision_check;
+
+  ALTER TABLE wikimedia_preview_decisions
+    ADD CONSTRAINT wikimedia_preview_decisions_decision_check
+    CHECK (decision IN ('pending', 'approved', 'rejected'));
 
   CREATE INDEX IF NOT EXISTS idx_artworks_source ON artworks(source);
   CREATE INDEX IF NOT EXISTS idx_artworks_public_domain ON artworks(is_public_domain);
@@ -386,4 +550,6 @@ const SCHEMA_SQL = `
   CREATE INDEX IF NOT EXISTS idx_artwork_tags_lookup ON artwork_tags(tag_normalized, artwork_id);
   CREATE INDEX IF NOT EXISTS idx_artwork_curation_highlighted ON artwork_curation(highlighted);
   CREATE INDEX IF NOT EXISTS idx_artwork_curation_rating ON artwork_curation(rating);
+  CREATE INDEX IF NOT EXISTS idx_wikimedia_preview_decisions_decision ON wikimedia_preview_decisions(decision);
+  CREATE INDEX IF NOT EXISTS idx_wikimedia_preview_decisions_decided_at ON wikimedia_preview_decisions(decided_at);
 `;

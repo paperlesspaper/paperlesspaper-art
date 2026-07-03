@@ -411,6 +411,15 @@ take precedence.
 All scraper commands skip artwork IDs that already exist in Postgres before
 downloading assets. Pass `--refresh-existing` to intentionally redownload and
 update existing catalog rows.
+The Wikimedia scraper upserts each accepted image into Postgres immediately
+after download and resize, so interrupted overnight runs keep the catalog rows
+that already finished.
+When preview review is enabled, Wikimedia candidates download a small local
+preview first and are added to a Postgres-backed review queue. The scraper holds
+the current search offset while that batch has pending previews, so you can
+approve or reject several previews in the web UI at once. Yes proceeds to the
+full download on the next scraper pass, while no skips that candidate in future
+runs. The queue persists across web app and scraper restarts.
 
 ### Wikimedia Search Loop
 
@@ -431,6 +440,30 @@ WIKIMEDIA_USER_AGENT="paperlesspaper-art/0.1 (https://github.com/paperlesspaper/
 bash scripts/scrape-wikimedia-loop.sh
 ```
 
+To rotate through several searches overnight, pass comma-separated keywords:
+
+```bash
+cd packages/scraper
+npm ci
+npm run build
+
+KEYWORDS="landscape paintings, portrait paintings, still life paintings, botanical illustration" \
+LIMIT=100 \
+MIN_GLOBAL_USAGE=0 \
+MIN_LOCAL_USAGE=0 \
+THUMB_WIDTH=2048 \
+DOWNLOAD_DELAY_MS=5000 \
+SUCCESS_DELAY=30 \
+WIKIMEDIA_USER_AGENT="paperlesspaper-art/0.1 (https://github.com/paperlesspaper/paperlesspaper-art; you@example.com)" \
+bash scripts/scrape-wikimedia-loop.sh
+```
+
+You can also pass keywords as quoted script arguments:
+
+```bash
+bash scripts/scrape-wikimedia-loop.sh "landscape paintings" "portraits" "still life"
+```
+
 This loops the equivalent of:
 
 ```bash
@@ -440,11 +473,17 @@ node dist/index.js wikimedia --query "paintings" --limit 100 --min-global-usage 
 Useful environment variables:
 
 - `QUERY`: Wikimedia search query, default `paintings`
+- `KEYWORDS`: comma-, semicolon-, pipe-, or newline-separated Wikimedia search
+  queries; when set, the loop runs each query in turn
 - `LIMIT`: results per run, default `100`
 - `WIDTHS`: resized image widths, default `512,1024`
 - `MIN_GLOBAL_USAGE`: minimum global Wikimedia usage count, default `0`
 - `MIN_LOCAL_USAGE`: minimum local Commons usage count, default `0`
 - `THUMB_WIDTH`: Wikimedia thumbnail width to request, default `1024`
+- `PREVIEW_REVIEW`: set to `1` to download a small review preview and wait for
+  a yes/no decision before full download, default `0`
+- `PREVIEW_WIDTH`: preview thumbnail width when `PREVIEW_REVIEW=1`, default
+  `160`
 - `DOWNLOAD_DELAY_MS`: delay between image downloads, default `5000`
 - `WIKIMEDIA_USER_AGENT`: descriptive Wikimedia request User-Agent with contact
   info; strongly recommended for long-running Commons scraping
@@ -453,7 +492,9 @@ Useful environment variables:
 - `SEARCH_OFFSET`: initial Wikimedia search offset, default `0` or the saved
   offset file value
 - `OFFSET_FILE`: file used to persist the next search offset, default
-  `.wikimedia-search-offset`
+  `.wikimedia-search-offset`; used for single-query runs
+- `OFFSET_DIR`: directory used to persist per-keyword search offsets during
+  multi-keyword runs, default `.wikimedia-search-offsets`
 - `REFRESH_EXISTING`: redownload artwork IDs already in Postgres, default `0`
 - `WEB_ROOT`: optional path to `apps/web`
 - `NODE_BIN`: Node executable, default `node`
@@ -461,11 +502,27 @@ Useful environment variables:
 - `RESTART_DELAY`: delay after a failed run, default `10`
 - `MAX_FAILURES`: stop after this many failures; `0` means retry forever
 
-The loop persists the next Wikimedia search offset in `OFFSET_FILE` and advances
-by `LIMIT` after each successful run, so later runs continue through the search
-results instead of reprocessing only the first page. For a broader Wikimedia
-backfill that actively hunts for Google Art Project images across categories,
-use the Google Art Project continuous scraper below.
+The loop persists the next Wikimedia search offset in `OFFSET_FILE` for a
+single query, or in one file per query under `OFFSET_DIR` for multi-keyword
+runs. Each successful run advances that query by `LIMIT`, so later runs continue
+through the search results instead of reprocessing only the first page. For a
+broader Wikimedia backfill that actively hunts for Google Art Project images
+across categories, use the Google Art Project continuous scraper below.
+
+When running the web app locally, the curation page also exposes a local-only
+Wikimedia scraper panel:
+
+```bash
+cd apps/web
+npm run dev
+```
+
+Open `http://localhost:3000/scraper`, enter keywords, and start an overnight
+run. The scraper page shows exact Wikimedia search queries already present in
+Postgres, skips covered keywords by default, suggests next keywords from the
+uncovered starter list, shows current download/Postgres status, supports a
+multi-preview approval queue, and streams recent scraper logs while the loop
+runs.
 
 For large Wikimedia runs, set `WIKIMEDIA_USER_AGENT` to identify your scraper
 with a contact URL or email. If Wikimedia reports `HTTP 429 Too many requests`

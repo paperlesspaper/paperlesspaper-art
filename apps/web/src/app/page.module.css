@@ -200,6 +200,13 @@
 .segmentedControl button:focus-visible,
 .epdField select:focus,
 .epdField input:focus,
+.scraperKeywordsField textarea:focus,
+.scraperField input:focus,
+.scraperField select:focus,
+.scraperUserAgentField input:focus,
+.scraperCheckboxes label:has(input:focus-visible),
+.scraperActions button:focus-visible,
+.scraperPreviewActions button:focus-visible,
 .epdCheckbox:has(input:focus-visible),
 .rangeControl input:focus-visible {
   border-color: #0a84ff;
@@ -445,9 +452,660 @@
 .filterChip:hover,
 .resetFiltersButton:hover:not(:disabled),
 .clearSearchButton:hover,
+.scraperActions button:hover:not(:disabled),
+.scraperPreviewActions button:hover:not(:disabled),
+.scraperSuggestionList button:hover,
 .tagCloudClear:hover,
 .tagCloudTag:hover {
   border-color: #0a84ff;
+}
+
+.scraperPanel {
+  display: grid;
+  width: 100%;
+  gap: 12px;
+  margin-top: 16px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  background: #f7f7f7;
+  padding: 12px;
+}
+
+.scraperPanelHeader {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+}
+
+.scraperPanelHeader h2,
+.scraperInsightPanel h3,
+.scraperLogPanel h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.scraperPanelHeader p,
+.scraperInsightPanel p,
+.scraperLogPanel p {
+  margin: 3px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.scraperStatusBadge {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  background: var(--foreground);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 10px;
+}
+
+.scraperStatusBadgeActive {
+  border-color: #0a84ff;
+  color: #0a84ff;
+}
+
+.scraperForm {
+  display: grid;
+  grid-template-columns: minmax(260px, 1.2fr) minmax(360px, 1.8fr);
+  gap: 12px;
+  align-items: start;
+}
+
+.scraperKeywordsField,
+.scraperUserAgentField,
+.scraperField {
+  display: grid;
+  min-width: 0;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.scraperKeywordsField textarea,
+.scraperUserAgentField input,
+.scraperField input,
+.scraperField select {
+  width: 100%;
+  min-width: 0;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 13px;
+}
+
+.scraperKeywordsField textarea {
+  min-height: 112px;
+  padding: 9px 10px;
+  resize: vertical;
+}
+
+.scraperUserAgentField {
+  grid-column: 1 / -1;
+}
+
+.scraperUserAgentField input,
+.scraperField input,
+.scraperField select {
+  height: 36px;
+  padding: 0 9px;
+}
+
+.scraperOptionsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.scraperCheckboxes {
+  display: flex;
+  grid-column: 1 / -1;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.scraperCheckboxes label {
+  display: inline-flex;
+  min-height: 32px;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  font-size: 13px;
+  padding: 0 10px;
+}
+
+.scraperCheckboxes input {
+  width: 14px;
+  height: 14px;
+  accent-color: #0a84ff;
+}
+
+.scraperActions {
+  display: flex;
+  min-height: 34px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.scraperActions button {
+  height: 34px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 0 12px;
+}
+
+.scraperActions button:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.scraperActions span,
+.scraperRunSummary {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.scraperError {
+  margin: 0;
+  border: 1px solid #ff6b5f;
+  border-radius: 6px;
+  background: #fff4f2;
+  color: #a62418;
+  font-size: 13px;
+  line-height: 18px;
+  padding: 8px 10px;
+}
+
+.scraperRunSummary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scraperInsightsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.scraperInsightPanel,
+.scraperProgressPanel,
+.scraperPreviewPanel,
+.scraperLogPanel {
+  display: grid;
+  min-width: 0;
+  gap: 8px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 8px;
+  background: var(--foreground);
+  padding: 10px;
+}
+
+.scraperProgressPanel {
+  gap: 10px;
+}
+
+.scraperPreviewPanel {
+  gap: 10px;
+}
+
+.scraperPreviewPanelHeader {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scraperPreviewPanelHeader h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.scraperPreviewPanelHeader span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scraperPreviewGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(660px, 1fr));
+  gap: 12px;
+}
+
+.scraperPreviewCard {
+  position: relative;
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 440px minmax(0, 1fr);
+  gap: 12px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: #fafafa;
+  padding: 8px;
+}
+
+.scraperPreviewImageFrame {
+  position: relative;
+  display: grid;
+  min-height: 440px;
+  aspect-ratio: 1;
+  overflow: hidden;
+  place-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: #f2f2f2;
+}
+
+.scraperPreviewImageFrame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.scraperPreviewDetails {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 10px;
+}
+
+.scraperPreviewHeader {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.scraperPreviewHeader span {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 14px;
+  text-transform: uppercase;
+}
+
+.scraperPreviewHeader strong {
+  display: -webkit-box;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 17px;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.scraperPreviewHeader small {
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.scraperDownloadBadge,
+.scraperDownloadBadgeDownloaded {
+  display: inline-flex;
+  width: fit-content;
+  min-height: 22px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  padding: 0 8px;
+}
+
+.scraperDownloadBadgeDownloaded {
+  border-color: #1f9d55;
+  color: #0a7f38;
+}
+
+.scraperPreviewMeta {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 3px;
+}
+
+.scraperPreviewMeta div {
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr);
+  min-width: 0;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.scraperPreviewMeta span {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.scraperPreviewMeta strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperPreviewActions {
+  display: flex;
+  min-height: 30px;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.scraperPreviewActions button {
+  height: 30px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 10px;
+}
+
+.scraperPreviewActions button:disabled {
+  color: var(--text-secondary);
+  cursor: default;
+  opacity: 0.45;
+}
+
+.scraperPreviewActions span {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scraperPreviewRatingGroup {
+  margin-top: 2px;
+}
+
+.scraperProgressHeader {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scraperProgressHeader h3 {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.scraperProgressHeader span {
+  display: inline-flex;
+  min-height: 26px;
+  align-items: center;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 999px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 10px;
+}
+
+.scraperProgressCards {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.scraperProgressCard {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: #fafafa;
+  padding: 8px;
+}
+
+.scraperProgressCard span {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.scraperProgressCard strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 22px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperProgressCard small {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: 11px;
+  line-height: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperProgressDetails {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px 12px;
+}
+
+.scraperProgressDetails div {
+  display: grid;
+  grid-template-columns: 104px minmax(0, 1fr);
+  min-width: 0;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.scraperProgressDetails span {
+  color: var(--text-secondary);
+  font-weight: 700;
+}
+
+.scraperProgressDetails strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperKeywordRows {
+  display: grid;
+  gap: 6px;
+}
+
+.scraperKeywordRowsScrollable {
+  max-height: 360px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.scraperKeywordRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  min-height: 30px;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #f0f0f0;
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+.scraperKeywordRow:last-child {
+  border-bottom: 0;
+}
+
+.scraperKeywordRow span {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text-primary);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperKeywordRow strong {
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+.scraperKeywordRow small {
+  min-width: 54px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  text-align: right;
+}
+
+.scraperCoveredText {
+  color: #0a7f38 !important;
+}
+
+.scraperSuggestionList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.scraperDecisionTotals {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.scraperDecisionTotals span {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: #fafafa;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  padding: 8px;
+  text-transform: uppercase;
+}
+
+.scraperDecisionTotals strong {
+  color: var(--text-primary);
+  font-size: 18px;
+  line-height: 22px;
+}
+
+.scraperSuggestionList button {
+  display: inline-flex;
+  width: 100%;
+  min-height: 46px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: var(--foreground);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 9px;
+  text-align: left;
+}
+
+.scraperSuggestionList button span {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.scraperSuggestionList button strong {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 12px;
+  line-height: 16px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.scraperSuggestionList button small {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 15px;
+}
+
+.scraperSuggestionList button em {
+  flex: 0 0 auto;
+  color: var(--text-secondary);
+  font-size: 10px;
+  font-style: normal;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.scraperLogPanel pre {
+  max-height: 260px;
+  min-height: 92px;
+  margin: 0;
+  overflow: auto;
+  border: 1px solid var(--button-secondary-border);
+  border-radius: 6px;
+  background: #111;
+  color: #f7f7f7;
+  font-family: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo,
+    Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 11px;
+  line-height: 17px;
+  padding: 10px;
+  white-space: pre-wrap;
 }
 
 .grid {
@@ -1470,6 +2128,37 @@
     display: grid;
   }
 
+  .scraperPanelHeader,
+  .scraperPreviewCard,
+  .scraperForm,
+  .scraperInsightsGrid,
+  .scraperProgressCards,
+  .scraperProgressDetails,
+  .scraperPreviewMeta {
+    grid-template-columns: 1fr;
+  }
+
+  .scraperStatusBadge {
+    width: fit-content;
+  }
+
+  .scraperOptionsGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .scraperKeywordRow {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .scraperKeywordRow small {
+    grid-column: 1 / -1;
+    text-align: left;
+  }
+
+  .scraperProgressDetails div {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
   .pagination {
     overflow-x: auto;
     justify-content: flex-start;
@@ -1555,8 +2244,32 @@
 
   .apiPanel,
   .previewApiPanel,
-  .epdPanel {
+  .epdPanel,
+  .scraperPanel {
     background: #050505;
+  }
+
+  .scraperInsightPanel,
+  .scraperProgressPanel,
+  .scraperPreviewPanel,
+  .scraperLogPanel {
+    background: #000;
+  }
+
+  .scraperProgressCard,
+  .scraperPreviewCard,
+  .scraperDecisionTotals span {
+    background: #050505;
+  }
+
+  .scraperPreviewImageFrame {
+    background: #050505;
+  }
+
+  .scraperError {
+    border-color: #8f2a22;
+    background: #1c0705;
+    color: #ff9d94;
   }
 
   .missingThumb {

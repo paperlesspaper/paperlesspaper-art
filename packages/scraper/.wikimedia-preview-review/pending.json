@@ -1,0 +1,26 @@
+{
+  "id": "wikimedia:17635378",
+  "sourceId": "17635378",
+  "title": "Feast of St Nicholas Richard Brakenburg",
+  "rawTitle": "File:Feast of St Nicholas Richard Brakenburg.jpg",
+  "query": "Dutch Golden Age painting",
+  "sourceUrl": "https://commons.wikimedia.org/wiki/File%3AFeast_of_St_Nicholas_Richard_Brakenburg.jpg",
+  "previewUrl": "https://upload.wikimedia.org/wikipedia/commons/7/7f/Feast_of_St_Nicholas_Richard_Brakenburg.jpg",
+  "previewLocalPath": "/Volumes/WD Blue 4TB/paperlesspaper-art/apps/web/public/images/wikimedia-previews/17635378/preview.jpg",
+  "previewPublicPath": "/images/wikimedia-previews/17635378/preview.jpg",
+  "previewWidth": 384,
+  "license": "CC BY-SA 3.0",
+  "licenseUrl": "https://creativecommons.org/licenses/by-sa/3.0",
+  "artist": "Richard Brakenburgh",
+  "date": "1700",
+  "description": "The Feast of Saint Nicholas label QS:Lfr,\"La fête de Saint Nicholas\" label QS:Len,\"Feast of St Nicholas\"",
+  "usage": {
+    "global": 0,
+    "local": 0
+  },
+  "dimensions": {
+    "width": 3350,
+    "height": 2794
+  },
+  "requestedAt": "2026-07-03T18:29:25.653Z"
+}
